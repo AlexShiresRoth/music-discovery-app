@@ -8,7 +8,7 @@ async function signInWithProvider(provider: Provider) {
   return await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: "/skibidi",
+      redirectTo: "/",
     },
   });
 }
