@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const songClipsSchema = pgTable("song_clips", {
   id: serial("id").primaryKey(),
@@ -29,9 +29,10 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   members: text("members").array().notNull(),
   joinedDate: timestamp("joined_date").defaultNow(),
   songClips: text("song_clips").array().notNull(),
+  membersWithAccess: uuid("members_with_access").array().notNull(),
 });
 
-export const listerProfilesSchema = pgTable("lister_profile", {
+export const listenerProfilesSchema = pgTable("listener_profile", {
   id: serial("id").primaryKey(),
   name: text("name"),
   email: text("email"),
@@ -39,4 +40,5 @@ export const listerProfilesSchema = pgTable("lister_profile", {
   location: text("location"),
   joinedDate: timestamp("joined_date").defaultNow(),
   liked_artists: text("liked_artists").array().notNull(),
+  userIdRef: uuid("user_id_ref").notNull(),
 });

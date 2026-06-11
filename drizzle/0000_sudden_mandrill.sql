@@ -1,4 +1,4 @@
-CREATE TABLE "band_profile" (
+CREATE TABLE "artist_profile" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"full_name" text,
 	"contact_email" text,
@@ -11,15 +11,26 @@ CREATE TABLE "band_profile" (
 	"tiktok" text,
 	"spotify" text,
 	"apple_music" text,
-	"bandcamp" text,
+	"artistcamp" text,
 	"soundcloud" text,
-	"band_name" text,
-	"band_description" text,
-	"band_logo" text,
+	"artist_name" text,
+	"artist_description" text,
+	"artist_logo" text,
 	"genre" text,
 	"members" text[] NOT NULL,
 	"joined_date" timestamp DEFAULT now(),
-	"song_clips" text[] NOT NULL
+	"song_clips" text[] NOT NULL,
+	"members_with_access" uuid[] NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "listener_profile" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text,
+	"email" text,
+	"genres" text[] NOT NULL,
+	"location" text,
+	"joined_date" timestamp DEFAULT now(),
+	"liked_artists" text[] NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "song_clips" (

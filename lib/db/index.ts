@@ -10,6 +10,6 @@ if (!connectionString) {
 
 // Disable prefetch as it is not supported for "Transaction" pool mode
 const client = postgres(connectionString, { prepare: false });
-const db = drizzle(client);
+export const db = drizzle(client);
 
 export const profiles = await db.select().from(artistProfilesSchema);
