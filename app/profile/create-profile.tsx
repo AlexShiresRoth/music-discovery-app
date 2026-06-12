@@ -15,6 +15,10 @@ export default function CreateProfile({ userId }: Props) {
   return (
     <main className="flex flex-col items-center justify-center h-screen">
       <h1>Create Profile</h1>
+      <p>
+        Want to create an artist profile? You can only create one profile per
+        account.
+      </p>
       <button onClick={() => setProfileType("artist")}>Artist</button>
       <button onClick={() => setProfileType("listener")}>Listener</button>
       {profileType === "artist" ? (

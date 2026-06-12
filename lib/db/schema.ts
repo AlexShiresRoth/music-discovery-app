@@ -20,7 +20,6 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   tiktok: text("tiktok"),
   spotify: text("spotify"),
   appleMusic: text("apple_music"),
-  artistcamp: text("artistcamp"),
   soundcloud: text("soundcloud"),
   artistName: text("artist_name"),
   artistDescription: text("artist_description"),
