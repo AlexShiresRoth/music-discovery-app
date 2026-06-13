@@ -34,12 +34,10 @@ export async function createServerClient() {
 export async function getSession() {
   try {
     const supabase = await createServerClient();
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession();
+    const session = await supabase.auth.getUser();
+    const { data, error } = session;
     if (error) throw error;
-    return session;
+    return data;
   } catch (error) {
     console.error(error);
     return null;

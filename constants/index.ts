@@ -50,3 +50,29 @@ export const STATES = [
   { value: "WI", label: "Wisconsin" },
   { value: "WY", label: "Wyoming" },
 ];
+
+export const COUNTRIES = [
+  { value: "US", label: "United States" },
+  { value: "CA", label: "Canada" },
+  { value: "UK", label: "United Kingdom" },
+  { value: "AU", label: "Australia" },
+  { value: "NZ", label: "New Zealand" },
+  { value: "ZA", label: "South Africa" },
+];
+
+export const GENRES = [
+  { value: "rock", label: "Rock" },
+  { value: "pop", label: "Pop" },
+  { value: "hip-hop", label: "Hip-Hop" },
+  { value: "electronic", label: "Electronic" },
+  { value: "country", label: "Country" },
+  { value: "latin", label: "Latin" },
+  { value: "reggae", label: "Reggae" },
+  { value: "jazz", label: "Jazz" },
+  { value: "blues", label: "Blues" },
+  { value: "soul", label: "Soul" },
+  { value: "funk", label: "Funk" },
+  { value: "r&b", label: "R&B" },
+  { value: "punk", label: "Punk" },
+  { value: "metal", label: "Metal" },
+];

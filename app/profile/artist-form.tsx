@@ -1,73 +1,143 @@
 "use client";
 
-import { STATES } from "@/constants";
+import SelectInput from "@/components/select-input";
+import TextArea from "@/components/text-area";
+import TextInput from "@/components/text-input";
+import Toast from "@/components/toast";
+import { COUNTRIES, GENRES, STATES } from "@/constants";
 import { useState } from "react";
 import { artistFormFields } from "./schemas";
 
-function InputWithLabel({
-  label,
-  children,
-  name,
-}: {
-  name: string;
-  label: string;
-  children: React.ReactNode;
-}) {
+function Section({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-1">{children}</div>;
+}
+
+function Columns({ children }: { children: React.ReactNode }) {
+  return <div className="grid grid-cols-2 gap-4">{children}</div>;
+}
+
+function Column({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-3">{children}</div>;
+}
+
+function WideColumn({ children }: { children: React.ReactNode }) {
+  return <div className="col-span-2">{children}</div>;
+}
+
+function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={name}>{label}</label>
-      {children}
+    <div className="border-b border-gray-400/80 pb-2 mb-4">
+      <h2 className="text-2xl text-indigo-500 uppercase">{children}</h2>
     </div>
   );
 }
 
 export default function ArtistProfileForm() {
   const fields = artistFormFields;
+
   const [pending, setIsFormPending] = useState(false);
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setIsFormPending(true);
+      const formData = new FormData(e.target as HTMLFormElement);
+      const profileData = Object.fromEntries(formData.entries());
+
+      const response = await fetch("/api/profile/artist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create profile");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        setIsToastVisible(true);
+      }
+
+      setIsFormPending(false);
+    } catch (error) {
+      setIsFormPending(false);
+      console.error(error);
+    }
+  };
 
   return (
-    <div>
-      <h1>Artist Profile</h1>
-      <form className="flex flex-col gap-2">
-        <InputWithLabel
-          label={fields.fullName.label}
-          name={fields.fullName.name}
+    <div className="w-full">
+      <h1 className="text-5xl font-bold uppercase">Artist Profile</h1>
+      <form
+        className="flex flex-col gap-12 w-full mt-20"
+        onSubmit={handleSubmit}
+      >
+        <Section>
+          <Heading>Location</Heading>
+          <Columns>
+            <Column>
+              <TextInput {...fields.fullName} />
+              <TextInput {...fields.contactEmail} />
+              <TextInput {...fields.city} />
+            </Column>
+            <Column>
+              <SelectInput {...fields.state} options={STATES} />
+              <SelectInput {...fields.country} options={COUNTRIES} />
+            </Column>
+          </Columns>
+        </Section>
+        <Section>
+          <Heading>About You</Heading>
+          <Columns>
+            <Column>
+              <TextInput {...fields.artistName} />
+              <SelectInput {...fields.genre} options={GENRES} />
+            </Column>
+            <Column>
+              <TextInput {...fields.members} />
+            </Column>
+            <WideColumn>
+              <TextArea {...fields.artistDescription} />
+            </WideColumn>
+          </Columns>
+        </Section>
+        <Section>
+          <Heading>Social</Heading>
+          <Columns>
+            <Column>
+              <TextInput {...fields.website} />
+              <TextInput {...fields.facebook} />
+              <TextInput {...fields.instagram} />
+              <TextInput {...fields.tiktok} />
+            </Column>
+            <Column>
+              <TextInput {...fields.spotify} />
+              <TextInput {...fields.appleMusic} />
+              <TextInput {...fields.soundcloud} />
+            </Column>
+          </Columns>
+        </Section>
+
+        <button
+          disabled={pending}
+          type="submit"
+          className="self-end px-4 py-2 bg-indigo-500 text-black rounded-md uppercase font-bold hover:bg-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
         >
-          <input
-            type="text"
-            name={fields.fullName.name}
-            placeholder={fields.fullName.placeholder}
-          />
-        </InputWithLabel>
-        <InputWithLabel
-          label={fields.contactEmail.label}
-          name={fields.contactEmail.name}
-        >
-          <input
-            type="email"
-            name={fields.contactEmail.name}
-            placeholder={fields.contactEmail.placeholder}
-          />
-        </InputWithLabel>
-        <InputWithLabel label={fields.city.label} name={fields.city.name}>
-          <input
-            type="text"
-            name={fields.city.name}
-            placeholder={fields.city.placeholder}
-          />
-        </InputWithLabel>
-        <InputWithLabel label={fields.state.label} name={fields.state.name}>
-          <select name={fields.state.name}>
-            <option value="">Select a state</option>
-            {STATES.map((state) => (
-              <option key={state.value} value={state.value}>
-                {state.label}
-              </option>
-            ))}
-          </select>
-        </InputWithLabel>
-        <button type="submit">Create Profile</button>
+          {pending ? "Creating Profile..." : "Create Profile"}
+        </button>
       </form>
+
+      <Toast
+        message="Profile created successfully"
+        type="success"
+        isVisible={isToastVisible}
+        setIsVisible={setIsToastVisible}
+      />
     </div>
   );
 }

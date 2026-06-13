@@ -13,19 +13,22 @@ export default function CreateProfile({ userId }: Props) {
     "artist",
   );
   return (
-    <main className="flex flex-col items-center justify-center h-screen">
-      <h1>Create Profile</h1>
-      <p>
-        Want to create an artist profile? You can only create one profile per
-        account.
-      </p>
-      <button onClick={() => setProfileType("artist")}>Artist</button>
-      <button onClick={() => setProfileType("listener")}>Listener</button>
-      {profileType === "artist" ? (
-        <ArtistProfileForm />
-      ) : (
-        <ListenerProfileForm />
-      )}
+    <main className="flex flex-col items-center justify-center w-full gap-12 py-12">
+      <header className="md:w-3/4 w-full">
+        <h1>Create Profile</h1>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setProfileType("artist")}>Artist</button>
+          <span>or</span>
+          <button onClick={() => setProfileType("listener")}>Listener</button>
+        </div>
+      </header>
+      <div className="md:w-3/4 w-full">
+        {profileType === "artist" ? (
+          <ArtistProfileForm />
+        ) : (
+          <ListenerProfileForm />
+        )}
+      </div>
     </main>
   );
 }
