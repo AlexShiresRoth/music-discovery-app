@@ -1,14 +1,15 @@
-import { getArtistProfile, getListenerProfile, getSession } from "@/lib/auth";
+import { getArtistProfile, getListenerProfile } from "@/lib/auth";
 import CreateProfile from "./create-profile";
 
 export default async function ProfilePage() {
-  const session = await getSession();
   const artistProfile = await getArtistProfile();
   const listenerProfile = await getListenerProfile();
 
   if (!artistProfile && !listenerProfile) {
-    return <CreateProfile userId={session?.user.id ?? ""} />;
+    return <CreateProfile />;
   }
 
-  return <div>Profile</div>;
+  if (artistProfile) {
+    return <p>{artistProfile.artistName}</p>;
+  }
 }

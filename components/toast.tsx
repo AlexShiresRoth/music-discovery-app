@@ -6,23 +6,70 @@ type Props = {
   type: "success" | "error" | "info" | "warning";
   duration?: 3000 | 5000;
   isVisible: boolean;
-  setIsVisible: (isVisible: boolean) => void;
+  setToast: (isVisible: null) => void;
 };
+
+function ToastWrapper({
+  children,
+  type,
+  duration,
+  isVisible,
+}: {
+  children: React.ReactNode;
+  type: "success" | "error" | "info" | "warning";
+  duration: 3000 | 5000;
+  isVisible: boolean;
+}) {
+  return (
+    <div
+      className={clsx(
+        "relative bg-black border-2 p-4 rounded-md rounded-t-none w-fit flex flex-col",
+        {
+          "border-green-500/20 text-green-500/80": type === "success",
+          "border-red-500/20 text-red-500/80": type === "error",
+          "border-blue-500/20 text-blue-500/80": type === "info",
+          "border-yellow-500/20 text-yellow-500/80": type === "warning",
+        },
+      )}
+    >
+      <div
+        className={clsx("absolute top-0 left-0 h-1 w-full flex items-center", {
+          "bg-green-500/30": type === "success",
+          "bg-red-500/30": type === "error",
+          "bg-blue-500/30": type === "info",
+          "bg-yellow-500/30": type === "warning",
+        })}
+      >
+        <span
+          className={clsx("h-1", {
+            "progress-3 w-full": duration === 3000 && isVisible,
+            "progress-5 w-full": duration === 5000 && isVisible,
+            "bg-green-500/80 text-green-500/80": type === "success",
+            "bg-red-500/80 text-red-500/80": type === "error",
+            "bg-blue-500/80 text-blue-500/80": type === "info",
+            "bg-yellow-500/80 text-yellow-500/80": type === "warning",
+          })}
+        />
+      </div>
+      {children}
+    </div>
+  );
+}
 
 export default function Toast({
   message,
   type,
   duration = 3000,
   isVisible,
-  setIsVisible,
+  setToast,
 }: Props) {
   useEffect(() => {
     if (isVisible) {
       setTimeout(() => {
-        setIsVisible(false);
+        setToast(null);
       }, duration);
     }
-  }, [duration, setIsVisible, isVisible]);
+  }, [duration, setToast, isVisible]);
 
   return (
     <div
@@ -34,34 +81,11 @@ export default function Toast({
         },
       )}
     >
-      {type === "success" && (
-        <div className="relative bg-black border-2 border-green-500/20 text-green-500/80 p-4 rounded-md rounded-t-none w-fit flex flex-col">
-          <div className="absolute top-0 left-0 h-1 w-full bg-green-500/30 flex items-center">
-            <span
-              className={clsx("bg-green-500/80 h-1", {
-                "progress-3 w-full": duration === 3000 && isVisible,
-                "progress-5 w-full": duration === 5000 && isVisible,
-              })}
-            />
-          </div>
+      {
+        <ToastWrapper type={type} duration={duration} isVisible={isVisible}>
           {message}
-        </div>
-      )}
-      {type === "error" && (
-        <div className="bg-black border border-red-500 text-red-500 p-4 rounded-md">
-          {message}
-        </div>
-      )}
-      {type === "info" && (
-        <div className="bg-black border border-blue-500 text-blue-500 p-4 rounded-md">
-          {message}
-        </div>
-      )}
-      {type === "warning" && (
-        <div className="bg-black border border-yellow-500 text-yellow-500 p-4 rounded-md">
-          {message}
-        </div>
-      )}
+        </ToastWrapper>
+      }
     </div>
   );
 }

@@ -49,6 +49,7 @@ export async function getSession() {
  * @returns The artist profile for the current user
  * @description returns a singular profile for the current user
  */
+// TODO - should this be api route? probably
 export async function getArtistProfile() {
   const session = await getSession();
 

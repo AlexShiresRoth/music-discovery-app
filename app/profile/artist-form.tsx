@@ -36,7 +36,10 @@ export default function ArtistProfileForm() {
   const fields = artistFormFields;
 
   const [pending, setIsFormPending] = useState(false);
-  const [isToastVisible, setIsToastVisible] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,19 +56,25 @@ export default function ArtistProfileForm() {
         body: JSON.stringify(profileData),
       });
 
+      const { error, success } = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to create profile");
+        setToast({
+          message: error || "Failed to create profile",
+          type: "error",
+        });
+        setIsFormPending(false);
+        return;
       }
 
-      const data = await response.json();
-      console.log(data);
-      if (data.success) {
-        setIsToastVisible(true);
+      if (success) {
+        setToast({ message: "Profile created successfully", type: "success" });
       }
 
       setIsFormPending(false);
     } catch (error) {
       setIsFormPending(false);
+      setToast({ message: JSON.stringify(error), type: "error" });
       console.error(error);
     }
   };
@@ -132,12 +141,14 @@ export default function ArtistProfileForm() {
         </button>
       </form>
 
-      <Toast
-        message="Profile created successfully"
-        type="success"
-        isVisible={isToastVisible}
-        setIsVisible={setIsToastVisible}
-      />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={!!toast}
+          setToast={setToast}
+        />
+      )}
     </div>
   );
 }

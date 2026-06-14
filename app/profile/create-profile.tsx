@@ -4,11 +4,7 @@ import { useState } from "react";
 import ArtistProfileForm from "./artist-form";
 import ListenerProfileForm from "./listener-form";
 
-type Props = {
-  userId: string;
-};
-
-export default function CreateProfile({ userId }: Props) {
+export default function CreateProfile() {
   const [profileType, setProfileType] = useState<"artist" | "listener">(
     "artist",
   );
