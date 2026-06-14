@@ -106,6 +106,12 @@ const ArtistProfileFormSchema: Record<
     placeholder: "Members",
     required: true,
   },
+  imageUrl: {
+    name: "imageUrl",
+    label: "Image URL",
+    placeholder: "Image URL",
+    required: false,
+  },
 };
 
 export const artistFormFields = ArtistProfileFormSchema;
