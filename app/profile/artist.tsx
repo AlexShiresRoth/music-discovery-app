@@ -32,10 +32,12 @@ function SocialLink({
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <PreHeader>Toggle</PreHeader>
-        <ToggleButton />
-      </div>
+      {link && (
+        <div className="flex flex-col gap-2">
+          <PreHeader>Toggle</PreHeader>
+          <ToggleButton />
+        </div>
+      )}
     </div>
   );
 }
@@ -102,15 +104,7 @@ export default function ArtistProfile({ artistProfile }: Props) {
             <header className="flex justify-between gap-2 border-b border-gray-400/80 pb-4">
               <div className="flex flex-col">
                 <PreHeader>Artist Name</PreHeader>
-                <h1 className="text-5xl font-bold uppercase">{artistName}</h1>
-              </div>
-              <div className="flex flex-col">
-                <PreHeader>Genre</PreHeader>
-                <p className="text-lg">{genre}</p>
-              </div>
-              <div className="flex flex-col">
-                <PreHeader>Members</PreHeader>
-                <p className="text-lg">{members.join(", ")}</p>
+                <h1 className="text-3xl font-bold uppercase">{artistName}</h1>
               </div>
               <div>
                 {artistLogo ? (
@@ -125,6 +119,14 @@ export default function ArtistProfile({ artistProfile }: Props) {
                 )}
               </div>
             </header>
+            <div className="flex flex-col border-b border-gray-400/80 pb-4">
+              <PreHeader>Genre</PreHeader>
+              <p className="text-lg">{genre}</p>
+            </div>
+            <div className="flex flex-col border-b border-gray-400/80 pb-4">
+              <PreHeader>Members</PreHeader>
+              <p className="text-lg">{members.join(", ")}</p>
+            </div>
             <div className="border-b border-gray-400/80 pb-4">
               <PreHeader>Bio</PreHeader>
               <p className="text-lg">{artistDescription}</p>

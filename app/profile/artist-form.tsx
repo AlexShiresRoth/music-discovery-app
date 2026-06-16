@@ -3,9 +3,10 @@
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import Toast from "@/components/toast";
 import { COUNTRIES, GENRES, STATES } from "@/constants";
-import { useState } from "react";
+import { ToastContext } from "@/context/toast";
+import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 import { artistFormFields } from "./schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -34,12 +35,9 @@ function Heading({ children }: { children: React.ReactNode }) {
 
 export default function ArtistProfileForm() {
   const fields = artistFormFields;
-
+  const router = useRouter();
   const [pending, setIsFormPending] = useState(false);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  const { setToast } = useContext(ToastContext);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,6 +67,7 @@ export default function ArtistProfileForm() {
 
       if (success) {
         setToast({ message: "Profile created successfully", type: "success" });
+        router.push("/profile");
       }
 
       setIsFormPending(false);
@@ -81,7 +80,6 @@ export default function ArtistProfileForm() {
 
   return (
     <div className="w-full">
-      <h1 className="text-5xl font-bold uppercase">Artist Profile</h1>
       <form
         className="flex flex-col gap-12 w-full mt-20"
         onSubmit={handleSubmit}
@@ -90,13 +88,21 @@ export default function ArtistProfileForm() {
           <Heading>Location</Heading>
           <Columns>
             <Column>
-              <TextInput {...fields.fullName} />
-              <TextInput {...fields.contactEmail} />
-              <TextInput {...fields.city} />
+              <TextInput {...fields.fullName} isPending={pending} />
+              <TextInput {...fields.contactEmail} isPending={pending} />
+              <TextInput {...fields.city} isPending={pending} />
             </Column>
             <Column>
-              <SelectInput {...fields.state} options={STATES} />
-              <SelectInput {...fields.country} options={COUNTRIES} />
+              <SelectInput
+                {...fields.state}
+                options={STATES}
+                isPending={pending}
+              />
+              <SelectInput
+                {...fields.country}
+                options={COUNTRIES}
+                isPending={pending}
+              />
             </Column>
           </Columns>
         </Section>
@@ -104,14 +110,18 @@ export default function ArtistProfileForm() {
           <Heading>About You</Heading>
           <Columns>
             <Column>
-              <TextInput {...fields.artistName} />
-              <SelectInput {...fields.genre} options={GENRES} />
+              <TextInput {...fields.artistName} isPending={pending} />
+              <SelectInput
+                {...fields.genre}
+                options={GENRES}
+                isPending={pending}
+              />
             </Column>
             <Column>
-              <TextInput {...fields.members} />
+              <TextInput {...fields.members} isPending={pending} />
             </Column>
             <WideColumn>
-              <TextArea {...fields.artistDescription} />
+              <TextArea {...fields.artistDescription} isPending={pending} />
             </WideColumn>
           </Columns>
         </Section>
@@ -119,15 +129,15 @@ export default function ArtistProfileForm() {
           <Heading>Social</Heading>
           <Columns>
             <Column>
-              <TextInput {...fields.website} />
-              <TextInput {...fields.facebook} />
-              <TextInput {...fields.instagram} />
-              <TextInput {...fields.tiktok} />
+              <TextInput {...fields.website} isPending={pending} />
+              <TextInput {...fields.facebook} isPending={pending} />
+              <TextInput {...fields.instagram} isPending={pending} />
+              <TextInput {...fields.tiktok} isPending={pending} />
             </Column>
             <Column>
-              <TextInput {...fields.spotify} />
-              <TextInput {...fields.appleMusic} />
-              <TextInput {...fields.soundcloud} />
+              <TextInput {...fields.spotify} isPending={pending} />
+              <TextInput {...fields.appleMusic} isPending={pending} />
+              <TextInput {...fields.soundcloud} isPending={pending} />
             </Column>
           </Columns>
         </Section>
@@ -140,15 +150,6 @@ export default function ArtistProfileForm() {
           {pending ? "Creating Profile..." : "Create Profile"}
         </button>
       </form>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          isVisible={!!toast}
-          setToast={setToast}
-        />
-      )}
     </div>
   );
 }

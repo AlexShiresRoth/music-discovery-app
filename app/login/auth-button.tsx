@@ -23,12 +23,9 @@ export default function SignInButton({
   children,
 }: SignInButtonProps) {
   async function handleSignIn() {
-    const { data, error } = await signInWithProvider(provider);
+    const { error } = await signInWithProvider(provider);
     if (error) {
       console.error(error);
-    }
-    if (data) {
-      console.log(data);
     }
   }
 
