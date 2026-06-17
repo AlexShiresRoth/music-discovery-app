@@ -7,7 +7,7 @@ import { COUNTRIES, GENRES, STATES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import { artistFormFields } from "./schemas";
+import { artistFormFields } from "../schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-1">{children}</div>;
@@ -39,7 +39,7 @@ export default function ArtistProfileForm() {
   const [pending, setIsFormPending] = useState(false);
   const { setToast } = useContext(ToastContext);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setIsFormPending(true);

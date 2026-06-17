@@ -1,5 +1,5 @@
-import ArtistProfileForm from "../artist-form";
 import ProfileWrapper from "../profile-wrapper";
+import ArtistProfileForm from "./artist-form";
 
 export default function ArtistProfilePage() {
   return (

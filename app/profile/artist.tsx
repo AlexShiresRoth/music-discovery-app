@@ -1,6 +1,7 @@
 import { type ArtistProfile } from "@/lib/db/types";
 import { Trash, Upload } from "lucide-react";
 import Image from "next/image";
+import MembersWithAccess from "./members-with-access";
 import ToggleButton from "./toggle";
 
 type Props = {
@@ -192,22 +193,24 @@ export default function ArtistProfile({ artistProfile }: Props) {
             <h2 className="font-bold uppercase text-indigo-500">
               Private Info
             </h2>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <PreHeader>Full Name</PreHeader>
-                <p className="text-lg">{fullName}</p>
-              </div>
-              <div>
-                <PreHeader>Contact Email</PreHeader>
-                <p className="text-lg">{contactEmail}</p>
-              </div>
-              <div>
-                <PreHeader>Joined Date</PreHeader>
-                <p className="text-lg">{joinedDate?.toLocaleDateString()}</p>
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-3 gap-4 border-b border-gray-400/80 pb-4">
+                <div>
+                  <PreHeader>Full Name</PreHeader>
+                  <p className="text-lg">{fullName}</p>
+                </div>
+                <div>
+                  <PreHeader>Contact Email</PreHeader>
+                  <p className="text-lg">{contactEmail}</p>
+                </div>
+                <div>
+                  <PreHeader>Joined Date</PreHeader>
+                  <p className="text-lg">{joinedDate?.toLocaleDateString()}</p>
+                </div>
               </div>
               <div>
                 <PreHeader>Members with Access</PreHeader>
-                <p className="text-lg">{membersWithAccess.join(", ")}</p>
+                <MembersWithAccess membersWithAccess={membersWithAccess} />
               </div>
             </div>
           </div>
