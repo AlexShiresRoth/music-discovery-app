@@ -1,6 +1,6 @@
 {
-  "id": "f37aa76d-7623-44dc-89da-2241d767a7a2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "5c283896-982e-4187-9aab-755b5a5b75ee",
+  "prevId": "f37aa76d-7623-44dc-89da-2241d767a7a2",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -194,6 +194,12 @@
         "liked_artists": {
           "name": "liked_artists",
           "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id_ref": {
+          "name": "user_id_ref",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
