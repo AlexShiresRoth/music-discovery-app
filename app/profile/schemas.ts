@@ -2,7 +2,7 @@ import { ArtistProfile } from "@/lib/db/types";
 
 export type ArtistProfileFormSchemaWithoutId = Omit<
   ArtistProfile,
-  "id" | "joinedDate" | "songClips" | "membersWithAccess"
+  "id" | "joinedDate" | "songClips" | "membersWithAccess" | "userRefId"
 >;
 
 const ArtistProfileFormSchema: Record<

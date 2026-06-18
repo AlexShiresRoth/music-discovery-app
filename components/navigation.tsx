@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth/session";
 import Link from "next/link";
 
 export default async function Navigation() {

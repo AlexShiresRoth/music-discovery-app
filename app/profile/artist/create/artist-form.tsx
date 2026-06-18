@@ -7,7 +7,7 @@ import { COUNTRIES, GENRES, STATES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import { artistFormFields } from "../schemas";
+import { artistFormFields } from "../../schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col gap-1">{children}</div>;
@@ -46,7 +46,7 @@ export default function ArtistProfileForm() {
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
 
-      const response = await fetch("/api/profile/artist", {
+      const response = await fetch("/api/profile/artist/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export default function ArtistProfileForm() {
 
       if (success) {
         setToast({ message: "Profile created successfully", type: "success" });
-        router.push("/profile");
+        router.push("/profile/artist");
       }
 
       setIsFormPending(false);

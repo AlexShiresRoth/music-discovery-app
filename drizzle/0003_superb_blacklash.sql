@@ -1,0 +1,1 @@
+ALTER TABLE "artist_profile" ADD COLUMN "user_ref_id" uuid NOT NULL;

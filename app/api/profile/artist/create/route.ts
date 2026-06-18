@@ -61,6 +61,7 @@ export async function POST(request: Request) {
         genre: data.genre,
         fullName: data.fullName,
         contactEmail: data.contactEmail,
+        userRefId: user.id,
       })
       .onConflictDoNothing();
 
