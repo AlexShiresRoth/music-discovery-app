@@ -1,12 +1,12 @@
-import "server-only";
 import { db } from "@/lib/db";
 import { artistProfilesSchema } from "@/lib/db/schema";
 import { arrayContains } from "drizzle-orm";
+import "server-only";
 import { getSession } from "./session";
 
 export async function getArtistProfile() {
   try {
-    const session = await getSession();
+    const { session } = await getSession();
 
     if (!session) {
       return null;
@@ -15,7 +15,11 @@ export async function getArtistProfile() {
     const profile = await db
       .select()
       .from(artistProfilesSchema)
-      .where(arrayContains(artistProfilesSchema.membersWithAccess, [session.user.id]))
+      .where(
+        arrayContains(artistProfilesSchema.membersWithAccess, [
+          session.user.id,
+        ]),
+      )
       .limit(1);
 
     return profile[0] ?? null;

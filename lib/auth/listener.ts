@@ -9,7 +9,7 @@ import { getSession } from "./session";
  * @description returns a singular profile for the current user
  */
 export async function getListenerProfile() {
-  const session = await getSession();
+  const { session } = await getSession();
 
   if (!session) {
     return null;

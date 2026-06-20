@@ -6,7 +6,7 @@ type Props = {
 
 // TODO - how can we get other members by id?
 export default async function MembersWithAccess({ membersWithAccess }: Props) {
-  const session = await getSession();
+  const { session } = await getSession();
 
   return (
     <div>
