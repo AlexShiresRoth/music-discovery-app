@@ -1,6 +1,7 @@
 "use client";
 import { ToastContext } from "@/context/toast";
 import { useContext } from "react";
+import { createPortal } from "react-dom";
 import Toast from "./toast";
 
 export default function ToastWrapper({
@@ -12,14 +13,16 @@ export default function ToastWrapper({
   return (
     <>
       {children}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          isVisible={!!toast}
-          setToast={setToast}
-        />
-      )}
+      {toast &&
+        createPortal(
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            isVisible={!!toast}
+            setToast={setToast}
+          />,
+          document.body,
+        )}
     </>
   );
 }

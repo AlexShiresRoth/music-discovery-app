@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 
-export default function CreateProfile() {
+export default function ChooseProfile() {
   return (
     <main className="flex flex-col items-center justify-center w-full gap-12 py-12">
       <div className="md:w-3/4 w-full flex flex-col items-center justify-center">

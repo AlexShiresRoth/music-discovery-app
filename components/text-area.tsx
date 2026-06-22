@@ -4,18 +4,22 @@ export default function TextArea({
   label,
   isPending,
   name,
+  isEdit = false,
   ...props
 }: ComponentPropsWithoutRef<"textarea"> & {
-  label: string;
+  label?: string;
   isPending: boolean;
+  isEdit?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="-mb-6 flex relative">
-        <label htmlFor={name} className="ml-4 p-2 bg-black text-sm">
-          {label}
-        </label>
-      </div>
+      {label && (
+        <div className="-mb-6 flex relative">
+          <label htmlFor={name} className="ml-4 p-2 bg-black text-sm">
+            {label}
+          </label>
+        </div>
+      )}
       <textarea
         {...props}
         name={name}

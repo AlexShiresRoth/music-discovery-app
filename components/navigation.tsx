@@ -1,10 +1,10 @@
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth/session";
 import Link from "next/link";
 
 export default async function Navigation() {
-  const session = await getSession();
+  const user = await getSession();
 
-  if (!session) {
+  if (!user) {
     return (
       <nav>
         <Link href="/login">Login</Link>

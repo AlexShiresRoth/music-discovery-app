@@ -74,7 +74,7 @@ export default function Toast({
   return (
     <div
       className={clsx(
-        "fixed left-1/2 -translate-x-1/2 mx-auto py-4 transition-all duration-300",
+        "fixed left-1/2 -translate-x-1/2 mx-auto py-4 transition-all duration-300 z-50",
         {
           "translate-y-0 bottom-0": isVisible,
           "translate-y-full bottom-0": !isVisible,

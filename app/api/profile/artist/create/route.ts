@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { artistProfilesSchema } from "@/lib/db/schema";
 import { arrayContains } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import "server-only";
 
 export async function POST(request: Request) {
   const supabase = await createServerClient();
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
         membersWithAccess: [user.id],
         joinedDate: new Date(),
         songClips: [],
-        members: [],
+        members: data.members || "",
         artistDescription: data.artistDescription,
         artistLogo: data.artistLogo || "",
         artistName: data.artistName,
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
         genre: data.genre,
         fullName: data.fullName,
         contactEmail: data.contactEmail,
+        userRefId: user.id,
       })
       .onConflictDoNothing();
 

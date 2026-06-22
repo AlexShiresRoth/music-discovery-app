@@ -15,7 +15,7 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   artistDescription: text("artist_description"),
   artistLogo: text("artist_logo"),
   genre: text("genre"),
-  members: text("members").array().notNull(),
+  members: text("members"),
   joinedDate: timestamp("joined_date").defaultNow(),
   songClips: text("song_clips").array().notNull(),
   membersWithAccess: uuid("members_with_access").array().notNull(),
@@ -30,6 +30,7 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   spotify: text("spotify"),
   appleMusic: text("apple_music"),
   soundcloud: text("soundcloud"),
+  userRefId: uuid("user_ref_id").notNull(),
 });
 
 export const listenerProfilesSchema = pgTable("listener_profile", {
@@ -37,7 +38,10 @@ export const listenerProfilesSchema = pgTable("listener_profile", {
   name: text("name"),
   email: text("email"),
   genres: text("genres").array().notNull(),
-  location: text("location"),
+  state: text("state"),
+  country: text("country"),
+  city: text("city"),
+  image: text("image"),
   joinedDate: timestamp("joined_date").defaultNow(),
   liked_artists: text("liked_artists").array().notNull(),
   userIdRef: uuid("user_id_ref").notNull(),
