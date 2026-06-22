@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { artistProfilesSchema } from "@/lib/db/schema";
 import { arrayContains } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
+import "server-only";
 export const POST = async (request: Request) => {
   const supabase = await createServerClient();
 

@@ -5,10 +5,12 @@ export default function SocialLink({
   link,
   platform,
   fallback,
+  isActive,
 }: {
   link: string | null;
   platform: string;
   fallback: string;
+  isActive: boolean;
 }) {
   return (
     <div className="flex gap-2 items-center justify-between border-b border-gray-400/80 pb-4">
@@ -24,8 +26,8 @@ export default function SocialLink({
       </div>
       {link && (
         <div className="flex flex-col gap-2">
-          <PreHeader>Toggle</PreHeader>
-          <ToggleButton />
+          <PreHeader>Show</PreHeader>
+          <ToggleButton isActive={isActive} />
         </div>
       )}
     </div>
