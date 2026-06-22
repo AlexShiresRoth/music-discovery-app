@@ -84,8 +84,8 @@ const ArtistProfileFormSchema: Record<
   },
   artistDescription: {
     name: "artistDescription",
-    label: "Artist Description",
-    placeholder: "Artist Description",
+    label: "Bio",
+    placeholder: "Bio",
     required: false,
   },
   artistLogo: {
