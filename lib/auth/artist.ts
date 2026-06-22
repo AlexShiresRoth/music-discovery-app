@@ -6,7 +6,7 @@ import { getSession } from "./session";
 
 export async function getArtistProfile() {
   try {
-    const { session } = await getSession();
+    const session = await getSession();
 
     if (!session) {
       return null;

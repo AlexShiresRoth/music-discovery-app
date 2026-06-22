@@ -9,6 +9,8 @@ import SocialSection from "./social";
 export default async function ArtistProfile() {
   const artistProfile = await getArtistProfile();
 
+  console.log("ARTIST PROFILE", artistProfile);
+
   if (!artistProfile) {
     return redirect("/profile/artist/create");
   }

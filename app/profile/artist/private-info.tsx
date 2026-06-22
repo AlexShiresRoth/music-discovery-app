@@ -11,6 +11,7 @@ export default function PrivateInfo({
   membersWithAccess: string[];
   joinedDate: Date | null;
 }) {
+  const date = new Date(joinedDate || "").toLocaleDateString();
   return (
     <div className="flex flex-col gap-10 w-full border border-gray-400/80 rounded-md p-8">
       <h2 className="font-bold uppercase text-indigo-500">Private Info</h2>
@@ -26,7 +27,7 @@ export default function PrivateInfo({
           </div>
           <div>
             <PreHeader>Joined Date</PreHeader>
-            <p className="text-lg">{joinedDate?.toLocaleDateString()}</p>
+            <p className="text-lg">{date}</p>
           </div>
         </div>
         <div>

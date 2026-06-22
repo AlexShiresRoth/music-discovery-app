@@ -15,7 +15,7 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   artistDescription: text("artist_description"),
   artistLogo: text("artist_logo"),
   genre: text("genre"),
-  members: text("members").array().notNull(),
+  members: text("members"),
   joinedDate: timestamp("joined_date").defaultNow(),
   songClips: text("song_clips").array().notNull(),
   membersWithAccess: uuid("members_with_access").array().notNull(),

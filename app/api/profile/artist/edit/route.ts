@@ -38,12 +38,11 @@ export const POST = async (request: Request) => {
 
     const p = foundArtistProfile[0];
 
-    console.log("DATA", data);
     await db
       .update(artistProfilesSchema)
       .set({
         songClips: p.songClips,
-        members: [...(data.members || []), ...p.members],
+        members: data.members || p.members,
         artistDescription: data.artistDescription || p.artistDescription,
         artistLogo: data.artistLogo || p.artistLogo,
         artistName: data.artistName || p.artistName,

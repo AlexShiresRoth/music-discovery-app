@@ -2,9 +2,8 @@ import { getSession } from "@/lib/auth/session";
 import Link from "next/link";
 
 export default async function Navigation() {
-  const { session } = await getSession();
+  const session = await getSession();
 
-  console.log("Session in Navigation:", session);
   if (!session) {
     return (
       <nav>

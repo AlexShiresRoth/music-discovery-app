@@ -5,7 +5,7 @@ export async function getSession() {
   try {
     const supabase = await createServerClient();
 
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getUser();
 
     if (error) {
       throw error;
@@ -14,6 +14,6 @@ export async function getSession() {
     return data;
   } catch (error) {
     console.error(error);
-    return { session: null, error };
+    return null;
   }
 }

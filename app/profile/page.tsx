@@ -5,6 +5,8 @@ import ChooseProfile from "./intro";
 export default async function ProfilePage() {
   const artistProfile = await getArtistProfile();
 
+  console.log("ARTIST PROFILE", artistProfile);
+
   if (artistProfile) {
     return redirect("/profile/artist");
   }

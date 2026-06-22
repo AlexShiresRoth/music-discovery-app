@@ -46,7 +46,6 @@ function ViewOrEditForm({
   );
 }
 
-// TODO - fix revalidation on save, cache is stale
 export default function PublicInfo({
   artistName,
   genre,
@@ -91,6 +90,7 @@ export default function PublicInfo({
 
       if (success) {
         setToast({ message: "Profile updated successfully", type: "success" });
+        router.refresh();
         router.back();
       }
 
@@ -101,6 +101,7 @@ export default function PublicInfo({
       console.error(error);
     }
   };
+
   return (
     <ViewOrEditForm mode={mode} handleSubmit={handleSubmit}>
       <div className="flex flex-col gap-10 w-full border border-gray-400/80 rounded-md p-8">
@@ -118,6 +119,7 @@ export default function PublicInfo({
             <button
               className="flex p-1 rounded items-center gap-1 hover:cursor-pointer hover:bg-white/10 transition-all"
               onClick={() => router.back()}
+              type="button"
             >
               <X size={20} />
             </button>
@@ -153,7 +155,7 @@ export default function PublicInfo({
               />
             </ViewOrEditData>
           ) : (
-            <ViewOrEditData title={fields.artistName.label}>
+            <ViewOrEditData title={fields.genre.label}>
               <p className="text-lg">{genre}</p>
             </ViewOrEditData>
           )}
@@ -163,7 +165,7 @@ export default function PublicInfo({
             <ViewOrEditData title={fields.members.label}>
               <TextInput
                 name={fields.members.name}
-                defaultValue={members.join(", ")}
+                defaultValue={members || ""}
                 isPending={isFormPending}
                 placeholder="Artist/Band Members"
                 isEdit
@@ -171,7 +173,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           ) : (
             <ViewOrEditData title={fields.members.label}>
-              <p className="text-lg">{members.join(", ")}</p>
+              <p className="text-lg">{members}</p>
             </ViewOrEditData>
           )}
         </div>

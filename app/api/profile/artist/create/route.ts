@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         membersWithAccess: [user.id],
         joinedDate: new Date(),
         songClips: [],
-        members: [],
+        members: data.members || "",
         artistDescription: data.artistDescription,
         artistLogo: data.artistLogo || "",
         artistName: data.artistName,
