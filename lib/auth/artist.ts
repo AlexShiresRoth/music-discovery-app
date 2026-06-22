@@ -6,20 +6,16 @@ import { getSession } from "./session";
 
 export async function getArtistProfile() {
   try {
-    const session = await getSession();
+    const user = await getSession();
 
-    if (!session) {
+    if (!user) {
       return null;
     }
 
     const profile = await db
       .select()
       .from(artistProfilesSchema)
-      .where(
-        arrayContains(artistProfilesSchema.membersWithAccess, [
-          session.user.id,
-        ]),
-      )
+      .where(arrayContains(artistProfilesSchema.membersWithAccess, [user.id]))
       .limit(1);
 
     return profile[0] ?? null;

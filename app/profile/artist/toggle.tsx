@@ -23,8 +23,10 @@ export default function ToggleButton({ isActive }: { isActive: boolean }) {
     >
       <div
         className={clsx(
-          "w-4 h-4 bg-white rounded-full absolute transition-all duration-300",
-          active ? "left-full -translate-x-full" : "left-0 translate-x-0",
+          "w-4 h-4 rounded-full absolute transition-all duration-300",
+          active
+            ? "left-full -translate-x-full bg-white"
+            : "left-0 translate-x-0 bg-gray-400/50",
         )}
       />
     </button>

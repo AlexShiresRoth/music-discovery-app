@@ -2,7 +2,7 @@
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import { GENRES, STATES } from "@/constants";
+import { COUNTRIES, GENRES, STATES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { Pencil, X } from "lucide-react";
 import Link from "next/link";
@@ -232,12 +232,12 @@ export default function PublicInfo({
             <div>
               {isEdit ? (
                 <ViewOrEditData title={fields.country.label}>
-                  <TextInput
+                  <SelectInput
                     isEdit
                     isPending={isFormPending}
                     name={fields.country.name}
                     defaultValue={country || ""}
-                    placeholder={fields.country.placeholder}
+                    options={COUNTRIES}
                   />
                 </ViewOrEditData>
               ) : (

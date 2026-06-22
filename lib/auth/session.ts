@@ -5,13 +5,15 @@ export async function getSession() {
   try {
     const supabase = await createServerClient();
 
-    const { data, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (error) {
-      throw error;
+    if (!user) {
+      return null;
     }
 
-    return data;
+    return user;
   } catch (error) {
     console.error(error);
     return null;

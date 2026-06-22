@@ -9,16 +9,16 @@ import { getSession } from "./session";
  * @description returns a singular profile for the current user
  */
 export async function getListenerProfile() {
-  const { session } = await getSession();
+  const user = await getSession();
 
-  if (!session) {
+  if (!user) {
     return null;
   }
 
   const profile = await db
     .select()
     .from(listenerProfilesSchema)
-    .where(eq(listenerProfilesSchema.userIdRef, session.user.id));
+    .where(eq(listenerProfilesSchema.userIdRef, user.id));
 
   return profile?.[0];
 }
