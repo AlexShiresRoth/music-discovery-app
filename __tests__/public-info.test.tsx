@@ -80,10 +80,12 @@ describe("PublicInfo", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       expect(screen.getByDisplayValue("Test Artist")).toBeDefined();
       expect(screen.getByDisplayValue("John, Jane")).toBeDefined();
-      // city input — query by name to avoid ambiguity with the NY state select label
+      // city — query by name to avoid ambiguity with the NY state select label
       const cityInput = container.querySelector<HTMLInputElement>('input[name="city"]');
       expect(cityInput?.value).toBe("New York");
-      expect(screen.getByDisplayValue("US")).toBeDefined();
+      // country is a SelectInput; check the selected value directly
+      const countrySelect = container.querySelector<HTMLSelectElement>('select[name="country"]');
+      expect(countrySelect?.value).toBe("US");
     });
 
     it("shows the Save button", () => {

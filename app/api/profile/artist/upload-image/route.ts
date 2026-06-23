@@ -1,5 +1,6 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { env } from "process";
 
 export async function POST(request: Request) {
   const supabase = await createServerClient();
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   // Auth is already verified above via the user's session.
   const admin = createAdminClient();
   const { error } = await admin.storage
-    .from("artist-images")
+    .from(env.ARTIST_IMAGES_BUCKET_NAME || "")
     .upload(`artist/${user.id}/${safeName}`, file, { upsert: true });
 
   if (error) {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
   }
 
   const { data: urlData } = admin.storage
-    .from("artist-images")
+    .from(env.ARTIST_IMAGES_BUCKET_NAME || "")
     .getPublicUrl(`artist/${user.id}/${safeName}`);
 
   return NextResponse.json({ publicUrl: urlData.publicUrl });

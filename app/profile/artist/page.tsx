@@ -18,17 +18,18 @@ export default async function ArtistProfile() {
       <div className="md:w-3/4 w-full flex gap-10 h-full">
         <div className="min-h-screen relative block">
           <div className="sticky top-0">
-            <div className="flex flex-col gap-8 items-center relative w-sm h-75 border border-gray-400/80 rounded">
-              {artistProfile.imageUrl && (
+            {artistProfile.imageUrl && (
+              <div className="flex flex-col gap-8 items-center relative w-sm h-75 border border-gray-400/80 rounded">
                 <Image
-                  src={`${artistProfile.imageUrl}`}
+                  src={artistProfile.imageUrl}
                   alt={artistProfile.artistName ?? "Artist Image"}
                   fill
+                  loading="eager"
                   className="object-cover rounded block"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-              )}
-            </div>
+              </div>
+            )}
             {!artistProfile.imageUrl && (
               <div className="w-sm h-75 border border-gray-400/80 rounded flex items-center justify-center">
                 <p className="text-gray-400/80">Upload an image</p>

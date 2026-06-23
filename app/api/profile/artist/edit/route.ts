@@ -37,7 +37,6 @@ export const POST = async (request: Request) => {
     }
 
     const p = foundArtistProfile[0];
-    console.log("DATA", data);
 
     await db
       .update(artistProfilesSchema)
@@ -60,7 +59,7 @@ export const POST = async (request: Request) => {
         genre: data.genre || p.genre,
         fullName: data.fullName || p.fullName,
         contactEmail: data.contactEmail || p.contactEmail,
-        imageUrl: data.imageUrl || p.imageUrl,
+        imageUrl: data.imageUrl === "" ? null : data.imageUrl || p.imageUrl, // if this is specifically an empty string, set it to null to remove image
       })
       .where(arrayContains(artistProfilesSchema.membersWithAccess, [user.id]));
 
