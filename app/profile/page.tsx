@@ -1,18 +1,12 @@
-import { getArtistProfile, getListenerProfile } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { getProfile } from "@/lib/auth";
 import ChooseProfile from "./intro";
+import Profile from "./profile";
 
 export default async function ProfilePage() {
-  const artistProfile = await getArtistProfile();
+  const profile = await getProfile();
 
-  if (artistProfile) {
-    return redirect("/profile/artist");
-  }
-
-  const listenerProfile = await getListenerProfile();
-
-  if (listenerProfile) {
-    return redirect("/profile/listener");
+  if (profile) {
+    return <Profile profile={profile} />;
   }
 
   return <ChooseProfile />;

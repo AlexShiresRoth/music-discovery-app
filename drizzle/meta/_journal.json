@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1781136739178,
-      "tag": "0000_sudden_mandrill",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1781142197101,
-      "tag": "0001_noisy_thundra",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1781471155481,
-      "tag": "0002_premium_callisto",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1781736593271,
-      "tag": "0003_superb_blacklash",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1781736744804,
-      "tag": "0004_silky_hairball",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1782137666859,
-      "tag": "0005_tough_nocturne",
+      "when": 1783385735497,
+      "tag": "0000_bouncy_miracleman",
       "breakpoints": true
     }
   ]

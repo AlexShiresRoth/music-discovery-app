@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import PrivateInfo from "@/app/profile/private-info";
 import { ToastContext } from "@/context/toast";
-import PrivateInfo from "@/app/profile/artist/private-info";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockBack = vi.fn();
 const mockRefresh = vi.fn();
@@ -16,12 +16,9 @@ const baseProps = {
   fullName: "Test User",
   contactEmail: "test@example.com",
   joinedDate,
-  membersWithAccess: ["user-1", "user-2"],
-  // ArtistProfileFormSchemaWithoutId fields not used by PrivateInfo
-  artistName: null,
+  profileName: null,
   genre: null,
-  members: null,
-  artistDescription: null,
+  bio: null,
   city: null,
   state: null,
   country: null,
@@ -32,7 +29,6 @@ const baseProps = {
   spotify: null,
   appleMusic: null,
   soundcloud: null,
-  artistLogo: null,
   imageUrl: null,
 };
 
@@ -68,16 +64,11 @@ describe("PrivateInfo", () => {
       expect(screen.getByText(formattedDate)).toBeDefined();
     });
 
-    it("renders a row for each member with access", () => {
-      renderWithToast();
-      // MembersWithAccess renders one div per member
-      const memberRows = screen.getAllByText("Me");
-      expect(memberRows).toHaveLength(2);
-    });
-
-    it("shows an Edit link pointing to /profile/artist/edit/private", () => {
+    it("shows an Edit link pointing to /profile/edit/private", () => {
       const { container } = renderWithToast();
-      const link = container.querySelector('a[href="/profile/artist/edit/private"]');
+      const link = container.querySelector(
+        'a[href="/profile/edit/private"]',
+      );
       expect(link).not.toBeNull();
     });
 
@@ -108,7 +99,9 @@ describe("PrivateInfo", () => {
     it("shows the Save button and no Edit link", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
-      expect(container.querySelector('a[href="/profile/artist/edit/private"]')).toBeNull();
+      expect(
+        container.querySelector('a[href="/profile/edit/private"]'),
+      ).toBeNull();
     });
 
     it("calls router.back when the close button is clicked", () => {
@@ -117,7 +110,7 @@ describe("PrivateInfo", () => {
       expect(mockBack).toHaveBeenCalled();
     });
 
-    it("posts to /api/profile/artist/edit on submit", async () => {
+    it("posts to /api/profile/edit on submit", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -128,7 +121,7 @@ describe("PrivateInfo", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          "/api/profile/artist/edit",
+          "/api/profile/edit",
           expect.objectContaining({
             method: "POST",
             headers: { "Content-Type": "application/json" },

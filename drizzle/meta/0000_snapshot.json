@@ -1,11 +1,11 @@
 {
-  "id": "f37aa76d-7623-44dc-89da-2241d767a7a2",
+  "id": "b094106a-6b66-4ca9-8f6f-b7734ddaa3e5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.artist_profile": {
-      "name": "artist_profile",
+    "public.profiles": {
+      "name": "profiles",
       "schema": "",
       "columns": {
         "id": {
@@ -22,6 +22,50 @@
         },
         "contact_email": {
           "name": "contact_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_name": {
+          "name": "profile_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "genre": {
+          "name": "genre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "joined_date": {
+          "name": "joined_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "is_verified": {
+          "name": "is_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "song_clips": {
+          "name": "song_clips",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_url": {
+          "name": "image_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -80,120 +124,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "artistcamp": {
-          "name": "artistcamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "soundcloud": {
           "name": "soundcloud",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "artist_name": {
-          "name": "artist_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "artist_description": {
-          "name": "artist_description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "artist_logo": {
-          "name": "artist_logo",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "genre": {
-          "name": "genre",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "members": {
-          "name": "members",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "joined_date": {
-          "name": "joined_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "song_clips": {
-          "name": "song_clips",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "members_with_access": {
-          "name": "members_with_access",
-          "type": "uuid[]",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.listener_profile": {
-      "name": "listener_profile",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "genres": {
-          "name": "genres",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "joined_date": {
-          "name": "joined_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "liked_artists": {
-          "name": "liked_artists",
-          "type": "text[]",
+        "user_ref_id": {
+          "name": "user_ref_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
