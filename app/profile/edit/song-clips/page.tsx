@@ -1,6 +1,6 @@
 import { getProfile } from "@/lib/auth";
 import { getSongClipsByIds } from "@/lib/db/song-clips";
-import SongClipsSection from "../../song-clips";
+import EditClips from "./edit-clips";
 
 export default async function EditSongClips() {
   const profile = await getProfile();
@@ -13,8 +13,8 @@ export default async function EditSongClips() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="bg-black md:w-1/2">
-        <SongClipsSection
+      <div className="md:w-1/2 py-6">
+        <EditClips
           clips={clips}
           isVerified={profile.isVerified ?? false}
           mode="Edit"

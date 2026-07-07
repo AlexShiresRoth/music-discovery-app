@@ -12,12 +12,12 @@ import { Music, Pencil, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import PreHeader from "./pre-header";
+import PreHeader from "../../pre-header";
 import {
-  MAX_SONG_CLIPS,
   MAX_SONG_CLIP_DURATION_SECONDS,
+  MAX_SONG_CLIPS,
   songClipFormFields,
-} from "./schemas";
+} from "../../schemas";
 
 type Mode = "Edit" | "View";
 
@@ -83,11 +83,7 @@ function ClipSlotView({
   );
 }
 
-export default function SongClipsSection({
-  clips,
-  isVerified,
-  mode = "View",
-}: Props) {
+export default function EditClips({ clips, isVerified, mode = "View" }: Props) {
   const isEdit = mode === "Edit";
   const router = useRouter();
   const { setToast } = useContext(ToastContext);
@@ -260,7 +256,7 @@ export default function SongClipsSection({
   ).length;
 
   const content = (
-    <div className="flex flex-col w-full p-8 gap-4 border border-gray-400/80 rounded-md">
+    <div className="flex flex-col w-full p-8 gap-4">
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col gap-1">
           <h2 className="font-bold uppercase text-indigo-500">Song Clips</h2>
@@ -295,120 +291,102 @@ export default function SongClipsSection({
         </p>
       )}
 
-      {isEdit ? (
-        isVerified ? (
-          <div className="relative">
-            <p className="text-sm text-gray-400/80">
-              Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or
-              shorter.
-            </p>
-            <div className="flex flex-col gap-6 pb-10">
-              {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
-                const existingClip = clips[index];
-                const draft = slotDrafts[index];
-
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-4 border border-gray-400/80 rounded-md p-4"
-                  >
-                    <PreHeader>Clip {index + 1}</PreHeader>
-
-                    {existingClip ? (
-                      <ExistingClipContent clip={existingClip} />
-                    ) : (
-                      <>
-                        <div className="flex flex-col gap-2">
-                          <PreHeader>Audio File</PreHeader>
-                          <label className="flex items-center gap-2 cursor-pointer text-gray-400/80 hover:text-indigo-500 transition-colors">
-                            <Upload size={16} />
-                            <span>
-                              {draft.fileName || "Choose an audio file"}
-                            </span>
-                            <input
-                              type="file"
-                              accept="audio/*"
-                              disabled={isFormPending}
-                              className="sr-only"
-                              onChange={(e) =>
-                                handleFileSelected(
-                                  index,
-                                  e.target.files?.[0] ?? null,
-                                )
-                              }
-                            />
-                          </label>
-                          {draft.fileName && (
-                            <button
-                              type="button"
-                              disabled={isFormPending}
-                              onClick={() => clearSlotDraft(index)}
-                              className="self-start text-sm text-gray-400/80 hover:text-red-500 transition-colors hover:cursor-pointer"
-                            >
-                              Clear file
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                          <PreHeader>
-                            {songClipFormFields.title.label}
-                          </PreHeader>
-                          <TextInput
-                            name={`title-${index}`}
-                            value={draft.title}
-                            onChange={(e) =>
-                              updateSlot(index, "title", e.target.value)
-                            }
-                            isPending={isFormPending}
-                            placeholder={songClipFormFields.title.placeholder}
-                            isEdit
-                          />
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                          <PreHeader>
-                            {songClipFormFields.full_song_url.label}
-                          </PreHeader>
-                          <TextInput
-                            name={`fullSongUrl-${index}`}
-                            value={draft.fullSongUrl}
-                            onChange={(e) =>
-                              updateSlot(index, "fullSongUrl", e.target.value)
-                            }
-                            isPending={isFormPending}
-                            placeholder={
-                              songClipFormFields.full_song_url.placeholder
-                            }
-                            isEdit
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="absolute bottom-0 left-0 w-full h-5 backdrop-blur-sm" />
-          </div>
-        ) : (
+      {isVerified && (
+        <div className="relative">
           <p className="text-sm text-gray-400/80">
-            You need to verify your account before uploading song clips.
+            Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or
+            shorter.
           </p>
-        )
-      ) : isVerified ? (
-        <div className="flex gap-4 w-full">
-          {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => (
-            <ClipSlotView
-              key={index}
-              clip={clips[index]}
-              slotNumber={index + 1}
-            />
-          ))}
-        </div>
-      ) : null}
+          <div className="flex flex-col gap-6 pb-10">
+            {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
+              const existingClip = clips[index];
+              const draft = slotDrafts[index];
 
-      {isEdit && isVerified && !atMaxClips && (
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col gap-4 border border-gray-400/80 rounded-md p-4"
+                >
+                  <PreHeader>Clip {index + 1}</PreHeader>
+
+                  {existingClip ? (
+                    <ExistingClipContent clip={existingClip} />
+                  ) : (
+                    <>
+                      <div className="flex flex-col gap-2">
+                        <PreHeader>Audio File</PreHeader>
+                        <label className="flex items-center gap-2 cursor-pointer text-gray-400/80 hover:text-indigo-500 transition-colors">
+                          <Upload size={16} />
+                          <span>
+                            {draft.fileName || "Choose an audio file"}
+                          </span>
+                          <input
+                            type="file"
+                            accept="audio/*"
+                            disabled={isFormPending}
+                            className="sr-only"
+                            onChange={(e) =>
+                              handleFileSelected(
+                                index,
+                                e.target.files?.[0] ?? null,
+                              )
+                            }
+                          />
+                        </label>
+                        {draft.fileName && (
+                          <button
+                            type="button"
+                            disabled={isFormPending}
+                            onClick={() => clearSlotDraft(index)}
+                            className="self-start text-sm text-gray-400/80 hover:text-red-500 transition-colors hover:cursor-pointer"
+                          >
+                            Clear file
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <PreHeader>{songClipFormFields.title.label}</PreHeader>
+                        <TextInput
+                          name={`title-${index}`}
+                          value={draft.title}
+                          onChange={(e) =>
+                            updateSlot(index, "title", e.target.value)
+                          }
+                          isPending={isFormPending}
+                          placeholder={songClipFormFields.title.placeholder}
+                          isEdit
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <PreHeader>
+                          {songClipFormFields.full_song_url.label}
+                        </PreHeader>
+                        <TextInput
+                          name={`fullSongUrl-${index}`}
+                          value={draft.fullSongUrl}
+                          onChange={(e) =>
+                            updateSlot(index, "fullSongUrl", e.target.value)
+                          }
+                          isPending={isFormPending}
+                          placeholder={
+                            songClipFormFields.full_song_url.placeholder
+                          }
+                          isEdit
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="absolute bottom-0 left-0 w-full h-5 backdrop-blur-sm" />
+        </div>
+      )}
+
+      {isVerified && !atMaxClips && (
         <button
           type="submit"
           disabled={isFormPending || pendingCount === 0}
@@ -422,5 +400,5 @@ export default function SongClipsSection({
     </div>
   );
 
-  return isEdit ? <form onSubmit={handleSubmit}>{content}</form> : content;
+  return <form onSubmit={handleSubmit}>{content}</form>;
 }

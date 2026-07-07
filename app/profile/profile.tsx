@@ -1,5 +1,4 @@
 import type { Profile, SongClip } from "@/lib/db/types";
-import { CheckCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import PrivateInfo from "./private-info";
@@ -18,10 +17,8 @@ export default async function Profile({ profile, clips }: Props) {
   return (
     <div className="flex flex-col w-full items-center py-8">
       <div className="md:w-3/4 w-full flex flex-col gap-8">
-        <header className="flex items-center gap-8">
-          {isVerified ? (
-            <CheckCircle />
-          ) : (
+        <header className="flex items-center gap-8 w-full justify-between">
+          {!isVerified && (
             <Link
               href="/profile/verify"
               className="text-white px-4 py-2 rounded-md bg-gray-700/10 border border-white/20 hover:cursor-pointer hover:bg-gray-400/20 transition-all"
@@ -29,8 +26,9 @@ export default async function Profile({ profile, clips }: Props) {
               Get Verified
             </Link>
           )}
-          <p>Current Clips Count: {profile.songClips.length}</p>
-          {isVerified && <div>Manage Song Clips</div>}
+          {isVerified && (
+            <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
+          )}
         </header>
         <div className="w-full flex gap-10 h-full">
           <div className="min-h-screen relative block">
@@ -60,8 +58,6 @@ export default async function Profile({ profile, clips }: Props) {
           <div className="flex flex-col gap-10 w-full">
             <PublicInfo {...profile} />
             <SocialSection {...profile} />
-            {/* TODO - I don't love the section here */}
-            <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
             <PrivateInfo {...profile} />
           </div>
         </div>
