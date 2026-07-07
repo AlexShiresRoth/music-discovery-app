@@ -1,1 +1,0 @@
-ALTER TABLE "listener_profile" ADD COLUMN "user_id_ref" uuid NOT NULL;

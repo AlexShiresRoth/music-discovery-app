@@ -1,4 +1,11 @@
-import { pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 export const songClipsSchema = pgTable("song_clips", {
   id: serial("id").primaryKey(),
@@ -7,18 +14,16 @@ export const songClipsSchema = pgTable("song_clips", {
   full_song_url: text("full_song_url"),
 });
 
-export const artistProfilesSchema = pgTable("artist_profile", {
+export const profilesSchema = pgTable("profiles", {
   id: serial("id").primaryKey(),
   fullName: text("full_name"),
   contactEmail: text("contact_email"),
-  artistName: text("artist_name"),
-  artistDescription: text("artist_description"),
-  artistLogo: text("artist_logo"),
+  profileName: text("profile_name"),
+  bio: text("bio"),
   genre: text("genre"),
-  members: text("members"),
   joinedDate: timestamp("joined_date").defaultNow(),
+  isVerified: boolean("is_verified").default(false),
   songClips: text("song_clips").array().notNull(),
-  membersWithAccess: uuid("members_with_access").array().notNull(),
   imageUrl: text("image_url"),
   city: text("city"),
   state: text("state"),
@@ -31,18 +36,4 @@ export const artistProfilesSchema = pgTable("artist_profile", {
   appleMusic: text("apple_music"),
   soundcloud: text("soundcloud"),
   userRefId: uuid("user_ref_id").notNull(),
-});
-
-export const listenerProfilesSchema = pgTable("listener_profile", {
-  id: serial("id").primaryKey(),
-  name: text("name"),
-  email: text("email"),
-  genres: text("genres").array().notNull(),
-  state: text("state"),
-  country: text("country"),
-  city: text("city"),
-  image: text("image"),
-  joinedDate: timestamp("joined_date").defaultNow(),
-  liked_artists: text("liked_artists").array().notNull(),
-  userIdRef: uuid("user_id_ref").notNull(),
 });

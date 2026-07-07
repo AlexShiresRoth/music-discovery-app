@@ -1,12 +1,12 @@
-import { ArtistProfile } from "@/lib/db/types";
+import { Profile } from "@/lib/db/types";
 
-export type ArtistProfileFormSchemaWithoutId = Omit<
-  ArtistProfile,
-  "id" | "joinedDate" | "songClips" | "membersWithAccess" | "userRefId"
+export type ProfileFormSchemaWithoutId = Omit<
+  Profile,
+  "id" | "joinedDate" | "songClips" | "userRefId" | "isVerified"
 >;
 
-const ArtistProfileFormSchema: Record<
-  keyof ArtistProfileFormSchemaWithoutId,
+const ProfileFormSchema: Record<
+  keyof ProfileFormSchemaWithoutId,
   { name: string; label: string; placeholder?: string; required?: boolean }
 > = {
   fullName: {
@@ -76,34 +76,22 @@ const ArtistProfileFormSchema: Record<
     placeholder: "SoundCloud",
     required: false,
   },
-  artistName: {
-    name: "artistName",
-    label: "Artist Name",
-    placeholder: "Artist Name",
+  profileName: {
+    name: "profileName",
+    label: "Display Name",
+    placeholder: "Display Name",
     required: true,
   },
-  artistDescription: {
-    name: "artistDescription",
+  bio: {
+    name: "bio",
     label: "Bio",
     placeholder: "Bio",
-    required: false,
-  },
-  artistLogo: {
-    name: "artistLogo",
-    label: "Artist Logo",
-    placeholder: "Artist Logo",
     required: false,
   },
   genre: {
     name: "genre",
     label: "Genre",
     placeholder: "Genre",
-    required: true,
-  },
-  members: {
-    name: "members",
-    label: "Members",
-    placeholder: "Members",
     required: true,
   },
   imageUrl: {
@@ -114,4 +102,4 @@ const ArtistProfileFormSchema: Record<
   },
 };
 
-export const artistFormFields = ArtistProfileFormSchema;
+export const profileFormFields = ProfileFormSchema;

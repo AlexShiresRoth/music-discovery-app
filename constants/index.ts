@@ -53,14 +53,15 @@ export const STATES = [
 
 export const COUNTRIES = [
   { value: "US", label: "United States" },
-  { value: "CA", label: "Canada" },
-  { value: "UK", label: "United Kingdom" },
-  { value: "AU", label: "Australia" },
-  { value: "NZ", label: "New Zealand" },
-  { value: "ZA", label: "South Africa" },
+  // { value: "CA", label: "Canada" },
+  // { value: "UK", label: "United Kingdom" },
+  // { value: "AU", label: "Australia" },
+  // { value: "NZ", label: "New Zealand" },
+  // { value: "ZA", label: "South Africa" },
 ];
 
 export const GENRES = [
+  { value: "None", label: "None" },
   { value: "Rock", label: "Rock" },
   { value: "Pop", label: "Pop" },
   { value: "Hip-Hop", label: "Hip-Hop" },

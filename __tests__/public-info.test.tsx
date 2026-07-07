@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import PublicInfo from "@/app/profile/public-info";
 import { ToastContext } from "@/context/toast";
-import PublicInfo from "@/app/profile/artist/public-info";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockBack = vi.fn();
 const mockRefresh = vi.fn();
@@ -10,10 +10,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 const baseProps = {
-  artistName: "Test Artist",
+  profileName: "Test Profile",
   genre: "Rock",
-  members: "John, Jane",
-  artistDescription: "A test band",
+  bio: "A test bio",
   city: "New York",
   state: "NY",
   country: "US",
@@ -26,7 +25,6 @@ const baseProps = {
   spotify: null,
   appleMusic: null,
   soundcloud: null,
-  artistLogo: null,
   imageUrl: null,
 };
 
@@ -51,21 +49,22 @@ describe("PublicInfo", () => {
       expect(screen.getByText("Public Info")).toBeDefined();
     });
 
-    it("displays the artist name", () => {
+    it("displays the profile name", () => {
       renderWithToast();
-      expect(screen.getByText("Test Artist")).toBeDefined();
+      expect(screen.getByText("Test Profile")).toBeDefined();
     });
 
-    it("displays genre, members and description", () => {
+    it("displays genre and bio", () => {
       renderWithToast();
       expect(screen.getByText("Rock")).toBeDefined();
-      expect(screen.getByText("John, Jane")).toBeDefined();
-      expect(screen.getByText("A test band")).toBeDefined();
+      expect(screen.getByText("A test bio")).toBeDefined();
     });
 
-    it("shows an Edit link pointing to /profile/artist/edit/public", () => {
+    it("shows an Edit link pointing to /profile/edit/public", () => {
       const { container } = renderWithToast();
-      const link = container.querySelector('a[href="/profile/artist/edit/public"]');
+      const link = container.querySelector(
+        'a[href="/profile/edit/public"]',
+      );
       expect(link).not.toBeNull();
     });
 
@@ -78,13 +77,13 @@ describe("PublicInfo", () => {
   describe("edit mode", () => {
     it("renders inputs pre-filled with current values", () => {
       const { container } = renderWithToast({ mode: "Edit" });
-      expect(screen.getByDisplayValue("Test Artist")).toBeDefined();
-      expect(screen.getByDisplayValue("John, Jane")).toBeDefined();
-      // city — query by name to avoid ambiguity with the NY state select label
-      const cityInput = container.querySelector<HTMLInputElement>('input[name="city"]');
+      expect(screen.getByDisplayValue("Test Profile")).toBeDefined();
+      const cityInput =
+        container.querySelector<HTMLInputElement>('input[name="city"]');
       expect(cityInput?.value).toBe("New York");
-      // country is a SelectInput; check the selected value directly
-      const countrySelect = container.querySelector<HTMLSelectElement>('select[name="country"]');
+      const countrySelect = container.querySelector<HTMLSelectElement>(
+        'select[name="country"]',
+      );
       expect(countrySelect?.value).toBe("US");
     });
 
@@ -96,7 +95,7 @@ describe("PublicInfo", () => {
     it("does not show the Edit link", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       expect(
-        container.querySelector('a[href="/profile/artist/edit/public"]'),
+        container.querySelector('a[href="/profile/edit/public"]'),
       ).toBeNull();
     });
 
@@ -106,7 +105,7 @@ describe("PublicInfo", () => {
       expect(mockBack).toHaveBeenCalled();
     });
 
-    it("posts to /api/profile/artist/edit on submit", async () => {
+    it("posts to /api/profile/edit on submit", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -117,7 +116,7 @@ describe("PublicInfo", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          "/api/profile/artist/edit",
+          "/api/profile/edit",
           expect.objectContaining({
             method: "POST",
             headers: { "Content-Type": "application/json" },

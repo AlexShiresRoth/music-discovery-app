@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import SocialSection from "@/app/profile/social";
 import { ToastContext } from "@/context/toast";
-import SocialSection from "@/app/profile/artist/social";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockBack = vi.fn();
 const mockRefresh = vi.fn();
@@ -54,7 +54,7 @@ describe("SocialSection", () => {
     it("shows fallback text when no links are set", () => {
       renderWithToast();
       expect(screen.getByText("www.mywebsite.com")).toBeDefined();
-      expect(screen.getByText("www.facebook.com/myartist")).toBeDefined();
+      expect(screen.getByText("www.facebook.com/myprofile")).toBeDefined();
     });
 
     it("shows the link value when a link is provided", () => {
@@ -62,9 +62,11 @@ describe("SocialSection", () => {
       expect(screen.getByText("https://myband.com")).toBeDefined();
     });
 
-    it("shows an Edit link pointing to /profile/artist/edit/social", () => {
+    it("shows an Edit link pointing to /profile/edit/social", () => {
       const { container } = renderWithToast();
-      const link = container.querySelector('a[href="/profile/artist/edit/social"]');
+      const link = container.querySelector(
+        'a[href="/profile/edit/social"]',
+      );
       expect(link).not.toBeNull();
     });
 
@@ -87,7 +89,11 @@ describe("SocialSection", () => {
     });
 
     it("pre-fills inputs with existing values", () => {
-      renderWithToast({ mode: "Edit", website: "https://myband.com", instagram: "myband" });
+      renderWithToast({
+        mode: "Edit",
+        website: "https://myband.com",
+        instagram: "myband",
+      });
       expect(screen.getByDisplayValue("https://myband.com")).toBeDefined();
       expect(screen.getByDisplayValue("myband")).toBeDefined();
     });
@@ -95,7 +101,9 @@ describe("SocialSection", () => {
     it("shows the Save button and no Edit link", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
-      expect(container.querySelector('a[href="/profile/artist/edit/social"]')).toBeNull();
+      expect(
+        container.querySelector('a[href="/profile/edit/social"]'),
+      ).toBeNull();
     });
 
     it("calls router.back when the close button is clicked", () => {
@@ -104,7 +112,7 @@ describe("SocialSection", () => {
       expect(mockBack).toHaveBeenCalled();
     });
 
-    it("posts to /api/profile/artist/edit on submit", async () => {
+    it("posts to /api/profile/edit on submit", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -115,7 +123,7 @@ describe("SocialSection", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          "/api/profile/artist/edit",
+          "/api/profile/edit",
           expect.objectContaining({
             method: "POST",
             headers: { "Content-Type": "application/json" },
