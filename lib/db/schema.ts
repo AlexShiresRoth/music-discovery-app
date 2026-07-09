@@ -1,5 +1,6 @@
 import {
   boolean,
+  integer,
   pgTable,
   serial,
   text,
@@ -12,6 +13,7 @@ export const songClipsSchema = pgTable("song_clips", {
   title: text("title"),
   db_url: text("db_url"),
   full_song_url: text("full_song_url"),
+  slot: integer("slot"),
 });
 
 export const profilesSchema = pgTable("profiles", {

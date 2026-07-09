@@ -14,11 +14,7 @@ export default async function EditSongClips() {
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <div className="md:w-1/2 py-6">
-        <EditClips
-          clips={clips}
-          isVerified={profile.isVerified ?? false}
-          mode="Edit"
-        />
+        <EditClips clips={clips} isVerified={profile.isVerified ?? false} />
       </div>
     </div>
   );
