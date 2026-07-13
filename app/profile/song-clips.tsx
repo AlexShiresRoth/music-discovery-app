@@ -61,6 +61,7 @@ function ClipSlotView({
 export default function SongClipsSection({ clips, isVerified }: Props) {
   const filledSlots = clips.length;
 
+  console.log("clips", clips);
   return (
     <div className="flex flex-col w-full p-8 gap-4 border border-gray-400/80 rounded-md">
       <div className="flex flex-col w-full gap-4">

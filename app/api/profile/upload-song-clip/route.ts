@@ -53,8 +53,6 @@ export async function POST(request: Request) {
   const files = formData.getAll("files") as File[];
   const metadata = formData.getAll("metadata") as string[];
 
-  console.log("files", files);
-  console.log("metadata", metadata);
   if (files.length === 0) {
     return NextResponse.json(
       { error: "At least one file is required" },
@@ -64,11 +62,11 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
   const bucket = env.SONG_CLIPS_BUCKET_NAME || "";
-  const uploadedClips = [];
   const newClipIds = [...profile.songClips];
 
   for await (const file of files) {
-    console.log("file", file);
+    const index = files.indexOf(file);
+    console.log("file index", index);
     if (!isAllowedAudio(file)) {
       return NextResponse.json(
         { error: "Invalid audio file" },
@@ -78,9 +76,11 @@ export async function POST(request: Request) {
 
     const safeName = file.name.replace(/[/\\]/g, "_");
 
-    const { error, data } = await admin.storage
+    const path = `clips/${user.id}/${safeName}`;
+
+    const { error } = await admin.storage
       .from(bucket)
-      .upload(`clips/${user.id}/${safeName}`, file, { upsert: true });
+      .upload(path, file, { upsert: true });
 
     if (error) {
       return NextResponse.json(
@@ -89,19 +89,29 @@ export async function POST(request: Request) {
       );
     }
 
+    const { data: urlData } = admin.storage.from(bucket).getPublicUrl(path);
+
+    const meta = JSON.parse(metadata[index]);
+
     const clip = await db
       .insert(songClipsSchema)
       .values([
         {
-          db_url: data.fullPath,
-          title: file.title,
-          full_song_url: file.fullSongUrl,
-          slot: file.slot,
+          db_url: urlData.publicUrl,
+          title: meta.title,
+          full_song_url: meta.fullSongUrl,
         },
       ])
       .returning();
 
     newClipIds.push(clip[0]?.id.toString());
+
+    await db
+      .update(profilesSchema)
+      .set({
+        songClips: newClipIds,
+      })
+      .where(eq(profilesSchema.userRefId, user.id));
   }
 
   return NextResponse.json({
