@@ -1,5 +1,6 @@
+import WaveSurferUI from "@/components/wave-surfer";
 import type { SongClip } from "@/lib/db/types";
-import { Music, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import Link from "next/link";
 import PreHeader from "./pre-header";
 import { MAX_SONG_CLIPS } from "./schemas";
@@ -12,20 +13,9 @@ type Props = {
 function ExistingClipContent({ clip }: { clip: SongClip }) {
   return (
     <>
-      <div className="flex items-center gap-2">
-        <Music size={14} className="text-indigo-500" />
-        <span>{clip.title}</span>
-      </div>
-      {clip.db_url && <audio controls src={clip.db_url} className="w-full" />}
-      {clip.full_song_url && (
-        <a
-          href={clip.full_song_url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-sm text-indigo-500 hover:underline"
-        >
-          {clip.full_song_url}
-        </a>
+      <div className="flex items-center gap-2"></div>
+      {clip.db_url && (
+        <WaveSurferUI url={clip.db_url} clipName={clip.title || ""} />
       )}
     </>
   );
@@ -43,7 +33,7 @@ function ClipSlotView({
       <div className="flex justify-between items-center gap-1">
         <PreHeader>Clip {slotNumber}</PreHeader>
         <Link
-          href={`/profile/edit/song-clips`}
+          href={`/profile/edit/song-clips/${slotNumber}`}
           className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
         >
           <Upload size={14} className="text-white" />
@@ -61,7 +51,6 @@ function ClipSlotView({
 export default function SongClipsSection({ clips, isVerified }: Props) {
   const filledSlots = clips.length;
 
-  console.log("clips", clips);
   return (
     <div className="flex flex-col w-full p-8 gap-4 border border-gray-400/80 rounded-md">
       <div className="flex flex-col w-full gap-4">

@@ -1,38 +1,78 @@
-import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
+// src/lib/audio/trim-audio.ts
+import ffmpegPath from "ffmpeg-static";
+import { spawn } from "node:child_process";
 
-export function isValidClipDuration(durationSeconds: number) {
-  return (
-    Number.isFinite(durationSeconds) &&
-    durationSeconds > 0 &&
-    durationSeconds <= MAX_SONG_CLIP_DURATION_SECONDS
-  );
-}
+type TrimAudioOptions = {
+  inputPath: string;
+  outputPath: string;
+  start: number;
+  end: number;
+};
 
-export function clipDurationErrorMessage(fileName?: string) {
-  const prefix = fileName ? `${fileName}: ` : "";
-  return `${prefix}Clips must be ${MAX_SONG_CLIP_DURATION_SECONDS} seconds or shorter`;
-}
+export function trimAudio({
+  inputPath,
+  outputPath,
+  start,
+  end,
+}: TrimAudioOptions): Promise<void> {
+  if (!ffmpegPath) {
+    return Promise.reject(new Error("FFmpeg binary is unavailable"));
+  }
 
-export function getAudioDurationFromFile(file: File): Promise<number> {
+  const duration = end - start;
+
+  if (
+    !Number.isFinite(start) ||
+    !Number.isFinite(end) ||
+    start < 0 ||
+    duration < 5 ||
+    duration > 30
+  ) {
+    return Promise.reject(new Error("Clip must be between 5 and 30 seconds"));
+  }
+
   return new Promise((resolve, reject) => {
-    const audio = document.createElement("audio");
-    const url = URL.createObjectURL(file);
+    const process = spawn(ffmpegPath || "", [
+      "-y",
 
-    const cleanup = () => {
-      URL.revokeObjectURL(url);
-      audio.removeAttribute("src");
-      audio.load();
-    };
+      // Seek to the selected WaveSurfer region.
+      "-ss",
+      String(start),
 
-    audio.preload = "metadata";
-    audio.onloadedmetadata = () => {
-      cleanup();
-      resolve(audio.duration);
-    };
-    audio.onerror = () => {
-      cleanup();
-      reject(new Error("Could not read audio duration"));
-    };
-    audio.src = url;
+      "-i",
+      inputPath,
+
+      // Keep only the selected duration.
+      "-t",
+      String(duration),
+
+      // Ignore embedded video or album-art streams.
+      "-vn",
+
+      // Produce a consistent MP3 preview.
+      "-c:a",
+      "libmp3lame",
+      "-b:a",
+      "192k",
+
+      outputPath,
+    ]);
+
+    let stderr = "";
+
+    process.stderr.on("data", (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+
+    process.once("error", reject);
+
+    process.once("close", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(`FFmpeg exited with code ${code}: ${stderr}`));
+    });
   });
 }
