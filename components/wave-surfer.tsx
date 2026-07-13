@@ -2,6 +2,7 @@ import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
+import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 
 type ClipSelection = {
@@ -12,29 +13,38 @@ type ClipSelection = {
 type Props = {
   onSelectionChange: (selection: ClipSelection | null) => void;
   file: File | null;
+  selectedRegion: ClipSelection | null;
 };
 
-export default function WaveSurferUI({ file, onSelectionChange }: Props) {
+export default function WaveSurferUI({
+  file,
+  onSelectionChange,
+  selectedRegion,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const playAndPause = () => {
-    if (wsRef.current) {
-      wsRef.current.playPause();
-      setIsPlaying(!isPlaying);
+    if (wsRef.current && wsRef.current.isPlaying()) {
+      wsRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      wsRef.current?.play(selectedRegion?.start, selectedRegion?.end);
+      setIsPlaying(true);
     }
   };
 
   useEffect(() => {
     if (containerRef.current) {
       const regions = RegionsPlugin.create();
+      const hover = HoverPlugin.create();
       const ws = WaveSurfer.create({
         container: containerRef.current,
         waveColor: "#fff",
         progressColor: "purple",
         height: 100,
-        plugins: [regions],
+        plugins: [regions, hover],
       });
 
       wsRef.current = ws;
@@ -49,6 +59,11 @@ export default function WaveSurferUI({ file, onSelectionChange }: Props) {
         region.play(true);
         setIsPlaying(true);
         onSelectionChange({ start: region.start, end: region.end });
+        wsRef.current?.on("timeupdate", (currentTime) => {
+          if (currentTime >= region.end) {
+            setIsPlaying(false);
+          }
+        });
       });
 
       regions.on("region-created", (region) => {
@@ -60,6 +75,11 @@ export default function WaveSurferUI({ file, onSelectionChange }: Props) {
         setIsPlaying(true);
         region.play(true);
         onSelectionChange({ start: region.start, end: region.end });
+        wsRef.current?.on("timeupdate", (currentTime) => {
+          if (currentTime >= region.end) {
+            setIsPlaying(false);
+          }
+        });
       });
 
       return () => {
@@ -85,8 +105,13 @@ export default function WaveSurferUI({ file, onSelectionChange }: Props) {
         resize: true,
         drag: true,
         color: "rgba(99,102,241,0.5)",
+        minLength: 5,
         maxLength: MAX_SONG_CLIP_DURATION_SECONDS,
       });
+    });
+
+    wsRef.current?.on("finish", () => {
+      setIsPlaying(false);
     });
   }, [file]);
 

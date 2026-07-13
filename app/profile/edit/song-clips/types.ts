@@ -3,5 +3,4 @@ export type ClipSlotDraft = {
   fileName: string;
   title: string;
   fullSongUrl: string;
-  slot: number | null;
 };

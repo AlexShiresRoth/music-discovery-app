@@ -2,6 +2,8 @@
 
 import { ToastContext } from "@/context/toast";
 import type { SongClip } from "@/lib/db/types";
+import clsx from "clsx";
+import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { MAX_SONG_CLIP_DURATION_SECONDS, MAX_SONG_CLIPS } from "../../schemas";
@@ -16,6 +18,7 @@ type Props = {
 
 export default function EditClips({ clips }: Props) {
   const router = useRouter();
+  const filledSlots = clips.length;
   const { setToast } = useContext(ToastContext);
   const [isFormPending, setIsFormPending] = useState(false);
 
@@ -23,7 +26,15 @@ export default function EditClips({ clips }: Props) {
     Array.from({ length: MAX_SONG_CLIPS }, () => emptySlot()),
   );
 
-  const filledSlots = clips.length;
+  const [openSlots, setOpenSlots] = useState<number>(clips.length || 1);
+
+  const setDraft = (draft: ClipSlotDraft, index: number) => {
+    setDrafts((prev) => {
+      const newDrafts = [...prev];
+      newDrafts[index] = draft;
+      return newDrafts;
+    });
+  };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +42,19 @@ export default function EditClips({ clips }: Props) {
     try {
       setIsFormPending(true);
       const formData = new FormData();
+      drafts.forEach((draft, index) => {
+        if (draft.file) {
+          formData.append(`files`, draft.file as File);
+          formData.append(
+            `metadata`,
+            JSON.stringify({
+              index,
+              title: draft.title,
+              fullSongUrl: draft.fullSongUrl,
+            }),
+          );
+        }
+      });
 
       const response = await fetch("/api/profile/upload-song-clip", {
         method: "POST",
@@ -80,16 +104,49 @@ export default function EditClips({ clips }: Props) {
           Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or shorter.
         </p>
         <div className="flex flex-col gap-6 pb-10">
-          {drafts.map((clip, index) => {
+          {drafts.slice(0, openSlots).map((clip, index) => {
             return (
               <SongClipSlot
                 key={index}
                 clip={clip}
                 index={index}
                 isFormPending={isFormPending}
+                setDrafts={setDraft}
               />
             );
           })}
+          <div className="flex items-center w-full justify-between">
+            <button
+              type="button"
+              disabled={openSlots >= MAX_SONG_CLIPS}
+              onClick={() => {
+                if (openSlots < MAX_SONG_CLIPS) {
+                  setOpenSlots(openSlots + 1);
+                  setDrafts([...drafts, emptySlot()]);
+                }
+              }}
+              className={clsx(
+                "flex items-center gap-2 text-sm text-gray-400/80 hover:text-indigo-500 transition-colors hover:cursor-pointer",
+                "disabled:text-gray-400/80",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+              )}
+            >
+              <Plus size={16} /> Add another clip
+            </button>
+
+            {openSlots > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenSlots(openSlots - 1);
+                  setDrafts(drafts.slice(0, -1));
+                }}
+                className="flex items-center gap-2 text-sm text-gray-400/80 hover:text-indigo-500 transition-colors hover:cursor-pointer"
+              >
+                <Minus size={16} /> Remove last clip
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

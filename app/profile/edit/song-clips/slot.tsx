@@ -18,25 +18,35 @@ export default function SongClipSlot({
   clip,
   index,
   isFormPending,
+  setDrafts,
 }: {
   clip: ClipSlotDraft;
   index: number;
   isFormPending: boolean;
+  setDrafts: (draft: ClipSlotDraft, index: number) => void;
 }) {
   const { setToast } = useContext(ToastContext);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [selection, setSelection] = useState<ClipSelection | null>(null);
 
-  const draft = emptySlot();
+  const [draft, setDraft] = useState<ClipSlotDraft>(emptySlot());
 
-  const clearSlotDraft = (index: number) => {};
+  const clearSlotDraft = (index: number) => {
+    setDraft(emptySlot());
+    setDrafts(emptySlot(), index);
+    setAudioFile(null);
+    setSelection(null);
+  };
 
-  const handleFileSelected = async (index: number, file: File | null) => {
+  const handleDraftUpdate = (draft: ClipSlotDraft) => {
+    setDraft(draft);
+    setDrafts(draft, index);
+  };
+
+  const handleFileSelected = async (file: File | null) => {
     if (!file) {
       return;
     }
-
-    console.log("FILE", file);
 
     setAudioFile(file);
 
@@ -48,8 +58,6 @@ export default function SongClipSlot({
       });
     }
   };
-
-  console.log("Selection", selection);
 
   return (
     <div
@@ -68,23 +76,35 @@ export default function SongClipSlot({
             accept="audio/*"
             disabled={isFormPending}
             className="sr-only"
-            onChange={(e) =>
-              handleFileSelected(index, e.target.files?.[0] ?? null)
-            }
+            onChange={(e) => {
+              handleFileSelected(e.target.files?.[0] ?? null);
+              handleDraftUpdate({
+                ...draft,
+                file: e.target.files?.[0] ?? null,
+                title: e.target.files?.[0]?.name ?? "",
+                fileName: e.target.files?.[0]?.name ?? "",
+              });
+            }}
           />
         </label>
-        {clip.fileName && (
+        {audioFile?.name && (
           <button
             type="button"
             disabled={isFormPending}
-            onClick={() => clearSlotDraft(index)}
+            onClick={() => {
+              clearSlotDraft(index);
+            }}
             className="self-start text-sm text-gray-400/80 hover:text-red-500 transition-colors hover:cursor-pointer"
           >
             Clear file
           </button>
         )}
         {audioFile && (
-          <WaveSurferUI file={audioFile} onSelectionChange={setSelection} />
+          <WaveSurferUI
+            file={audioFile}
+            onSelectionChange={setSelection}
+            selectedRegion={selection}
+          />
         )}
       </div>
 
@@ -92,8 +112,10 @@ export default function SongClipSlot({
         <PreHeader>{songClipFormFields.title.label}</PreHeader>
         <TextInput
           name={`title-${index}`}
-          value={clip.title}
-          onChange={(e) => {}}
+          value={audioFile?.name || ""}
+          onChange={(e) =>
+            handleDraftUpdate({ ...draft, title: e.target.value })
+          }
           isPending={isFormPending}
           placeholder={songClipFormFields.title.placeholder}
           isEdit
@@ -104,8 +126,10 @@ export default function SongClipSlot({
         <PreHeader>{songClipFormFields.full_song_url.label}</PreHeader>
         <TextInput
           name={`fullSongUrl-${index}`}
-          value={clip?.fullSongUrl}
-          onChange={() => {}}
+          value={clip?.fullSongUrl || ""}
+          onChange={(e) =>
+            handleDraftUpdate({ ...draft, fullSongUrl: e.target.value })
+          }
           isPending={isFormPending}
           placeholder={songClipFormFields.full_song_url.placeholder}
           isEdit

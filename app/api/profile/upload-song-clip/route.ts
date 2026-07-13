@@ -1,6 +1,4 @@
-import { MAX_SONG_CLIPS } from "@/app/profile/schemas";
 import { createAdminClient, createServerClient } from "@/lib/auth";
-import { validateClipDuration } from "@/lib/audio/validate-clip-duration.server";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -53,28 +51,13 @@ export async function POST(request: Request) {
 
   const formData = await request.formData();
   const files = formData.getAll("files") as File[];
-  const titles = formData.getAll("titles") as string[];
-  const fullSongUrls = formData.getAll("fullSongUrls") as string[];
+  const metadata = formData.getAll("metadata") as string[];
 
+  console.log("files", files);
+  console.log("metadata", metadata);
   if (files.length === 0) {
     return NextResponse.json(
       { error: "At least one file is required" },
-      { status: 400 },
-    );
-  }
-
-  if (files.length !== titles.length || files.length !== fullSongUrls.length) {
-    return NextResponse.json(
-      { error: "Each file must have a matching title and URL fields" },
-      { status: 400 },
-    );
-  }
-
-  if (profile.songClips.length + files.length > MAX_SONG_CLIPS) {
-    return NextResponse.json(
-      {
-        error: `You can only have up to ${MAX_SONG_CLIPS} song clips (${profile.songClips.length} already uploaded)`,
-      },
       { status: 400 },
     );
   }
@@ -84,68 +67,44 @@ export async function POST(request: Request) {
   const uploadedClips = [];
   const newClipIds = [...profile.songClips];
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const title = titles[i]?.trim();
-    const fullSongUrl = fullSongUrls[i]?.trim();
-
-    if (!title) {
-      return NextResponse.json(
-        { error: `Title is required for file: ${file.name}` },
-        { status: 400 },
-      );
-    }
-
+  for await (const file of files) {
+    console.log("file", file);
     if (!isAllowedAudio(file)) {
       return NextResponse.json(
-        { error: `${file.name} must be an audio format (mp3, wav, m4a, etc.)` },
+        { error: "Invalid audio file" },
         { status: 400 },
       );
-    }
-
-    const durationCheck = await validateClipDuration(file);
-    if (!durationCheck.valid) {
-      return NextResponse.json({ error: durationCheck.error }, { status: 400 });
     }
 
     const safeName = file.name.replace(/[/\\]/g, "_");
-    const storagePath = `clips/${user.id}/${Date.now()}-${i}-${safeName}`;
 
-    const { error: uploadError } = await admin.storage
+    const { error, data } = await admin.storage
       .from(bucket)
-      .upload(storagePath, file, { upsert: true });
+      .upload(`clips/${user.id}/${safeName}`, file, { upsert: true });
 
-    if (uploadError) {
-      console.error(uploadError);
+    if (error) {
       return NextResponse.json(
-        { error: `Failed to upload ${file.name}: ${uploadError.message}` },
+        { error: "Failed to upload audio file" },
         { status: 500 },
       );
     }
 
-    const { data: urlData } = admin.storage.from(bucket).getPublicUrl(storagePath);
-
-    const [clip] = await db
+    const clip = await db
       .insert(songClipsSchema)
-      .values({
-        title,
-        db_url: urlData.publicUrl,
-        full_song_url: fullSongUrl || null,
-      })
+      .values([
+        {
+          db_url: data.fullPath,
+          title: file.title,
+          full_song_url: file.fullSongUrl,
+          slot: file.slot,
+        },
+      ])
       .returning();
 
-    uploadedClips.push(clip);
-    newClipIds.push(String(clip.id));
+    newClipIds.push(clip[0]?.id.toString());
   }
-
-  await db
-    .update(profilesSchema)
-    .set({ songClips: newClipIds })
-    .where(eq(profilesSchema.userRefId, user.id));
 
   return NextResponse.json({
     success: true,
-    clips: uploadedClips,
-    count: uploadedClips.length,
   });
 }
