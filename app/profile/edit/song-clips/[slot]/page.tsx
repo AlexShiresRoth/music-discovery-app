@@ -15,11 +15,15 @@ export default async function EditSongClips({ params }: Props) {
     return null;
   }
 
-  const clips = await getSongClipsByIds(profile.songClips);
+  const clips = await getSongClipsByIds(
+    profile.songClips.map((clip) => clip.id),
+  );
 
   const slotNumber = parseInt(slot) - 1;
 
-  const clip = clips[slotNumber];
+  const clip = clips.find((clip) => clip.slot === slotNumber);
+
+  console.log("clip", clip, clips);
 
   return (
     <div className="w-full flex flex-col items-center justify-center">

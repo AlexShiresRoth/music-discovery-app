@@ -1,6 +1,6 @@
 import WaveSurferUI from "@/components/wave-surfer";
 import type { SongClip } from "@/lib/db/types";
-import { Upload } from "lucide-react";
+import { Edit, Upload } from "lucide-react";
 import Link from "next/link";
 import PreHeader from "./pre-header";
 import { MAX_SONG_CLIPS } from "./schemas";
@@ -36,7 +36,11 @@ function ClipSlotView({
           href={`/profile/edit/song-clips/${slotNumber}`}
           className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
         >
-          <Upload size={14} className="text-white" />
+          {clip ? (
+            <Edit size={14} className="text-white" />
+          ) : (
+            <Upload size={14} className="text-white" />
+          )}
         </Link>
       </div>
       {clip ? (
@@ -70,13 +74,12 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
         )}
 
         <div className="flex gap-4 w-full">
-          {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => (
-            <ClipSlotView
-              key={index}
-              clip={clips[index]}
-              slotNumber={index + 1}
-            />
-          ))}
+          {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
+            const clip = clips.find((clip) => clip.slot === index);
+            return (
+              <ClipSlotView key={index} clip={clip} slotNumber={index + 1} />
+            );
+          })}
         </div>
       </div>
     </div>

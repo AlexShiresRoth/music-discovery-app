@@ -1,5 +1,5 @@
 {
-  "id": "b094106a-6b66-4ca9-8f6f-b7734ddaa3e5",
+  "id": "a2af626b-958c-42ce-8d02-221b3a58a584",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -60,9 +60,10 @@
         },
         "song_clips": {
           "name": "song_clips",
-          "type": "text[]",
+          "type": "jsonb[]",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'{}'"
         },
         "image_url": {
           "name": "image_url",
@@ -153,6 +154,12 @@
           "name": "id",
           "type": "serial",
           "primaryKey": true,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "integer",
+          "primaryKey": false,
           "notNull": true
         },
         "title": {

@@ -67,14 +67,19 @@ export default function EditClips({ clip, slot }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col w-full p-8 gap-4">
       <div className="flex items-center justify-between w-full">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-bold uppercase text-indigo-500">
-            Upload Song Clip
-          </h2>
-        </div>
+        <h2 className="font-bold uppercase text-indigo-500">
+          Upload Song Clip
+        </h2>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="text-sm text-gray-400/80 hover:cursor-pointer hover:text-gray-500 transition-colors"
+        >
+          Back
+        </button>
       </div>
 
-      <div className="relative">
+      <div className="relative flex flex-col gap-4">
         <p className="text-sm text-gray-400/80">
           Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or shorter.
         </p>

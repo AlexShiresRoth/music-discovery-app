@@ -7,7 +7,7 @@ CREATE TABLE "profiles" (
 	"genre" text,
 	"joined_date" timestamp DEFAULT now(),
 	"is_verified" boolean DEFAULT false,
-	"song_clips" text[] NOT NULL,
+	"song_clips" jsonb[] DEFAULT '{}' NOT NULL,
 	"image_url" text,
 	"city" text,
 	"state" text,
@@ -24,6 +24,7 @@ CREATE TABLE "profiles" (
 --> statement-breakpoint
 CREATE TABLE "song_clips" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"slot" integer NOT NULL,
 	"title" text,
 	"db_url" text,
 	"full_song_url" text

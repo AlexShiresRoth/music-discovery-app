@@ -111,7 +111,6 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const bucket = env.SONG_CLIPS_BUCKET_NAME || "";
   const newClipIds = [...profile.songClips];
-  const uploadedClips = [];
 
   let meta: ClipMetadata;
 
@@ -143,11 +142,11 @@ export async function POST(request: Request) {
     );
   }
 
-  console.log("meta", meta);
-  console.log("file", file);
   const { start, end } = meta.selectedRegion;
   let inputPath: string | null = null;
   let outputPath: string | null = null;
+
+  console.log("meta", meta);
 
   try {
     inputPath = await writeTempFile(file, `.${extensionForFile(file)}`);
@@ -185,14 +184,14 @@ export async function POST(request: Request) {
     const [clip] = await db
       .insert(songClipsSchema)
       .values({
+        slot: meta.index,
         db_url: urlData.publicUrl,
         title,
         full_song_url: meta.fullSongUrl?.trim() || null,
       })
       .returning();
 
-    uploadedClips.push(clip);
-    newClipIds.push(String(clip.id));
+    newClipIds.push({ slot: meta.index, id: String(clip.id) });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -215,7 +214,5 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     success: true,
-    count: uploadedClips.length,
-    clips: uploadedClips,
   });
 }

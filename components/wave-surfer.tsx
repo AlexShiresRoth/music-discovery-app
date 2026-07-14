@@ -20,6 +20,8 @@ type Props = {
   clipName?: string;
 };
 
+const WAVE_COLOR = "rgba(255, 255, 255, 0.5)";
+
 function WaveSurferBasic({ url, clipName }: { url: string; clipName: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
@@ -35,7 +37,7 @@ function WaveSurferBasic({ url, clipName }: { url: string; clipName: string }) {
     const hover = HoverPlugin.create();
     const ws = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: "#fff",
+      waveColor: WAVE_COLOR,
       progressColor: "purple",
       height: 100,
       plugins: [hover],
@@ -124,7 +126,7 @@ function WaveSurferWithRegions({
     const hover = HoverPlugin.create();
     const ws = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: "#fff",
+      waveColor: WAVE_COLOR,
       progressColor: "purple",
       height: 100,
       plugins: [regions, hover],

@@ -7,7 +7,10 @@ export default async function ProfilePage() {
   const profile = await getProfile();
 
   if (profile) {
-    const clips = await getSongClipsByIds(profile.songClips);
+    const clips = await getSongClipsByIds(
+      profile.songClips.map((clip) => clip.id),
+    );
+    console.log("clips", clips);
     return <Profile profile={profile} clips={clips} />;
   }
 
