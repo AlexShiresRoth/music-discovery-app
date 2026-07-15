@@ -1,4 +1,3 @@
-// src/lib/audio/trim-audio.ts
 import ffmpegPath from "ffmpeg-static";
 import { spawn } from "node:child_process";
 

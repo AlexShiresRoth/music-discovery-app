@@ -28,8 +28,7 @@ export const profilesSchema = pgTable("profiles", {
   joinedDate: timestamp("joined_date").defaultNow(),
   isVerified: boolean("is_verified").default(false),
   songClips: jsonb("song_clips")
-    .$type<SongClipWithSlot>()
-    .array()
+    .$type<SongClipWithSlot[]>()
     .notNull()
     .default([]),
   imageUrl: text("image_url"),

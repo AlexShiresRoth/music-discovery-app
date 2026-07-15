@@ -1,7 +1,6 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
-import { SongClipWithSlot } from "@/lib/db/types";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { env } from "process";
@@ -42,7 +41,7 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const newClipIds = (profile.songClips as SongClipWithSlot[]).filter(
+  const newClipIds = profile.songClips.filter(
     (clip) => parseInt(clip.id) !== parseInt(clipId),
   );
 

@@ -10,7 +10,7 @@ import SongClipSlot from "./slot";
 import { ClipSlotDraft } from "./types";
 
 type Props = {
-  clip: SongClip;
+  clip?: SongClip;
   isVerified: boolean;
   slot: number;
 };
