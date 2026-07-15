@@ -23,11 +23,12 @@ export async function POST(request: Request) {
   // Strip any path separators so a crafted filename can't escape the user's folder.
   const safeName = file.name.replace(/[/\\]/g, "_");
 
+  const bucket = env.IMAGES_BUCKET_NAME || "";
   // Use the admin client for storage so RLS doesn't block the upload.
   // Auth is already verified above via the user's session.
   const admin = createAdminClient();
   const { error } = await admin.storage
-    .from(env.IMAGES_BUCKET_NAME || "")
+    .from(bucket)
     .upload(`profile/${user.id}/${safeName}`, file, { upsert: true });
 
   if (error) {

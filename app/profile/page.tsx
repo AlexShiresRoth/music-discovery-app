@@ -1,4 +1,5 @@
 import { getProfile } from "@/lib/auth";
+import { getSongClipsByIds } from "@/lib/db/song-clips";
 import ChooseProfile from "./intro";
 import Profile from "./profile";
 
@@ -6,7 +7,10 @@ export default async function ProfilePage() {
   const profile = await getProfile();
 
   if (profile) {
-    return <Profile profile={profile} />;
+    const clips = await getSongClipsByIds(
+      profile.songClips.map((clip) => clip.id),
+    );
+    return <Profile profile={profile} clips={clips} />;
   }
 
   return <ChooseProfile />;

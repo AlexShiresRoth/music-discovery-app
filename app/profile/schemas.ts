@@ -1,4 +1,25 @@
-import { Profile } from "@/lib/db/types";
+import { Profile, SongClip } from "@/lib/db/types";
+
+export const MAX_SONG_CLIPS = 3;
+export const MAX_SONG_CLIP_DURATION_SECONDS = 30;
+
+export const songClipFormFields: Record<
+  keyof Pick<SongClip, "title" | "full_song_url">,
+  { name: string; label: string; placeholder?: string; required?: boolean }
+> = {
+  title: {
+    name: "title",
+    label: "Title",
+    placeholder: "Track title",
+    required: true,
+  },
+  full_song_url: {
+    name: "fullSongUrl",
+    label: "Full Song URL",
+    placeholder: "Link to the full track",
+    required: false,
+  },
+};
 
 export type ProfileFormSchemaWithoutId = Omit<
   Profile,
