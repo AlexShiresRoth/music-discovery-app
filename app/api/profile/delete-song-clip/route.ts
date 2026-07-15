@@ -16,10 +16,16 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { clipId } = await request.json();
+  const { clipId: rawClipId } = await request.json();
 
-  if (!clipId) {
+  if (rawClipId === undefined || rawClipId === null || rawClipId === "") {
     return NextResponse.json({ error: "Clip ID is required" }, { status: 400 });
+  }
+
+  const clipId = Number(rawClipId);
+
+  if (!Number.isInteger(clipId) || clipId <= 0) {
+    return NextResponse.json({ error: "Invalid clip ID" }, { status: 400 });
   }
 
   const profiles = await db
@@ -42,7 +48,7 @@ export async function DELETE(request: Request) {
   }
 
   const newClipIds = profile.songClips.filter(
-    (clip) => parseInt(clip.id) !== parseInt(clipId),
+    (clip) => Number(clip.id) !== clipId,
   );
 
   await db
