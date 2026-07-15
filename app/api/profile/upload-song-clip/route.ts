@@ -146,8 +146,6 @@ export async function POST(request: Request) {
   let inputPath: string | null = null;
   let outputPath: string | null = null;
 
-  console.log("meta", meta);
-
   try {
     inputPath = await writeTempFile(file, `.${extensionForFile(file)}`);
     outputPath = join(tmpdir(), `clip-trimmed-${randomUUID()}.mp3`);

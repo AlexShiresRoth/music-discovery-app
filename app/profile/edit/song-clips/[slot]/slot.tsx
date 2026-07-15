@@ -5,7 +5,7 @@ import { songClipFormFields } from "@/app/profile/schemas";
 import TextInput from "@/components/text-input";
 import WaveSurferUI from "@/components/wave-surfer";
 import { ToastContext } from "@/context/toast";
-import { Upload } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { useContext, useState } from "react";
 import { emptySlot, titleFromFilename } from "./helpers";
 import { ClipSelection, ClipSlotDraft } from "./types";
@@ -26,12 +26,42 @@ export default function SongClipSlot({
   const [selection, setSelection] = useState<ClipSelection | null>(
     draft.selectedRegion ?? null,
   );
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const clearSlotDraft = () => {
-    const cleared = emptySlot();
-    setDraft(cleared);
+  const clearSlotDraft = async () => {
+    setDraft(emptySlot());
     setAudioFile(null);
     setSelection(null);
+  };
+
+  const handleDeleteFile = async () => {
+    try {
+      setIsDeleting(true);
+
+      const response = await fetch("/api/profile/delete-song-clip", {
+        method: "DELETE",
+        body: JSON.stringify({ clipId: draft.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete song clip");
+      }
+
+      clearSlotDraft();
+
+      setToast({
+        message: `Song clip deleted successfully`,
+        type: "success",
+      });
+    } catch {
+      setIsDeleting(false);
+      setToast({
+        message: `Could not delete song clip`,
+        type: "error",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDraftUpdate = (next: ClipSlotDraft) => {
@@ -72,19 +102,33 @@ export default function SongClipSlot({
           <input
             type="file"
             accept="audio/*"
-            disabled={isFormPending}
+            disabled={isFormPending || isDeleting}
             className="sr-only"
             onChange={(e) => handleFileSelected(e.target.files?.[0] ?? null)}
           />
         </label>
-        {(audioFile || draft.dbUrl) && (
+        {audioFile && (
           <button
             type="button"
-            disabled={isFormPending}
+            disabled={isFormPending || isDeleting}
             onClick={clearSlotDraft}
             className="self-start text-sm text-gray-400/80 hover:text-red-500 transition-colors hover:cursor-pointer"
           >
             Clear file
+          </button>
+        )}
+        {draft.dbUrl && (
+          <button
+            type="button"
+            disabled={isDeleting || isFormPending}
+            onClick={handleDeleteFile}
+            className="self-start text-sm text-gray-400/80 hover:text-red-500 transition-colors hover:cursor-pointer"
+          >
+            {isDeleting ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              "Delete file"
+            )}
           </button>
         )}
         {audioFile && (
@@ -110,7 +154,7 @@ export default function SongClipSlot({
           onChange={(e) =>
             handleDraftUpdate({ ...draft, title: e.target.value })
           }
-          isPending={isFormPending}
+          isPending={isFormPending || isDeleting}
           placeholder={songClipFormFields.title.placeholder}
           isEdit
         />
@@ -124,7 +168,7 @@ export default function SongClipSlot({
           onChange={(e) =>
             handleDraftUpdate({ ...draft, fullSongUrl: e.target.value })
           }
-          isPending={isFormPending}
+          isPending={isFormPending || isDeleting}
           placeholder={songClipFormFields.full_song_url.placeholder}
           isEdit
         />

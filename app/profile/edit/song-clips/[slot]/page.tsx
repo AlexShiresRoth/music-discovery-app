@@ -23,8 +23,6 @@ export default async function EditSongClips({ params }: Props) {
 
   const clip = clips.find((clip) => clip.slot === slotNumber);
 
-  console.log("clip", clip, clips);
-
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <div className="md:w-1/2 py-6">

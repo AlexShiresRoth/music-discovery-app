@@ -162,7 +162,7 @@ export default function UploadImage({ imageUrl }: Props) {
           {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
         </button>
         <button
-          disabled={isDeleting || isUploading}
+          disabled={isDeleting || isUploading || !imageUrl}
           onClick={handleDeleteImage}
           className="p-2 hover:cursor-pointer border border-gray-400/80 rounded-full hover:border-red-500/80 transition-all text-gray-400/80 hover:text-red-500 disabled:hover:cursor-not-allowed"
         >
