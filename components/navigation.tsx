@@ -13,7 +13,7 @@ export default async function Navigation() {
   }
 
   return (
-    <nav className="flex w-full items-center justify-center py-4 border-b border-gray-400/80">
+    <nav className="flex w-full items-center justify-center py-4 border-b border-gray-400/80 fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center gap-4 md:w-3/4 w-full">
         <Link href="/">Home</Link>
         <Link href="/profile">Profile</Link>

@@ -24,3 +24,19 @@ export async function getProfile() {
     return null;
   }
 }
+
+// TODO - we should shuffle the profiles
+export async function getProfiles(startIndex: number = 0, limit: number = 100) {
+  try {
+    const profiles = await db
+      .select()
+      .from(profilesSchema)
+      .offset(startIndex)
+      .limit(limit);
+
+    return profiles;
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    return [];
+  }
+}
