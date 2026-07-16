@@ -29,24 +29,20 @@ function ClipSlotView({
   slotNumber: number;
 }) {
   return (
-    <div className="flex flex-col gap-3 border border-gray-400/80 rounded-md p-4 w-full">
+    <div className="flex flex-col gap-3 border rounded-md p-4 w-full">
       <div className="flex justify-between items-center gap-1">
         <PreHeader>Clip {slotNumber}</PreHeader>
         <Link
           href={`/profile/edit/song-clips/${slotNumber}`}
-          className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
+          className="hover:cursor-pointer p-1 rounded transition-colors"
         >
-          {clip ? (
-            <Edit size={14} className="text-white" />
-          ) : (
-            <Upload size={14} className="text-white" />
-          )}
+          {clip ? <Edit size={14} /> : <Upload size={14} />}
         </Link>
       </div>
       {clip ? (
         <ExistingClipContent clip={clip} />
       ) : (
-        <p className="text-sm text-gray-400/80">No clip uploaded</p>
+        <p className="text-sm ">No clip uploaded</p>
       )}
     </div>
   );
@@ -56,24 +52,22 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
   const filledSlots = clips.length;
 
   return (
-    <div className="flex flex-col w-full p-8 gap-4 border border-gray-400/80 rounded-md">
+    <div className="flex flex-col w-full gap-4">
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="font-bold uppercase text-indigo-500">Song Clips</h2>
+          <h2 className="font-bold uppercase  ">Song Clips</h2>
           {isVerified && (
-            <p className="text-sm text-gray-400/80">
+            <p className="text-sm ">
               {filledSlots} / {MAX_SONG_CLIPS} clips
             </p>
           )}
         </div>
 
         {!isVerified && (
-          <p className="text-sm text-gray-400/80">
-            Verify your account to upload song clips.
-          </p>
+          <p className="text-sm ">Verify your account to upload song clips.</p>
         )}
 
-        <div className="flex gap-4 w-full">
+        <div className="flex gap-4 w-full md:flex-row flex-col">
           {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
             const clip = clips.find((clip) => clip.slot === index);
             return (

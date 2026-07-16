@@ -89,12 +89,12 @@ export default function SongClipSlot({
   };
 
   return (
-    <div className="flex flex-col gap-4 p-8 border border-gray-400/40 rounded-md">
+    <div className="flex flex-col gap-4 p-8 border rounded-md">
       <PreHeader>Clip {index + 1}</PreHeader>
 
       <div id={`waveform-${index}`} className="flex flex-col gap-2">
         <PreHeader>Audio File</PreHeader>
-        <label className="flex items-center gap-2 cursor-pointer text-gray-400/80 hover:text-indigo-500 transition-colors">
+        <label className="flex items-center gap-2 cursor-pointer hover:text-amber-500 hover:transition-colors">
           <Upload size={16} />
           <span>
             {audioFile?.name || draft.fileName || "Choose an audio file"}

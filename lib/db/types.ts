@@ -8,3 +8,7 @@ export type SongClipWithSlot = {
 export type SongClip = typeof songClipsSchema.$inferSelect;
 
 export type Profile = typeof profilesSchema.$inferSelect;
+
+export type ProfileWithSongClips = Omit<Profile, "songClips"> & {
+  songClips: SongClip[];
+};

@@ -7,7 +7,7 @@ CREATE TABLE "profiles" (
 	"genre" text,
 	"joined_date" timestamp DEFAULT now(),
 	"is_verified" boolean DEFAULT false,
-	"song_clips" jsonb[] DEFAULT '{}' NOT NULL,
+	"song_clips" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"image_url" text,
 	"city" text,
 	"state" text,

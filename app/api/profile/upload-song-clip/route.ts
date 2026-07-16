@@ -113,7 +113,6 @@ export async function POST(request: Request) {
   const newClipIds = [...profile.songClips];
 
   let meta: ClipMetadata;
-
   try {
     meta = JSON.parse(metadataEntry) as ClipMetadata;
   } catch {

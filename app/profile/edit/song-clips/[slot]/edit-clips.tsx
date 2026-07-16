@@ -65,18 +65,18 @@ export default function EditClips({ clip, slot }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col w-full p-8 gap-4">
-      <div className="flex items-center justify-between w-full">
-        <h2 className="font-bold uppercase text-indigo-500">
-          Upload Song Clip
-        </h2>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="text-sm text-gray-400/80 hover:cursor-pointer hover:text-gray-500 transition-colors"
-        >
-          Back
-        </button>
+    <form onSubmit={handleSubmit} className="flex flex-col w-full md:p-8 gap-4">
+      <div className="flex md:flex-row flex-col-reverse md:items-center justify-between w-full">
+        <h2 className="font-bold uppercase">Upload Song Clip</h2>
+        <div>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="text-sm text-gray-400/80 hover:cursor-pointer hover:text-gray-500 transition-colors"
+          >
+            Back
+          </button>
+        </div>
       </div>
 
       <div className="relative flex flex-col gap-4">
@@ -96,7 +96,7 @@ export default function EditClips({ clip, slot }: Props) {
       <button
         type="submit"
         disabled={isFormPending}
-        className="self-end px-4 py-2 rounded bg-indigo-500 uppercase text-black font-bold hover:cursor-pointer hover:bg-indigo-600 transition-colors disabled:bg-indigo-500/30"
+        className="self-end px-4 py-2 rounded bg-black text-white uppercase text-black font-bold hover:cursor-pointer transition-colors disabled:bg-indigo-500/30"
       >
         {isFormPending ? "Uploading" : `Save`}
       </button>

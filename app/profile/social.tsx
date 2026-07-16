@@ -110,12 +110,12 @@ export default function SocialSection({
   const content = (
     <div
       className={clsx(
-        "flex flex-col gap-10 w-full border border-gray-400/80 rounded-md p-8",
+        "flex flex-col gap-10 w-full border rounded-md p-8",
         isEdit && "max-h-[70vh]",
       )}
     >
       <div className="flex items-center justify-between w-full">
-        <h2 className="font-bold uppercase text-indigo-500">Social Links</h2>
+        <h2 className="font-bold uppercase  ">Social Links</h2>
         {!isEdit && (
           <Link href="/profile/edit/social" className="flex items-center gap-1">
             <Pencil size={14} /> Edit
@@ -135,10 +135,7 @@ export default function SocialSection({
         <div className="relative">
           <div className="flex flex-col gap-4 h-[40vh] overflow-y-auto pb-10">
             {SOCIAL_FIELDS.map(({ key }) => (
-              <div
-                key={key}
-                className="flex flex-col gap-2 border-b border-gray-400/80 pb-4"
-              >
+              <div key={key} className="flex flex-col gap-2 border-b pb-4">
                 <PreHeader>{fields[key].label}</PreHeader>
                 <TextInput
                   name={fields[key].name}

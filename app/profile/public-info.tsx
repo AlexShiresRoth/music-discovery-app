@@ -103,9 +103,9 @@ export default function PublicInfo({
 
   return (
     <ViewOrEditForm mode={mode} handleSubmit={handleSubmit}>
-      <div className="flex flex-col gap-10 w-full border border-gray-400/80 rounded-md p-8">
+      <div className="flex flex-col gap-10 w-full border rounded-md p-8">
         <div className="flex items-center justify-between w-full">
-          <h2 className="font-bold uppercase text-indigo-500">Public Info</h2>
+          <h2 className="font-bold uppercase  ">Public Info</h2>
           {!isEdit && (
             <Link
               href="/profile/edit/public"
@@ -124,7 +124,7 @@ export default function PublicInfo({
             </button>
           )}
         </div>
-        <header className="flex justify-between gap-2 border-b border-gray-400/80 pb-4">
+        <header className="flex justify-between gap-2 border-b pb-4">
           {isEdit ? (
             <ViewOrEditData title={fields.profileName.label}>
               <TextInput
@@ -142,7 +142,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           )}
         </header>
-        <div className="flex flex-col border-b border-gray-400/80 pb-4">
+        <div className="flex flex-col border-b pb-4">
           {isEdit ? (
             <ViewOrEditData title={fields.genre.label}>
               <SelectInput
@@ -159,7 +159,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           )}
         </div>
-        <div className={isEdit ? "" : "border-b border-gray-400/80 pb-4"}>
+        <div className={isEdit ? "" : "border-b pb-4"}>
           {isEdit ? (
             <ViewOrEditData title={fields.bio.label}>
               <TextArea
@@ -175,7 +175,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           )}
         </div>
-        <div className="flex flex-col gap-2 border-b border-gray-400/80 pb-4">
+        <div className="flex flex-col gap-2 border-b pb-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
               {isEdit ? (
