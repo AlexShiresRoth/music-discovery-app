@@ -12,6 +12,7 @@ export default async function Home() {
       ...profile,
       songClips: profiles[0].songClips.map((clip) => ({
         ...clip,
+        full_song_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         id: randomUUID(),
       })),
     })),

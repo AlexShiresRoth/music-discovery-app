@@ -3,7 +3,7 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Loader2, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
@@ -22,6 +22,7 @@ type Props = {
   clipName?: string;
   isActive?: boolean;
   isOnFeed?: boolean;
+  fullSongUrl?: string;
 };
 
 const WAVE_COLOR = "#FACE85";
@@ -31,11 +32,13 @@ function WaveSurferBasic({
   clipName,
   isActive,
   isOnFeed,
+  fullSongUrl,
 }: {
   url: string;
   clipName: string;
   isActive?: boolean;
   isOnFeed?: boolean;
+  fullSongUrl?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
@@ -47,6 +50,7 @@ function WaveSurferBasic({
   const isActiveRef = useRef(isActive ?? false);
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying);
+  const [isLoading, setIsLoading] = useState(true);
 
   const shouldPlay = useCallback(() => {
     if (isOnFeed) {
@@ -125,6 +129,7 @@ function WaveSurferBasic({
       ? () => {}
       : ws.on("finish", () => setLocalPlaying(false));
 
+    setIsLoading(false);
     return () => {
       unsubReady();
       unsubPlay();
@@ -151,12 +156,21 @@ function WaveSurferBasic({
     return () => unsubReady();
   }, [isOnFeed, isActive, isPlaying, syncPlayback]);
 
+  // TODO - add a loading state to the wave surfer
   return (
     <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
-      <div ref={containerRef} className="w-full min-w-0" />
-      <div className="flex items-center gap-2 border-t pt-2 text-sm">
+      <div ref={containerRef} className="w-full min-w-0">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="animate-spin" size={32} />
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+      <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
         {!isOnFeed && (
-          <>
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={playAndPause}
@@ -173,11 +187,21 @@ function WaveSurferBasic({
             >
               {localMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
-          </>
+          </div>
         )}
         <p className={clsx("text-sm truncate", isOnFeed && "text-xl")}>
           {clipName}
         </p>
+        {fullSongUrl && (
+          <a
+            href={fullSongUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm hover:cursor-pointer hover:text-gray-500 transition-colors"
+          >
+            Listen to full song
+          </a>
+        )}
       </div>
     </div>
   );
@@ -343,6 +367,7 @@ export default function WaveSurferUI({
   clipName,
   isActive,
   isOnFeed,
+  fullSongUrl,
 }: Props) {
   if (url) {
     return (
@@ -351,6 +376,7 @@ export default function WaveSurferUI({
         url={url}
         clipName={clipName || ""}
         isActive={isActive}
+        fullSongUrl={fullSongUrl}
       />
     );
   }

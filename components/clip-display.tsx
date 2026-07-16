@@ -22,6 +22,7 @@ export default function ClipDisplay({
         url={clip.db_url || ""}
         clipName={clip.title || ""}
         isActive={isActive}
+        fullSongUrl={clip.full_song_url || ""}
         isOnFeed
       />
     </div>
