@@ -41,7 +41,6 @@ export const POST = async (request: Request) => {
     await db
       .update(profilesSchema)
       .set({
-        songClips: p.songClips,
         bio: data.bio || p.bio,
         profileName: data.profileName || p.profileName,
         country: data.country || p.country,

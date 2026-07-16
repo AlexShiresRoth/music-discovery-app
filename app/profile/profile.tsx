@@ -15,13 +15,13 @@ type Props = {
 export default async function Profile({ profile, clips }: Props) {
   const isVerified = profile.isVerified;
   return (
-    <div className="flex flex-col w-full items-center py-8">
-      <div className="md:w-3/4 w-full flex flex-col gap-8">
+    <div className="flex flex-col w-full items-center p-8">
+      <div className="w-full flex flex-col gap-8">
         <header className="flex items-center gap-8 w-full justify-between">
           {!isVerified && (
             <Link
               href="/profile/verify"
-              className="text-white px-4 py-2 rounded-md bg-gray-700/10 border border-white/20 hover:cursor-pointer hover:bg-gray-400/20 transition-all"
+              className="text-white px-4 py-2 rounded-md bg-gray-700/10 border hover:cursor-pointer  transition-all"
             >
               Get Verified
             </Link>
@@ -34,7 +34,7 @@ export default async function Profile({ profile, clips }: Props) {
           <div className="min-h-screen relative block">
             <div className="sticky top-0">
               {profile.imageUrl && (
-                <div className="flex flex-col gap-8 items-center relative w-sm h-75 border border-gray-400/80 rounded">
+                <div className="flex flex-col gap-8 items-center relative w-sm h-75 border rounded">
                   <Image
                     src={profile.imageUrl}
                     alt={profile.profileName ?? "Image"}
@@ -46,7 +46,7 @@ export default async function Profile({ profile, clips }: Props) {
                 </div>
               )}
               {!profile.imageUrl && (
-                <div className="w-sm h-75 border border-gray-400/80 rounded flex items-center justify-center">
+                <div className="w-sm h-75 border rounded flex items-center justify-center">
                   <p className="text-gray-400/80">Upload an image</p>
                 </div>
               )}

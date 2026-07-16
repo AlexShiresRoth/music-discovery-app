@@ -45,7 +45,7 @@ export default function SelectInput({
           {...props}
           name={name}
           disabled={isPending}
-          className="border border-gray-400/80 rounded-md p-4.5 indent-1 disabled:opacity-50 focus:outline-none hover:border-gray-400 transition-all "
+          className="border rounded-md p-4.5 indent-1 disabled:opacity-50 focus:outline-none transition-all "
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

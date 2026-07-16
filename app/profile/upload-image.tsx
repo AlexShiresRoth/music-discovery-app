@@ -101,6 +101,13 @@ export default function UploadImage({ imageUrl }: Props) {
       setFile(file);
       const res = await handleUpload(file);
 
+      if (!res.ok) {
+        setToast({ message: "Failed to upload image", type: "error" });
+        console.error("Failed to upload image");
+        setIsUploading(false);
+        return;
+      }
+
       if (res.ok) {
         const { publicUrl }: UploadImageAPIResponse = await res.json();
         try {
@@ -157,14 +164,14 @@ export default function UploadImage({ imageUrl }: Props) {
         <button
           disabled={isDeleting || isUploading}
           onClick={handleImageUpload}
-          className="p-2 hover:cursor-pointer border border-gray-400/80 rounded-full hover:border-indigo-500/80 transition-all text-gray-400/80 hover:text-indigo-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
+          className="p-2 hover:cursor-pointer border rounded-full hover:border-indigo-500/80 transition-all text-gray-400/80 hover:  disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
         >
           {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
         </button>
         <button
           disabled={isDeleting || isUploading || !imageUrl}
           onClick={handleDeleteImage}
-          className="p-2 hover:cursor-pointer border border-gray-400/80 rounded-full hover:border-red-500/80 transition-all text-gray-400/80 hover:text-red-500 disabled:hover:cursor-not-allowed"
+          className="p-2 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all text-gray-400/80 hover:text-red-500 disabled:hover:cursor-not-allowed"
         >
           <Trash />
         </button>

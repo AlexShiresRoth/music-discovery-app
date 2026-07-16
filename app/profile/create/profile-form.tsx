@@ -27,8 +27,8 @@ function WideColumn({ children }: { children: React.ReactNode }) {
 
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-b border-gray-400/80 pb-2 mb-4">
-      <h2 className="text-2xl text-indigo-500 uppercase">{children}</h2>
+    <div className="border-b pb-2 mb-4">
+      <h2 className="text-2xl   uppercase">{children}</h2>
     </div>
   );
 }

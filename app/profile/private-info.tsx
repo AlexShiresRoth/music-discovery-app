@@ -65,9 +65,9 @@ export default function PrivateInfo({
   };
 
   const content = (
-    <div className="flex flex-col gap-10 w-full border border-gray-400/80 rounded-md p-8">
+    <div className="flex flex-col gap-10 w-full border rounded-md p-8">
       <div className="flex items-center justify-between w-full">
-        <h2 className="font-bold uppercase text-indigo-500">Private Info</h2>
+        <h2 className="font-bold uppercase">Private Info</h2>
         {!isEdit && (
           <Link
             href="/profile/edit/private"

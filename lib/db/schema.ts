@@ -42,5 +42,6 @@ export const profilesSchema = pgTable("profiles", {
   spotify: text("spotify"),
   appleMusic: text("apple_music"),
   soundcloud: text("soundcloud"),
+  bandcamp: text("bandcamp"),
   userRefId: uuid("user_ref_id").notNull(),
 });

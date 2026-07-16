@@ -67,9 +67,7 @@ export default function EditClips({ clip, slot }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col w-full p-8 gap-4">
       <div className="flex items-center justify-between w-full">
-        <h2 className="font-bold uppercase text-indigo-500">
-          Upload Song Clip
-        </h2>
+        <h2 className="font-bold uppercase  ">Upload Song Clip</h2>
         <button
           type="button"
           onClick={() => router.back()}

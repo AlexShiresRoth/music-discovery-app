@@ -2,6 +2,8 @@ import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import "server-only";
+import { getSongClipsByIds } from "../db/song-clips";
+import { ProfileWithSongClips } from "../db/types";
 import { getSession } from "./session";
 
 export async function getProfile() {
@@ -26,7 +28,10 @@ export async function getProfile() {
 }
 
 // TODO - we should shuffle the profiles
-export async function getProfiles(startIndex: number = 0, limit: number = 100) {
+export async function getProfilesWithSongClips(
+  startIndex: number = 0,
+  limit: number = 100,
+): Promise<ProfileWithSongClips[]> {
   try {
     const profiles = await db
       .select()
@@ -34,7 +39,18 @@ export async function getProfiles(startIndex: number = 0, limit: number = 100) {
       .offset(startIndex)
       .limit(limit);
 
-    return profiles;
+    if (profiles.length === 0) {
+      return [];
+    }
+
+    return await Promise.all(
+      profiles.map(async (profile) => {
+        const songClips = await getSongClipsByIds(
+          profile.songClips.map((clip) => clip.id),
+        );
+        return { ...profile, songClips };
+      }),
+    );
   } catch (error) {
     console.error("Error fetching profiles:", error);
     return [];

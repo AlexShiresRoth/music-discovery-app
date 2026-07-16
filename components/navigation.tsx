@@ -13,9 +13,9 @@ export default async function Navigation() {
   }
 
   return (
-    <nav className="flex w-full items-center justify-center py-4 border-b border-gray-400/80 fixed top-0 left-0 right-0 z-50">
-      <div className="flex items-center gap-4 md:w-3/4 w-full">
-        <Link href="/">Home</Link>
+    <nav className="flex h-screen border-r">
+      <div className="flex flex-col gap-4 md:w-3/4 p-8">
+        <Link href="/">Discover</Link>
         <Link href="/profile">Profile</Link>
         <Link href="/logout">Logout</Link>
       </div>

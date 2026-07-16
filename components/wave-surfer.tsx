@@ -1,8 +1,10 @@
 "use client";
 
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useFeedAudio } from "@/context/feed-audio";
+import clsx from "clsx";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
@@ -18,17 +20,77 @@ type Props = {
   selectedRegion?: ClipSelection | null | undefined;
   url?: string;
   clipName?: string;
+  isActive?: boolean;
+  isOnFeed?: boolean;
 };
 
-const WAVE_COLOR = "rgba(255, 255, 255, 0.5)";
+const WAVE_COLOR = "#FACE85";
 
-function WaveSurferBasic({ url, clipName }: { url: string; clipName: string }) {
+function WaveSurferBasic({
+  url,
+  clipName,
+  isActive,
+  isOnFeed,
+}: {
+  url: string;
+  clipName: string;
+  isActive?: boolean;
+  isOnFeed?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isMuted: feedMuted, isPlaying: feedPlaying } = useFeedAudio();
+  const [localPlaying, setLocalPlaying] = useState(false);
+  const [localMuted, setLocalMuted] = useState(false);
+  const isMuted = isOnFeed ? feedMuted : localMuted;
+  const isPlaying = isOnFeed ? feedPlaying : localPlaying;
+  const isActiveRef = useRef(isActive ?? false);
+  const isMutedRef = useRef(isMuted);
+  const isPlayingRef = useRef(isPlaying);
+
+  const shouldPlay = useCallback(() => {
+    if (isOnFeed) {
+      return isActiveRef.current && isPlayingRef.current;
+    }
+    return isPlayingRef.current;
+  }, [isOnFeed]);
+
+  useEffect(() => {
+    isActiveRef.current = isActive ?? false;
+  }, [isActive]);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  const syncPlayback = useCallback(() => {
+    const ws = wsRef.current;
+    if (!ws) return;
+
+    if (!shouldPlay()) {
+      ws.pause();
+      return;
+    }
+
+    if (ws.getDuration() > 0) {
+      void ws.play();
+    }
+  }, [shouldPlay]);
 
   const playAndPause = () => {
-    wsRef.current?.playPause();
+    const ws = wsRef.current;
+    if (!ws) return;
+
+    if (ws.isPlaying()) {
+      ws.pause();
+      return;
+    }
+
+    void ws.play();
   };
 
   useEffect(() => {
@@ -38,39 +100,84 @@ function WaveSurferBasic({ url, clipName }: { url: string; clipName: string }) {
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
-      progressColor: "purple",
+      progressColor: "black",
       height: 100,
       plugins: [hover],
       url,
     });
 
+    ws.setMuted(isMutedRef.current);
     wsRef.current = ws;
 
-    const unsubPlay = ws.on("play", () => setIsPlaying(true));
-    const unsubPause = ws.on("pause", () => setIsPlaying(false));
-    const unsubFinish = ws.on("finish", () => setIsPlaying(false));
+    const unsubReady = ws.on("ready", () => {
+      if (shouldPlay()) {
+        void ws.play();
+      }
+    });
+
+    const unsubPlay = isOnFeed
+      ? () => {}
+      : ws.on("play", () => setLocalPlaying(true));
+    const unsubPause = isOnFeed
+      ? () => {}
+      : ws.on("pause", () => setLocalPlaying(false));
+    const unsubFinish = isOnFeed
+      ? () => {}
+      : ws.on("finish", () => setLocalPlaying(false));
 
     return () => {
+      unsubReady();
       unsubPlay();
       unsubPause();
       unsubFinish();
       ws.destroy();
       wsRef.current = null;
     };
-  }, [url]);
+  }, [url, shouldPlay, isOnFeed]);
+
+  useEffect(() => {
+    wsRef.current?.setMuted(isMuted);
+  }, [isMuted]);
+
+  useEffect(() => {
+    if (!isOnFeed) return;
+
+    syncPlayback();
+
+    const ws = wsRef.current;
+    if (!ws || ws.getDuration() > 0) return;
+
+    const unsubReady = ws.on("ready", syncPlayback);
+    return () => unsubReady();
+  }, [isOnFeed, isActive, isPlaying, syncPlayback]);
 
   return (
-    <div className="flex flex-col gap-2 border border-gray-400/40 rounded-md p-4">
-      <div ref={containerRef} className="w-full" />
-      <div className="flex items-center gap-2 border-t border-gray-400/40 pt-2 text-sm">
-        <button
-          type="button"
-          onClick={playAndPause}
-          className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
-        >
-          {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-        </button>
-        <p>{clipName}</p>
+    <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
+      <div ref={containerRef} className="w-full min-w-0" />
+      <div className="flex items-center gap-2 border-t pt-2 text-sm">
+        {!isOnFeed && (
+          <>
+            <button
+              type="button"
+              onClick={playAndPause}
+              className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
+              aria-label={localPlaying ? "Pause clip" : "Play clip"}
+            >
+              {localPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setLocalMuted((muted) => !muted)}
+              className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors"
+              aria-label={localMuted ? "Unmute clip" : "Mute clip"}
+            >
+              {localMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+          </>
+        )}
+        <p className={clsx("text-sm truncate", isOnFeed && "text-xl")}>
+          {clipName}
+        </p>
       </div>
     </div>
   );
@@ -208,11 +315,11 @@ function WaveSurferWithRegions({
   }, [file]);
 
   return (
-    <div className="flex flex-col gap-2 border border-gray-400/40 rounded-md p-4">
+    <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
       <p className="text-sm text-gray-400/80">
         Drag the region to select up to {MAX_SONG_CLIP_DURATION_SECONDS}s
       </p>
-      <div ref={containerRef} className="w-full" />
+      <div ref={containerRef} className="w-full min-w-0" />
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -234,9 +341,18 @@ export default function WaveSurferUI({
   selectedRegion,
   url,
   clipName,
+  isActive,
+  isOnFeed,
 }: Props) {
   if (url) {
-    return <WaveSurferBasic url={url} clipName={clipName || ""} />;
+    return (
+      <WaveSurferBasic
+        isOnFeed={isOnFeed}
+        url={url}
+        clipName={clipName || ""}
+        isActive={isActive}
+      />
+    );
   }
 
   if (!file || !onSelectionChange) return null;
