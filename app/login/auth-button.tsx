@@ -1,14 +1,16 @@
 "use client";
+
 import { createClient } from "@/lib/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
 async function signInWithProvider(provider: Provider) {
+  const redirectTo = `${window.location.origin}/auth/callback`;
   return await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: "/profile",
+      redirectTo,
     },
   });
 }

@@ -60,7 +60,9 @@ export default function NavContent({ user }: Props) {
           {!user ? (
             <Link href="/login">Login</Link>
           ) : (
-            <Link href="/logout">Logout</Link>
+            // Full navigation so auth cookies clear and the nav re-renders
+            // with the signed-out session (Link soft-nav can keep a stale layout).
+            <a href="/logout">Logout</a>
           )}
         </div>
       </div>
