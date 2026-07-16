@@ -30,11 +30,11 @@ export default async function Profile({ profile, clips }: Props) {
             <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
           )}
         </header>
-        <div className="w-full flex gap-10 h-full">
-          <div className="min-h-screen relative block">
+        <div className="w-full flex md:flex-row flex-col gap-10 md:h-full">
+          <div className="md:min-h-screen relative block">
             <div className="sticky top-0">
               {profile.imageUrl && (
-                <div className="flex flex-col gap-8 items-center relative w-sm h-75 border rounded">
+                <div className="flex flex-col gap-8 items-center relative md:w-sm w-full h-75 border rounded">
                   <Image
                     src={profile.imageUrl}
                     alt={profile.profileName ?? "Image"}

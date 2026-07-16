@@ -36,11 +36,7 @@ function ClipSlotView({
           href={`/profile/edit/song-clips/${slotNumber}`}
           className="hover:cursor-pointer p-1 rounded transition-colors"
         >
-          {clip ? (
-            <Edit size={14} className="text-white" />
-          ) : (
-            <Upload size={14} className="text-white" />
-          )}
+          {clip ? <Edit size={14} /> : <Upload size={14} />}
         </Link>
       </div>
       {clip ? (
@@ -71,7 +67,7 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
           <p className="text-sm ">Verify your account to upload song clips.</p>
         )}
 
-        <div className="flex gap-4 w-full">
+        <div className="flex gap-4 w-full md:flex-row flex-col">
           {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
             const clip = clips.find((clip) => clip.slot === index);
             return (

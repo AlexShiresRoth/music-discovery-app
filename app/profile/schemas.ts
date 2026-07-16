@@ -97,6 +97,12 @@ const ProfileFormSchema: Record<
     placeholder: "SoundCloud",
     required: false,
   },
+  bandcamp: {
+    name: "bandcamp",
+    label: "Bandcamp",
+    placeholder: "Bandcamp",
+    required: false,
+  },
   profileName: {
     name: "profileName",
     label: "Display Name",

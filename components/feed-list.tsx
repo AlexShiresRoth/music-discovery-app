@@ -46,7 +46,7 @@ export default function FeedList({
   });
   return (
     <FeedAudioProvider>
-      <main className="w-[calc(100%-256px)] flex flex-col gap-4 items-center">
+      <main className="flex flex-col gap-4 items-center">
         <div
           ref={scrollRef}
           className="flex flex-col w-full gap-2 snap-y snap-mandatory overflow-y-scroll h-screen"

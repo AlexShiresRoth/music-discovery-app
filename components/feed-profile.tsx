@@ -54,10 +54,10 @@ export default function FeedProfile({
               {profile.city} - {profile.state}
             </p>
           </div>
-          <h2 className="text-7xl font-bold text-black uppercase">
+          <h2 className="text-4xl md:text-7xl font-bold text-black uppercase">
             {profile.profileName}
           </h2>
-          <div className="flex flex-wrap items-center gap-y-1 mt-4 text-sm uppercase tracking-wide">
+          <div className="flex flex-wrap items-center gap-y-1 mt-4 md:text-sm text-xs uppercase tracking-wide">
             {profileLinks.map((link, index) => (
               <span key={link.href} className="inline-flex items-center">
                 {index > 0 && (
@@ -102,6 +102,7 @@ export default function FeedProfile({
               setClipIndex(index);
               scrollToClip(index);
             }}
+            className="hover:cursor-pointer hover:scale-110 transition-all duration-300"
           >
             <span
               className={clsx(
