@@ -25,8 +25,8 @@ export default function FeedAudioProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   return (
     <FeedAudioContext.Provider

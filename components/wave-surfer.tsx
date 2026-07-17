@@ -129,7 +129,6 @@ function WaveSurferBasic({
       ? () => {}
       : ws.on("finish", () => setLocalPlaying(false));
 
-    setIsLoading(false);
     return () => {
       unsubReady();
       unsubPlay();
@@ -152,16 +151,20 @@ function WaveSurferBasic({
     const ws = wsRef.current;
     if (!ws || ws.getDuration() > 0) return;
 
-    const unsubReady = ws.on("ready", syncPlayback);
+    const unsubReady = ws.on("ready", () => {
+      syncPlayback();
+      setIsLoading(false);
+    });
     return () => unsubReady();
   }, [isOnFeed, isActive, isPlaying, syncPlayback]);
 
   // TODO - add a loading state to the wave surfer
+  // TODO - add modal to play button on first visitx
   return (
     <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
-      <div ref={containerRef} className="w-full min-w-0">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
+      <div ref={containerRef} className="w-full min-w-0 min-h-24 md:min-h-32">
+        {isLoading && !wsRef ? (
+          <div className="flex items-center justify-center h-32">
             <Loader2 className="animate-spin" size={32} />
           </div>
         ) : (

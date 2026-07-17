@@ -19,7 +19,7 @@ export default function SelectInput({
     <div className="flex flex-col">
       {label && (
         <div className="-mb-4 flex relative">
-          <label htmlFor={name} className="ml-4 p-2 bg-black text-sm">
+          <label htmlFor={name} className="ml-4 p-2 text-sm">
             {label}
           </label>
         </div>

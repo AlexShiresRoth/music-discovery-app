@@ -165,7 +165,7 @@ describe("POST /api/profile/edit", () => {
     );
   });
 
-  it("preserves existing songClips on update", async () => {
+  it("does not overwrite songClips on update", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-1" } },
       error: null,
@@ -176,9 +176,9 @@ describe("POST /api/profile/edit", () => {
 
     await POST(makeRequest(validUpdateData));
 
-    expect(mockSet).toHaveBeenCalledWith(
-      expect.objectContaining({ songClips: ["clip-1"] }),
-    );
+    expect(mockSet).toHaveBeenCalled();
+    const payload = mockSet.mock.calls[0][0];
+    expect(payload).not.toHaveProperty("songClips");
   });
 
   it("returns 500 when the database update fails", async () => {

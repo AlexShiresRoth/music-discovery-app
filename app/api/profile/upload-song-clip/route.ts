@@ -2,6 +2,7 @@ import { trimAudio } from "@/lib/audio/song-clip-duration";
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
+import { SongClipWithSlot } from "@/lib/db/types";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
@@ -110,7 +111,11 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient();
   const bucket = env.SONG_CLIPS_BUCKET_NAME || "";
-  const newClipIds = [...profile.songClips];
+  const clipMap = new Map<number, SongClipWithSlot>();
+
+  for (const clip of profile.songClips) {
+    clipMap.set(clip.slot, clip);
+  }
 
   let meta: ClipMetadata;
   try {
@@ -188,7 +193,7 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    newClipIds.push({ slot: meta.index, id: String(clip.id) });
+    clipMap.set(meta.index, { slot: clip.slot, id: String(clip.id) });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -206,7 +211,7 @@ export async function POST(request: Request) {
 
   await db
     .update(profilesSchema)
-    .set({ songClips: newClipIds })
+    .set({ songClips: [...clipMap.values()] })
     .where(eq(profilesSchema.userRefId, user.id));
 
   return NextResponse.json({

@@ -3,10 +3,10 @@ import { ToastContext } from "@/context/toast";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockBack = vi.fn();
+const mockPush = vi.fn();
 const mockRefresh = vi.fn();
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ back: mockBack, refresh: mockRefresh }),
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));
 
 const baseProps = {
@@ -100,16 +100,18 @@ describe("SocialSection", () => {
 
     it("shows the Save button and no Edit link", () => {
       const { container } = renderWithToast({ mode: "Edit" });
-      expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
+      const saveButton = screen.getByRole("button", { name: "Save" });
+      expect(saveButton).toBeDefined();
+      expect(saveButton.className).toContain("bg-amber-500");
       expect(
         container.querySelector('a[href="/profile/edit/social"]'),
       ).toBeNull();
     });
 
-    it("calls router.back when the close button is clicked", () => {
+    it("navigates to /profile when the close button is clicked", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       fireEvent.click(container.querySelector('button[type="button"]')!);
-      expect(mockBack).toHaveBeenCalled();
+      expect(mockPush).toHaveBeenCalledWith("/profile");
     });
 
     it("posts to /api/profile/edit on submit", async () => {
@@ -132,7 +134,7 @@ describe("SocialSection", () => {
       });
     });
 
-    it("shows success toast and calls refresh + back on success", async () => {
+    it("shows success toast and navigates to /profile on success", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -148,7 +150,7 @@ describe("SocialSection", () => {
           type: "success",
         });
         expect(mockRefresh).toHaveBeenCalled();
-        expect(mockBack).toHaveBeenCalled();
+        expect(mockPush).toHaveBeenCalledWith("/profile");
       });
     });
 

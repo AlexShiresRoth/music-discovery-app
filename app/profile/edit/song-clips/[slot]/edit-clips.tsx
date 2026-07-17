@@ -53,7 +53,7 @@ export default function EditClips({ clip, slot }: Props) {
           type: "success",
         });
         router.refresh();
-        router.back();
+        router.push("/profile");
       }
 
       setIsFormPending(false);
@@ -71,7 +71,7 @@ export default function EditClips({ clip, slot }: Props) {
         <div>
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => router.push("/profile")}
             className="text-sm text-gray-400/80 hover:cursor-pointer hover:text-gray-500 transition-colors"
           >
             Back
@@ -96,7 +96,7 @@ export default function EditClips({ clip, slot }: Props) {
       <button
         type="submit"
         disabled={isFormPending}
-        className="self-end px-4 py-2 rounded bg-black text-white uppercase text-black font-bold hover:cursor-pointer transition-colors disabled:bg-indigo-500/30"
+        className="self-end px-4 py-2 rounded bg-amber-500 uppercase font-bold hover:cursor-pointer hover:bg-amber-600 transition-colors disabled:bg-amber-500/30"
       >
         {isFormPending ? "Uploading" : `Save`}
       </button>

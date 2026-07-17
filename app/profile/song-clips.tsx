@@ -52,7 +52,7 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
   const filledSlots = clips.length;
 
   return (
-    <div className="flex flex-col w-full gap-4">
+    <div className="flex flex-col w-full gap-4 relative z-0">
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="font-bold uppercase  ">Song Clips</h2>
