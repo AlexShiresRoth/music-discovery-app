@@ -14,7 +14,7 @@ export default function ChooseProfile() {
         </header>
         <Link
           href="/profile/create"
-          className="bg-indigo-500 text-black uppercase px-4 py-2 rounded font-bold hover:bg-indigo-600 transition-all hover:cursor-pointer"
+          className="bg-amber-500 text-black uppercase px-4 py-2 rounded font-bold hover:bg-amber-600 transition-all hover:cursor-pointer"
         >
           Create Profile
         </Link>

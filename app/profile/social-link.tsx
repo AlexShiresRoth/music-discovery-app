@@ -13,7 +13,7 @@ export default function SocialLink({
   isActive: boolean;
 }) {
   return (
-    <div className="flex gap-2 items-center justify-between border-b pb-4">
+    <div className="flex gap-2 md:items-center md:flex-row flex-col justify-between border-b pb-4">
       <div className="flex flex-col gap-2">
         <PreHeader>{platform}</PreHeader>
         <div className="flex justify-start w-full">
@@ -25,7 +25,7 @@ export default function SocialLink({
         </div>
       </div>
       {link && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-start gap-2">
           <PreHeader>Show</PreHeader>
           <ToggleButton isActive={isActive} />
         </div>

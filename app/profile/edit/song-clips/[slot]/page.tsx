@@ -1,5 +1,6 @@
 import { getProfile } from "@/lib/auth";
 import { getSongClipsByIds } from "@/lib/db/song-clips";
+import EditWrapper from "../../edit-wrapper";
 import EditClips from "./edit-clips";
 
 type Props = {
@@ -24,14 +25,12 @@ export default async function EditSongClips({ params }: Props) {
   const clip = clips.find((clip) => clip.slot === slotNumber);
 
   return (
-    <div className="w-full flex flex-col justify-center p-8">
-      <div className="md:w-1/2 py-6">
-        <EditClips
-          clip={clip}
-          isVerified={profile.isVerified ?? false}
-          slot={slotNumber}
-        />
-      </div>
-    </div>
+    <EditWrapper>
+      <EditClips
+        clip={clip}
+        isVerified={profile.isVerified ?? false}
+        slot={slotNumber}
+      />
+    </EditWrapper>
   );
 }

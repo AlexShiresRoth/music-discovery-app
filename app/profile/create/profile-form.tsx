@@ -144,7 +144,7 @@ export default function ProfileForm() {
         <button
           disabled={pending}
           type="submit"
-          className="self-end px-4 py-2 bg-indigo-500 text-black rounded-md uppercase font-bold hover:bg-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
+          className="self-end px-4 py-2 bg-amber-500 text-black rounded-md uppercase font-bold hover:bg-amber-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
         >
           {pending ? "Creating Profile..." : "Create Profile"}
         </button>

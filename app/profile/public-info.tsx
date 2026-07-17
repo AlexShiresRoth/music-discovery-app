@@ -90,7 +90,7 @@ export default function PublicInfo({
       if (success) {
         setToast({ message: "Profile updated successfully", type: "success" });
         router.refresh();
-        router.back();
+        router.push("/profile");
       }
 
       setIsFormPending(false);
@@ -103,7 +103,7 @@ export default function PublicInfo({
 
   return (
     <ViewOrEditForm mode={mode} handleSubmit={handleSubmit}>
-      <div className="flex flex-col gap-10 w-full border rounded-md p-8">
+      <div className="flex flex-col gap-10 w-full border rounded-md p-4 md:p-8 bg-background">
         <div className="flex items-center justify-between w-full">
           <h2 className="font-bold uppercase  ">Public Info</h2>
           {!isEdit && (
@@ -117,7 +117,7 @@ export default function PublicInfo({
           {isEdit && (
             <button
               className="flex p-1 rounded items-center gap-1 hover:cursor-pointer hover:bg-white/10 transition-all"
-              onClick={() => router.back()}
+              onClick={() => router.push("/profile")}
               type="button"
             >
               <X size={20} />
@@ -234,7 +234,7 @@ export default function PublicInfo({
           <button
             type="submit"
             disabled={isFormPending}
-            className="self-end px-4 py-2 rounded bg-indigo-500 uppercase text-black font-bold hover:cursor-pointer hover:bg-indigo-600 transition-colors disabled:bg-indigo-500/30"
+            className="self-end px-4 py-2 rounded bg-amber-500 uppercase text-black font-bold hover:cursor-pointer hover:bg-amber-600 transition-colors disabled:bg-amber-500/30"
           >
             {isFormPending ? "Saving" : "Save"}
           </button>

@@ -15,7 +15,7 @@ export default function TextArea({
     <div className="flex flex-col gap-2">
       {label && (
         <div className="-mb-6 flex relative">
-          <label htmlFor={name} className="ml-4 p-2 bg-black text-sm">
+          <label htmlFor={name} className="ml-4 p-2 text-sm">
             {label}
           </label>
         </div>

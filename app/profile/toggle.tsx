@@ -13,9 +13,9 @@ export default function ToggleButton({ isActive }: { isActive: boolean }) {
   return (
     <button
       className={clsx(
-        "flex relative w-full h-5.5 items-center justify-center rounded-full hover:cursor-pointer transition-all duration-300",
+        "flex relative w-1/8 md:w-full h-5.5 items-center justify-center rounded-full hover:cursor-pointer transition-all duration-300",
         {
-          "bg-indigo-500/60 border border-indigo-500/80": active,
+          "bg-amber-500/60 border border-amber-500/80": active,
           "bg-gray-500/10 border": !active,
         },
       )}
