@@ -100,7 +100,9 @@ describe("SocialSection", () => {
 
     it("shows the Save button and no Edit link", () => {
       const { container } = renderWithToast({ mode: "Edit" });
-      expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
+      const saveButton = screen.getByRole("button", { name: "Save" });
+      expect(saveButton).toBeDefined();
+      expect(saveButton.className).toContain("bg-amber-500");
       expect(
         container.querySelector('a[href="/profile/edit/social"]'),
       ).toBeNull();
@@ -132,7 +134,7 @@ describe("SocialSection", () => {
       });
     });
 
-    it("shows success toast and calls refresh + back on success", async () => {
+    it("shows success toast and navigates to /profile on success", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),

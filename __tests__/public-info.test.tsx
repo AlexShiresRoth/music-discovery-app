@@ -99,6 +99,13 @@ describe("PublicInfo", () => {
       ).toBeNull();
     });
 
+    it("styles the Save button with amber background", () => {
+      renderWithToast({ mode: "Edit" });
+      expect(screen.getByRole("button", { name: "Save" }).className).toContain(
+        "bg-amber-500",
+      );
+    });
+
     it("navigates to /profile when the close button is clicked", () => {
       const { container } = renderWithToast({ mode: "Edit" });
       fireEvent.click(container.querySelector('button[type="button"]')!);
@@ -125,7 +132,7 @@ describe("PublicInfo", () => {
       });
     });
 
-    it("shows success toast and calls refresh + back on success", async () => {
+    it("shows success toast and navigates to /profile on success", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
