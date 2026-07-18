@@ -50,9 +50,10 @@ function extensionForFile(file: File) {
 }
 
 async function writeTempFile(file: File, suffix: string) {
-  const path = join(tmpdir(), `clip-${randomUUID()}${suffix}`);
+  const dir = /* turbopackIgnore: true */ tmpdir();
+  const path = join(dir, `clip-${randomUUID()}${suffix}`);
   const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path, buffer);
+  await fs.writeFile(/* turbopackIgnore: true */ path, buffer);
   return path;
 }
 
@@ -61,7 +62,7 @@ async function cleanup(...paths: Array<string | null>) {
     paths.map(async (path) => {
       if (!path) return;
       try {
-        await fs.unlink(path);
+        await fs.unlink(/* turbopackIgnore: true */ path);
       } catch {
         // Ignore missing temp files.
       }
@@ -69,7 +70,6 @@ async function cleanup(...paths: Array<string | null>) {
   );
 }
 
-// TODO - this works locally but not on Vercel/supabase. NEed to handle this
 export async function POST(request: Request) {
   const supabase = await createServerClient();
 
@@ -152,7 +152,8 @@ export async function POST(request: Request) {
 
   try {
     inputPath = await writeTempFile(file, `.${extensionForFile(file)}`);
-    outputPath = join(tmpdir(), `clip-trimmed-${randomUUID()}.mp3`);
+    const tempDir = /* turbopackIgnore: true */ tmpdir();
+    outputPath = join(tempDir, `clip-trimmed-${randomUUID()}.mp3`);
 
     await trimAudio({
       inputPath,
@@ -161,7 +162,9 @@ export async function POST(request: Request) {
       end,
     });
 
-    const trimmedBuffer = await fs.readFile(outputPath);
+    const trimmedBuffer = await fs.readFile(
+      /* turbopackIgnore: true */ outputPath,
+    );
     const safeTitle = title.replace(/[/\\]/g, "_");
     const storagePath = `clips/${user.id}/${Date.now()}-${meta.index}-${safeTitle}.mp3`;
 
