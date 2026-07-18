@@ -1,5 +1,7 @@
-import ffmpegPath from "ffmpeg-static";
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 type TrimAudioOptions = {
   inputPath: string;
@@ -8,12 +10,20 @@ type TrimAudioOptions = {
   end: number;
 };
 
+function getFfmpegPath(): string | null {
+  // Resolve at call time so Turbopack doesn't NFT-trace the binary via a
+  // static import (that was pulling next.config + the whole project in).
+  const ffmpegPath = require("ffmpeg-static") as string | null;
+  return ffmpegPath;
+}
+
 export function trimAudio({
   inputPath,
   outputPath,
   start,
   end,
 }: TrimAudioOptions): Promise<void> {
+  const ffmpegPath = getFfmpegPath();
   if (!ffmpegPath) {
     return Promise.reject(new Error("FFmpeg binary is unavailable"));
   }
@@ -31,7 +41,7 @@ export function trimAudio({
   }
 
   return new Promise((resolve, reject) => {
-    const process = spawn(ffmpegPath || "", [
+    const process = spawn(ffmpegPath, [
       "-y",
 
       // Seek to the selected WaveSurfer region.

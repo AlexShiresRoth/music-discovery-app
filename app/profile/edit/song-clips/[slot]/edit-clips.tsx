@@ -38,6 +38,13 @@ export default function EditClips({ clip, slot }: Props) {
 
       const { error, success } = await response.json();
 
+      if (response.status === 413) {
+        return setToast({
+          message: "File is too large",
+          type: "error",
+        });
+      }
+
       if (!response.ok) {
         setToast({
           message: error || "Failed to upload song clips",
