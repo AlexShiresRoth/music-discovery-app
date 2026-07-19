@@ -1,14 +1,9 @@
-import { trimAudio } from "@/lib/audio/song-clip-duration";
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { SongClipWithSlot } from "@/lib/db/types";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { env } from "process";
 
 export const runtime = "nodejs";
@@ -34,40 +29,6 @@ type ClipMetadata = {
 
 function isAllowedAudio(file: File) {
   return ALLOWED_AUDIO_TYPES.has(file.type) || file.type.startsWith("audio/");
-}
-
-function extensionForFile(file: File) {
-  const fromName = file.name.split(".").pop();
-  if (fromName && fromName !== file.name) {
-    return fromName.toLowerCase();
-  }
-
-  if (file.type.includes("wav")) return "wav";
-  if (file.type.includes("mp4") || file.type.includes("m4a")) return "m4a";
-  if (file.type.includes("ogg")) return "ogg";
-  if (file.type.includes("webm")) return "webm";
-  return "mp3";
-}
-
-async function writeTempFile(file: File, suffix: string) {
-  const dir = /* turbopackIgnore: true */ tmpdir();
-  const path = join(dir, `clip-${randomUUID()}${suffix}`);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(/* turbopackIgnore: true */ path, buffer);
-  return path;
-}
-
-async function cleanup(...paths: Array<string | null>) {
-  await Promise.all(
-    paths.map(async (path) => {
-      if (!path) return;
-      try {
-        await fs.unlink(/* turbopackIgnore: true */ path);
-      } catch {
-        // Ignore missing temp files.
-      }
-    }),
-  );
 }
 
 export async function POST(request: Request) {
@@ -146,36 +107,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const { start, end } = meta.selectedRegion;
-  let inputPath: string | null = null;
-  let outputPath: string | null = null;
-
   try {
-    inputPath = await writeTempFile(file, `.${extensionForFile(file)}`);
-    const tempDir = /* turbopackIgnore: true */ tmpdir();
-    outputPath = join(tempDir, `clip-trimmed-${randomUUID()}.mp3`);
-
-    await trimAudio({
-      inputPath,
-      outputPath,
-      start,
-      end,
-    });
-
-    const trimmedBuffer = await fs.readFile(
-      /* turbopackIgnore: true */ outputPath,
-    );
     const safeTitle = title.replace(/[/\\]/g, "_");
-    const storagePath = `clips/${user.id}/${Date.now()}-${meta.index}-${safeTitle}.mp3`;
+    const storagePath = `clips/${user.id}/${Date.now()}-${meta.index}-${safeTitle}`;
 
     const { error } = await admin.storage
       .from(bucket)
-      .upload(storagePath, trimmedBuffer, {
+      .upload(storagePath, file, {
         upsert: true,
         contentType: "audio/mpeg",
       });
 
     if (error) {
+      console.error(error.message);
       return NextResponse.json(
         { error: "Failed to upload audio file" },
         { status: 500 },
@@ -208,8 +152,6 @@ export async function POST(request: Request) {
       },
       { status: 400 },
     );
-  } finally {
-    await cleanup(inputPath, outputPath);
   }
 
   await db

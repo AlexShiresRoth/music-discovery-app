@@ -1,6 +1,7 @@
 "use client";
 
 import { ToastContext } from "@/context/toast";
+import { processAudioForUpload } from "@/lib/audio/trim-clip";
 import type { SongClip } from "@/lib/db/types";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
@@ -24,12 +25,47 @@ export default function EditClips({ clip, slot }: Props) {
     clip ? songClipToDraft(clip) : emptySlot(),
   );
 
+  // TODO - we may want to convert to MP3 instead of WAV
+  // can use breazystack/lamejs package possibly
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       setIsFormPending(true);
-      const formData = buildClipUploadFormData(draft, slot);
+
+      if (!draft.file || !draft.selectedRegion) {
+        setToast({
+          message: "Select a file and clip region before uploading",
+          type: "error",
+        });
+        setIsFormPending(false);
+        return;
+      }
+
+      const trimmedWAVFile = await processAudioForUpload(
+        draft.file,
+        draft.selectedRegion.start,
+        draft.selectedRegion.end,
+      );
+
+      const draftWithClip: ClipSlotDraft = {
+        ...draft,
+        file: trimmedWAVFile,
+      };
+
+      const mb = trimmedWAVFile.size / 1024 ** 2;
+
+      // vercel limit is 4.5MB
+      if (mb > 4.5) {
+        setToast({
+          message: "File is too large",
+          type: "error",
+        });
+        setIsFormPending(false);
+        return;
+      }
+
+      const formData = buildClipUploadFormData(draftWithClip, slot);
 
       const response = await fetch("/api/profile/upload-song-clip", {
         method: "POST",
@@ -39,10 +75,12 @@ export default function EditClips({ clip, slot }: Props) {
       const { error, success } = await response.json();
 
       if (response.status === 413) {
-        return setToast({
+        setToast({
           message: "File is too large",
           type: "error",
         });
+        setIsFormPending(false);
+        return;
       }
 
       if (!response.ok) {

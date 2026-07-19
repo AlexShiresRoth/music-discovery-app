@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockGetUser = vi.fn();
 
 const {
-  mockTrimAudio,
   mockSelect,
   mockFrom,
   mockWhere,
@@ -19,7 +18,6 @@ const {
   mockUpload,
   mockGetPublicUrl,
 } = vi.hoisted(() => ({
-  mockTrimAudio: vi.fn(),
   mockSelect: vi.fn(),
   mockFrom: vi.fn(),
   mockWhere: vi.fn(),
@@ -40,10 +38,6 @@ vi.mock("@/lib/auth", () => ({
     auth: { getUser: mockGetUser },
   })),
   createAdminClient: vi.fn(() => ({ storage: mockStorage })),
-}));
-
-vi.mock("@/lib/audio/song-clip-duration", () => ({
-  trimAudio: mockTrimAudio,
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -68,7 +62,7 @@ const mockStorage = {
 };
 
 const PUBLIC_URL =
-  "https://project.supabase.co/storage/v1/object/public/song-clips/clips/user-1/clip.mp3";
+  "https://project.supabase.co/storage/v1/object/public/song-clips/clips/user-1/clip.wav";
 
 const verifiedProfile = {
   id: 1,
@@ -83,8 +77,9 @@ const defaultMetadata = {
   selectedRegion: { start: 0, end: 15 },
 };
 
-const testAudioFile = new File(["audio-data"], "track.mp3", {
-  type: "audio/mpeg",
+/** Client already trimmed/encoded this before upload. */
+const testAudioFile = new File(["wav-bytes"], "track-clip.wav", {
+  type: "audio/wav",
 });
 
 function makeUploadRequest(options?: {
@@ -127,11 +122,6 @@ describe("POST /api/profile/upload-song-clip", () => {
     mockWhere.mockReturnValue({ limit: mockLimit });
     mockFrom.mockReturnValue({ where: mockWhere });
     mockSelect.mockReturnValue({ from: mockFrom });
-
-    mockTrimAudio.mockImplementation(async ({ outputPath }) => {
-      const { promises: fs } = await import("node:fs");
-      await fs.writeFile(outputPath, Buffer.from("trimmed-audio"));
-    });
 
     mockUpload.mockResolvedValue({ error: null });
     mockGetPublicUrl.mockReturnValue({ data: { publicUrl: PUBLIC_URL } });
@@ -245,19 +235,6 @@ describe("POST /api/profile/upload-song-clip", () => {
     expect(body.error).toMatch(/^Select a clip region for /);
   });
 
-  it("returns 400 when trimming the clip fails", async () => {
-    mockTrimAudio.mockRejectedValue(
-      new Error("Clip must be between 5 and 30 seconds"),
-    );
-
-    const response = await POST(makeUploadRequest());
-    const body = await response.json();
-
-    expect(response.status).toBe(400);
-    expect(body.error).toBe("Clip must be between 5 and 30 seconds");
-    expect(mockUpload).not.toHaveBeenCalled();
-  });
-
   it("returns 500 when storage upload fails", async () => {
     mockUpload.mockResolvedValue({ error: { message: "Storage full" } });
 
@@ -269,24 +246,22 @@ describe("POST /api/profile/upload-song-clip", () => {
     expect(mockInsert).not.toHaveBeenCalled();
   });
 
-  it("uploads the trimmed clip and updates the profile", async () => {
+  it("uploads the pre-trimmed client clip and updates the profile", async () => {
     const response = await POST(makeUploadRequest());
     const body = await response.json();
 
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
 
-    expect(mockTrimAudio).toHaveBeenCalledWith(
-      expect.objectContaining({
-        start: 0,
-        end: 15,
-      }),
-    );
-
-    const [uploadPath, uploadBuffer, uploadOpts] = mockUpload.mock.calls[0];
+    const [uploadPath, uploadFile, uploadOpts] = mockUpload.mock.calls[0] as [
+      string,
+      File,
+      { upsert: boolean; contentType: string },
+    ];
     expect(uploadPath).toMatch(/^clips\/user-1\//);
-    expect(uploadPath).toContain("-0-Test Track.mp3");
-    expect(uploadBuffer).toEqual(Buffer.from("trimmed-audio"));
+    expect(uploadPath).toContain("-0-Test Track");
+    expect(uploadFile.type).toBe("audio/wav");
+    expect(uploadFile.size).toBe(testAudioFile.size);
     expect(uploadOpts).toEqual({
       upsert: true,
       contentType: "audio/mpeg",
@@ -330,7 +305,7 @@ describe("POST /api/profile/upload-song-clip", () => {
 
     expect(uploadPath).toMatch(/^clips\/user-1\//);
     expect(filename).not.toMatch(/[/\\]/);
-    expect(filename).toContain(".._.._.._evil_track.mp3");
+    expect(filename).toContain(".._.._.._evil_track");
   });
 
   it("scopes the upload path to the authenticated user's ID", async () => {

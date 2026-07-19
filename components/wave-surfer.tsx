@@ -26,6 +26,7 @@ type Props = {
 };
 
 const WAVE_COLOR = "#FACE85";
+const PROGRESS_COLOR = "black";
 
 function WaveSurferBasic({
   url,
@@ -104,7 +105,7 @@ function WaveSurferBasic({
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
-      progressColor: "black",
+      progressColor: PROGRESS_COLOR,
       height: 100,
       plugins: [hover],
       url,
@@ -261,7 +262,7 @@ function WaveSurferWithRegions({
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
-      progressColor: "purple",
+      progressColor: PROGRESS_COLOR,
       height: 100,
       plugins: [regions, hover],
     });
@@ -270,7 +271,7 @@ function WaveSurferWithRegions({
     regionsRef.current = regions;
 
     const disableDragSelection = regions.enableDragSelection({
-      color: "rgba(255, 165, 0, 0.35)",
+      color: "rgba(255, 255, 255, 0.35)",
       minLength: 5,
       maxLength: MAX_SONG_CLIP_DURATION_SECONDS,
     });
@@ -328,7 +329,7 @@ function WaveSurferWithRegions({
         end: existing?.end ?? end,
         resize: true,
         drag: true,
-        color: "rgba(99,102,241,0.5)",
+        color: "rgba(255, 255, 255, 0.5)",
         minLength: 5,
         maxLength: MAX_SONG_CLIP_DURATION_SECONDS,
       });
