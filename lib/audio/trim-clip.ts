@@ -9,7 +9,7 @@ function clamp(value: number, min: number, max: number) {
  * @param end
  * @returns start and end sample indexes based on start and end seconds from selection
  */
-async function convertTimeToSampleIndexes(
+export async function convertTimeToSampleIndexes(
   audioBuffer: AudioBuffer,
   start: number,
   end: number,
@@ -35,7 +35,7 @@ async function convertTimeToSampleIndexes(
  * @param endSeconds
  * @returns trimmed audio buffer based on start and end seconds from selection
  */
-function sliceAudioBuffer(
+export function sliceAudioBuffer(
   originalBuffer: AudioBuffer,
   startSample: number,
   endSample: number,
@@ -68,7 +68,10 @@ function sliceAudioBuffer(
  * We downmix to mono 16-bit PCM so a ~30s clip stays well under Vercel's
  * 4.5MB body limit (stereo 16-bit 44.1kHz × 30s is ~5MB).
  */
-function encodeAudioBuffer(audioBuffer: AudioBuffer, fileName: string): File {
+export function encodeAudioBuffer(
+  audioBuffer: AudioBuffer,
+  fileName: string,
+): File {
   const sampleRate = audioBuffer.sampleRate;
   const frameCount = audioBuffer.length;
   const channels = audioBuffer.numberOfChannels;
