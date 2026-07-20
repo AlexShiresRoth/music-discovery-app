@@ -8,7 +8,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { SongClipWithSlot } from "./types";
+import { SocialField, SongClipWithSlot } from "./types";
 
 export const songClipsSchema = pgTable("song_clips", {
   id: serial("id").primaryKey(),
@@ -35,13 +35,37 @@ export const profilesSchema = pgTable("profiles", {
   city: text("city"),
   state: text("state"),
   country: text("country"),
-  website: text("website"),
-  facebook: text("facebook"),
-  instagram: text("instagram"),
-  tiktok: text("tiktok"),
-  spotify: text("spotify"),
-  appleMusic: text("apple_music"),
-  soundcloud: text("soundcloud"),
-  bandcamp: text("bandcamp"),
+  website: jsonb("website")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  facebook: jsonb("facebook")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  instagram: jsonb("instagram")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  tiktok: jsonb("tiktok")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  spotify: jsonb("spotify")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  appleMusic: jsonb("apple_music")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  soundcloud: jsonb("soundcloud")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
+  bandcamp: jsonb("bandcamp")
+    .$type<SocialField>()
+    .notNull()
+    .default({ url: "", show: true }),
   userRefId: uuid("user_ref_id").notNull(),
 });

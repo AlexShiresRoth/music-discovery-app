@@ -6,6 +6,7 @@ import InstagramIcon from "@/icons/instagram";
 import SocialSoundcloudIcon from "@/icons/soundcloud";
 import SocialSpotifyIcon from "@/icons/spotify";
 import TikTokIcon from "@/icons/tiktok";
+import type { SocialField as SocialFieldType } from "@/lib/db/types";
 import clsx from "clsx";
 import { Globe, Pencil, X } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +17,24 @@ import SocialField from "./social-field";
 import SocialLink from "./social-link";
 
 type Mode = "Edit" | "View";
+
+type SocialKey =
+  | "website"
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "spotify"
+  | "appleMusic"
+  | "soundcloud"
+  | "bandcamp";
+
+type SocialSectionProps = Partial<
+  Pick<ProfileFormSchemaWithoutId, SocialKey>
+> & {
+  mode?: Mode;
+};
+
+const EMPTY_SOCIAL: SocialFieldType = { url: "", show: true };
 
 const SOCIAL_FIELDS = [
   {
@@ -56,16 +75,16 @@ const SOCIAL_FIELDS = [
 ];
 
 export default function SocialSection({
-  website = "",
-  facebook = "",
-  instagram = "",
-  tiktok = "",
-  spotify = "",
-  appleMusic = "",
-  soundcloud = "",
-  bandcamp = "",
+  website,
+  facebook,
+  instagram,
+  tiktok,
+  spotify,
+  appleMusic,
+  soundcloud,
+  bandcamp,
   mode = "View",
-}: ProfileFormSchemaWithoutId & { mode?: Mode }) {
+}: SocialSectionProps) {
   const isEdit = mode === "Edit";
   const fields = profileFormFields;
   const router = useRouter();
@@ -73,14 +92,14 @@ export default function SocialSection({
   const [isFormPending, setIsFormPending] = useState(false);
 
   const values = {
-    website,
-    facebook,
-    instagram,
-    tiktok,
-    spotify,
-    appleMusic,
-    soundcloud,
-    bandcamp,
+    website: website ?? EMPTY_SOCIAL,
+    facebook: facebook ?? EMPTY_SOCIAL,
+    instagram: instagram ?? EMPTY_SOCIAL,
+    tiktok: tiktok ?? EMPTY_SOCIAL,
+    spotify: spotify ?? EMPTY_SOCIAL,
+    appleMusic: appleMusic ?? EMPTY_SOCIAL,
+    soundcloud: soundcloud ?? EMPTY_SOCIAL,
+    bandcamp: bandcamp ?? EMPTY_SOCIAL,
   };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -90,10 +109,19 @@ export default function SocialSection({
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
 
+      const socialData: Record<string, SocialFieldType> = {};
+
+      for (const [key, value] of Object.entries(profileData)) {
+        socialData[key] = {
+          url: value as string,
+          show: values[key as SocialKey]?.show ?? true,
+        };
+      }
+
       const response = await fetch("/api/profile/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(socialData),
       });
 
       const { error, success } = await response.json();
@@ -156,7 +184,7 @@ export default function SocialSection({
                   label={fields[key].label}
                   placeholder={fields[key].placeholder || ""}
                   name={fields[key].name}
-                  value={values[key] || ""}
+                  value={values[key]}
                   isFormPending={isFormPending}
                   index={index}
                   icon={IconComponent && <IconComponent size={16} />}
@@ -170,10 +198,11 @@ export default function SocialSection({
         SOCIAL_FIELDS.map(({ key, fallback, icon: IconComponent }) => (
           <SocialLink
             key={key}
-            link={values[key]}
-            isActive={Boolean(values[key])}
+            link={values[key].url}
+            isActive={values[key].show}
             platform={fields[key].label}
             fallback={fallback}
+            name={key}
             icon={IconComponent ? <IconComponent size={16} /> : undefined}
           />
         ))

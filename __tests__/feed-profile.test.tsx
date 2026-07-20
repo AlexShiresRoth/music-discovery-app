@@ -59,14 +59,14 @@ const baseProfile = {
   city: "Austin",
   state: "TX",
   country: "US",
-  website: null,
-  facebook: null,
-  instagram: "https://instagram.com/test",
-  tiktok: null,
-  spotify: "https://open.spotify.com/artist/test",
-  appleMusic: "https://music.apple.com/artist/test",
-  soundcloud: null,
-  bandcamp: null,
+  website: { url: "", show: true },
+  facebook: { url: "", show: true },
+  instagram: { url: "https://instagram.com/test", show: true },
+  tiktok: { url: "", show: true },
+  spotify: { url: "https://open.spotify.com/artist/test", show: true },
+  appleMusic: { url: "https://music.apple.com/artist/test", show: true },
+  soundcloud: { url: "", show: true },
+  bandcamp: { url: "", show: true },
   userRefId: "user-1",
 } as unknown as ProfileWithSongClips;
 
@@ -118,6 +118,28 @@ describe("FeedProfile", () => {
     expect(screen.getByRole("link", { name: "Instagram" })).toBeDefined();
     expect(screen.queryByRole("link", { name: "Bandcamp" })).toBeNull();
     expect(screen.queryByRole("link", { name: "SoundCloud" })).toBeNull();
+  });
+
+  it("hides social links when show is false", () => {
+    render(
+      <FeedProfile
+        profile={{
+          ...baseProfile,
+          spotify: { url: "https://open.spotify.com/artist/test", show: false },
+          appleMusic: {
+            url: "https://music.apple.com/artist/test",
+            show: true,
+          },
+          instagram: { url: "https://instagram.com/test", show: false },
+        }}
+        activeProfileIndex={0}
+        currentIndex={0}
+      />,
+    );
+
+    expect(screen.queryByRole("link", { name: "Spotify" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Apple Music" })).toBeDefined();
   });
 
   it("shows separators between links on the same row", () => {

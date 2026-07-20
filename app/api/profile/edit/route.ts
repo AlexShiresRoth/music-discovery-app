@@ -2,9 +2,22 @@ import { ProfileFormSchemaWithoutId } from "@/app/profile/schemas";
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
+import type { SocialField } from "@/lib/db/types";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import "server-only";
+
+const SOCIAL_KEYS = [
+  "website",
+  "facebook",
+  "instagram",
+  "tiktok",
+  "spotify",
+  "appleMusic",
+  "soundcloud",
+  "bandcamp",
+] as const;
+
 export const POST = async (request: Request) => {
   const supabase = await createServerClient();
 
@@ -24,7 +37,7 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const data: ProfileFormSchemaWithoutId = await request.json();
+    const data: Partial<ProfileFormSchemaWithoutId> = await request.json();
 
     const foundProfile = await db
       .select()
@@ -32,51 +45,47 @@ export const POST = async (request: Request) => {
       .where(eq(profilesSchema.userRefId, user.id))
       .limit(1);
 
-    if (!foundProfile) {
+    if (!foundProfile[0]) {
       throw new Error("Could not find profile");
     }
 
     const p = foundProfile[0];
 
-    const urlsToValidate = [
-      { name: "website", url: data.website },
-      { name: "facebook", url: data.facebook },
-      { name: "instagram", url: data.instagram },
-      { name: "tiktok", url: data.tiktok },
-      { name: "spotify", url: data.spotify },
-      { name: "appleMusic", url: data.appleMusic },
-      { name: "soundcloud", url: data.soundcloud },
-      { name: "bandcamp", url: data.bandcamp },
-    ];
+    const urlsToValidate = SOCIAL_KEYS.map((name) => ({
+      name,
+      field: data[name] ?? { url: "", show: true },
+    }));
 
-    for (const { name, url } of urlsToValidate) {
-      if (url) {
-        const isValid = URL.canParse(url);
-        const containsName = name === "website" ? true : url.includes(name);
+    for (const { name, field } of urlsToValidate) {
+      if (field.url && field.url !== "") {
+        const isValid = URL.canParse(field.url);
+        const containsName =
+          name === "website" ? true : field.url.includes(name);
         if (!isValid || !containsName) {
           return NextResponse.json(
-            { error: `${name}: "${url}" is not a valid ${name} URL` },
+            { error: `${name}: "${field.url}" is not a valid ${name} URL` },
             { status: 400 },
           );
         }
       }
     }
 
+    const socialUpdates = Object.fromEntries(
+      SOCIAL_KEYS.filter((key) => data[key] !== undefined).map((key) => [
+        key,
+        data[key] as SocialField,
+      ]),
+    );
+
     await db
       .update(profilesSchema)
       .set({
+        ...socialUpdates,
         bio: data.bio || p.bio,
         profileName: data.profileName || p.profileName,
         country: data.country || p.country,
         state: data.state || p.state,
         city: data.city || p.city,
-        website: data.website || p.website,
-        facebook: data.facebook || p.facebook,
-        instagram: data.instagram || p.instagram,
-        tiktok: data.tiktok || p.tiktok,
-        spotify: data.spotify || p.spotify,
-        appleMusic: data.appleMusic || p.appleMusic,
-        soundcloud: data.soundcloud || p.soundcloud,
         genre: data.genre || p.genre,
         fullName: data.fullName || p.fullName,
         contactEmail: data.contactEmail || p.contactEmail,

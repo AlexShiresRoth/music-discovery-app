@@ -1,6 +1,7 @@
 "use client";
 
 import TextInput from "@/components/text-input";
+import type { SocialField } from "@/lib/db/types";
 import React from "react";
 import PreHeader from "./pre-header";
 
@@ -17,7 +18,7 @@ export default function SocialField({
   label: string;
   placeholder: string;
   name: string;
-  value: string;
+  value: SocialField;
   isFormPending: boolean;
   index: number;
 }) {
@@ -26,7 +27,7 @@ export default function SocialField({
       <div className="flex items-center gap-1">
         <div className="flex items-center gap-1">
           {icon && (
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center text-current">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-start text-current">
               {icon}
             </div>
           )}
@@ -35,7 +36,7 @@ export default function SocialField({
       </div>
       <TextInput
         name={name}
-        defaultValue={value}
+        defaultValue={value.url || ""}
         isPending={isFormPending}
         placeholder={placeholder}
         isEdit

@@ -36,15 +36,19 @@ export default function FeedProfile({
     clip?.scrollIntoView({ behavior: "smooth", inline: "start" });
   };
 
-  const profileLinks = [
-    profile.website && { label: "Website", href: profile.website },
-    profile.spotify && { label: "Spotify", href: profile.spotify },
-    profile.appleMusic && { label: "Apple Music", href: profile.appleMusic },
-    profile.bandcamp && { label: "Bandcamp", href: profile.bandcamp },
-    profile.soundcloud && { label: "SoundCloud", href: profile.soundcloud },
-    profile.tiktok && { label: "TikTok", href: profile.tiktok },
-    profile.instagram && { label: "Instagram", href: profile.instagram },
-  ].filter((link): link is { label: string; href: string } => Boolean(link));
+  const profileLinks = (
+    [
+      ["Spotify", profile.spotify],
+      ["Apple Music", profile.appleMusic],
+      ["Bandcamp", profile.bandcamp],
+      ["SoundCloud", profile.soundcloud],
+      ["Instagram", profile.instagram],
+      ["TikTok", profile.tiktok],
+      ["Website", profile.website],
+    ] as const
+  )
+    .filter(([, field]) => field.url && field.show)
+    .map(([label, field]) => ({ label, href: field.url }));
 
   useLayoutEffect(() => {
     const container = linksRef.current;

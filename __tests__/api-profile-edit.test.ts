@@ -46,6 +46,8 @@ function makeRequest(body: object) {
   });
 }
 
+const social = (url = "", show = true) => ({ url, show });
+
 const existingProfile = {
   id: "profile-1",
   profileName: "Old Profile",
@@ -57,13 +59,14 @@ const existingProfile = {
   genre: "Jazz",
   bio: "Old bio",
   imageUrl: null,
-  website: "https://old.com",
-  facebook: null,
-  instagram: null,
-  tiktok: null,
-  spotify: null,
-  appleMusic: null,
-  soundcloud: null,
+  website: social("https://old.com"),
+  facebook: social(),
+  instagram: social(),
+  tiktok: social(),
+  spotify: social(),
+  appleMusic: social(),
+  soundcloud: social(),
+  bandcamp: social(),
   songClips: [],
   userRefId: "user-1",
   joinedDate: new Date("2024-01-01"),
@@ -79,14 +82,14 @@ const validUpdateData = {
   country: "US",
   genre: "Rock",
   bio: "New bio",
-  website: "https://new.com",
-  facebook: "",
-  instagram: "",
-  tiktok: "",
-  spotify: "",
-  appleMusic: "",
-  soundcloud: "",
-  bandcamp: "",
+  website: social("https://new.com"),
+  facebook: social(),
+  instagram: social(),
+  tiktok: social(),
+  spotify: social(),
+  appleMusic: social(),
+  soundcloud: social(),
+  bandcamp: social(),
 };
 
 describe("POST /api/profile/edit", () => {
@@ -208,7 +211,7 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          website: "https://myband.example",
+          website: social("https://myband.example"),
         }),
       );
 
@@ -220,9 +223,9 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          instagram: "https://instagram.com/myband",
-          spotify: "https://open.spotify.com/artist/123",
-          bandcamp: "https://myband.bandcamp.com",
+          instagram: social("https://instagram.com/myband"),
+          spotify: social("https://open.spotify.com/artist/123"),
+          bandcamp: social("https://myband.bandcamp.com"),
         }),
       );
 
@@ -234,9 +237,9 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          website: "",
-          instagram: "",
-          spotify: null,
+          website: social(),
+          instagram: social(""),
+          spotify: undefined,
         }),
       );
 
@@ -248,7 +251,7 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          website: "not-a-url",
+          website: social("not-a-url"),
         }),
       );
       const body = await response.json();
@@ -262,7 +265,7 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          instagram: "https://example.com/myband",
+          instagram: social("https://example.com/myband"),
         }),
       );
       const body = await response.json();
@@ -278,9 +281,9 @@ describe("POST /api/profile/edit", () => {
       const response = await POST(
         makeRequest({
           ...validUpdateData,
-          facebook: "https://facebook.com/ok",
-          tiktok: "not-a-tiktok-url",
-          spotify: "https://open.spotify.com/artist/123",
+          facebook: social("https://facebook.com/ok"),
+          tiktok: social("not-a-tiktok-url"),
+          spotify: social("https://open.spotify.com/artist/123"),
         }),
       );
       const body = await response.json();
@@ -290,6 +293,38 @@ describe("POST /api/profile/edit", () => {
         'tiktok: "not-a-tiktok-url" is not a valid tiktok URL',
       );
       expect(mockUpdate).not.toHaveBeenCalled();
+    });
+
+    it("persists show:false when toggling social link visibility", async () => {
+      const response = await POST(
+        makeRequest({
+          website: social("https://myband.example", false),
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          website: { url: "https://myband.example", show: false },
+        }),
+      );
+    });
+
+    it("accepts a visibility-only update without other profile fields", async () => {
+      const response = await POST(
+        makeRequest({
+          instagram: social("https://instagram.com/myband", true),
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          instagram: { url: "https://instagram.com/myband", show: true },
+          profileName: "Old Profile",
+          fullName: "Old Name",
+        }),
+      );
     });
   });
 });
