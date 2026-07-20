@@ -37,10 +37,12 @@ export default function FeedProfile({
   };
 
   const profileLinks = [
+    profile.website && { label: "Website", href: profile.website },
     profile.spotify && { label: "Spotify", href: profile.spotify },
     profile.appleMusic && { label: "Apple Music", href: profile.appleMusic },
     profile.bandcamp && { label: "Bandcamp", href: profile.bandcamp },
     profile.soundcloud && { label: "SoundCloud", href: profile.soundcloud },
+    profile.tiktok && { label: "TikTok", href: profile.tiktok },
     profile.instagram && { label: "Instagram", href: profile.instagram },
   ].filter((link): link is { label: string; href: string } => Boolean(link));
 
@@ -77,7 +79,6 @@ export default function FeedProfile({
 
   return (
     <div
-      key={profile.id}
       data-profile-slide
       className="flex flex-col justify-between snap-start min-h-screen p-8 rounded w-screen max-w-full overflow-hidden"
     >
@@ -98,7 +99,7 @@ export default function FeedProfile({
           >
             {profileLinks.map((link, index) => (
               <span
-                key={link.href}
+                key={link.href + index}
                 data-profile-link
                 className="relative whitespace-nowrap"
               >
