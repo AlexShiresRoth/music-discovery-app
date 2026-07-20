@@ -3,11 +3,28 @@
 import clsx from "clsx";
 import { useState } from "react";
 
-export default function ToggleButton({ isActive }: { isActive: boolean }) {
+export default function ToggleButton({
+  isActive,
+  name,
+}: {
+  isActive: boolean;
+  name: string;
+}) {
   const [active, setIsActive] = useState(isActive);
 
-  const handleToggle = () => {
+  const submitToggle = async (name: string, value: boolean) => {
+    return await fetch("/api/profile/edit", {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        value,
+      }),
+    });
+  };
+
+  const handleToggle = async () => {
     setIsActive(!active);
+    await submitToggle(name, !active);
   };
 
   return (

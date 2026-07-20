@@ -22,6 +22,20 @@
       "when": 1784160000000,
       "tag": "0002_song_clips_jsonb",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784513408721,
+      "tag": "0003_faithful_slayback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784513664694,
+      "tag": "0004_thin_hellcat",
+      "breakpoints": true
     }
   ]
 }

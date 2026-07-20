@@ -44,13 +44,14 @@ const SOCIAL_FIELDS = [
 ];
 
 export default function SocialSection({
-  website = "",
-  facebook = "",
-  instagram = "",
-  tiktok = "",
-  spotify = "",
-  appleMusic = "",
-  soundcloud = "",
+  website = { url: "", show: true },
+  facebook = { url: "", show: true },
+  instagram = { url: "", show: true },
+  tiktok = { url: "", show: true },
+  spotify = { url: "", show: true },
+  appleMusic = { url: "", show: true },
+  soundcloud = { url: "", show: true },
+  bandcamp = { url: "", show: true },
   mode = "View",
 }: ProfileFormSchemaWithoutId & { mode?: Mode }) {
   const isEdit = mode === "Edit";
@@ -67,6 +68,7 @@ export default function SocialSection({
     spotify,
     appleMusic,
     soundcloud,
+    bandcamp,
   };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -139,7 +141,7 @@ export default function SocialSection({
                 <PreHeader>{fields[key].label}</PreHeader>
                 <TextInput
                   name={fields[key].name}
-                  defaultValue={values[key] || ""}
+                  defaultValue={values[key].url || ""}
                   isPending={isFormPending}
                   placeholder={fields[key].placeholder}
                   isEdit
@@ -153,10 +155,11 @@ export default function SocialSection({
         SOCIAL_FIELDS.map(({ key, fallback }) => (
           <SocialLink
             key={key}
-            link={values[key]}
+            link={values[key].url}
             isActive={values[key] ? true : false}
             platform={fields[key].label}
             fallback={fallback}
+            name={key}
           />
         ))
       )}

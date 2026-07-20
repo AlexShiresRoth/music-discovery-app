@@ -5,6 +5,10 @@ export type SongClipWithSlot = {
   id: string;
 };
 
+export type SocialField = {
+  url: string;
+  show: boolean;
+};
 export type SongClip = typeof songClipsSchema.$inferSelect;
 
 export type Profile = typeof profilesSchema.$inferSelect;
