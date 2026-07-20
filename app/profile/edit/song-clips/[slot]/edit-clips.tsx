@@ -26,7 +26,10 @@ export default function EditClips({ clip, slot }: Props) {
 
   const handleNewUpload = async (draft: ClipSlotDraft) => {
     if (!draft.selectedRegion || !draft.file) {
-      throw new Error("Select a file and clip region before uploading");
+      return {
+        error: new Error("Select a file and clip region before uploading"),
+        data: null,
+      };
     }
 
     const trimmedWAVFile = await processAudioForUpload(
@@ -44,10 +47,10 @@ export default function EditClips({ clip, slot }: Props) {
 
     // vercel limit is 4.5MB
     if (mb > 4.5) {
-      throw new Error("File is too large");
+      return { error: new Error("File is too large"), data: null };
     }
 
-    return buildClipUploadFormData(draftWithClip, slot);
+    return { error: null, data: buildClipUploadFormData(draftWithClip, slot) };
   };
 
   // TODO - we may want to convert to MP3 instead of WAV
@@ -58,25 +61,11 @@ export default function EditClips({ clip, slot }: Props) {
     try {
       setIsFormPending(true);
 
-      let formData: FormData;
+      const { error: uploadError, data: formData } =
+        await handleNewUpload(draft);
 
-      // if the clip is not in the database, we need to upload a new one
-      if (!draft.dbUrl) {
-        try {
-          formData = await handleNewUpload(draft);
-        } catch (error) {
-          setToast({
-            message:
-              error instanceof Error
-                ? error.message
-                : "Failed to prepare upload",
-            type: "error",
-          });
-          setIsFormPending(false);
-          return;
-        }
-      } else {
-        formData = buildClipUploadFormData(draft, slot);
+      if (uploadError) {
+        throw uploadError;
       }
 
       const response = await fetch("/api/profile/upload-song-clip", {
@@ -87,42 +76,79 @@ export default function EditClips({ clip, slot }: Props) {
       const { error, success } = await response.json();
 
       if (response.status === 413) {
-        setToast({
-          message: "File is too large",
-          type: "error",
-        });
-        setIsFormPending(false);
-        return;
+        throw new Error("File is too large");
       }
 
       if (!response.ok) {
-        setToast({
-          message: error || "Failed to upload song clips",
-          type: "error",
-        });
-        setIsFormPending(false);
-        return;
+        throw new Error(error || "Failed to upload song clips");
       }
 
       if (success) {
         setToast({
-          message: `Song clip uploaded successfully`,
+          message: "Song clip uploaded successfully",
           type: "success",
         });
         router.refresh();
         router.push("/profile");
       }
-
-      setIsFormPending(false);
     } catch (error) {
+      setToast({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to upload song clips",
+        type: "error",
+      });
+    } finally {
       setIsFormPending(false);
-      setToast({ message: JSON.stringify(error), type: "error" });
-      console.error(error);
+    }
+  };
+
+  const handleEditSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      setIsFormPending(true);
+
+      const response = await fetch("/api/profile/edit-song-clip", {
+        method: "POST",
+        body: JSON.stringify({
+          title: draft.title,
+          full_song_url: draft.dbUrl,
+          id: draft.id,
+        }),
+      });
+
+      const { error, success } = await response.json();
+
+      if (!response.ok) {
+        throw new Error(error || "Failed to edit song clip");
+      }
+
+      if (success) {
+        setToast({
+          message: "Song clip edited successfully",
+          type: "success",
+        });
+        router.refresh();
+        router.push("/profile");
+      }
+    } catch (error) {
+      setToast({
+        message:
+          error instanceof Error ? error.message : "Failed to edit song clip",
+        type: "error",
+      });
+    } finally {
+      setIsFormPending(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col w-full md:p-8 gap-4">
+    <form
+      onSubmit={draft.dbUrl ? handleEditSubmit : handleSubmit}
+      className="flex flex-col w-full md:p-8 gap-4"
+    >
       <div className="flex md:flex-row flex-col-reverse md:items-center justify-between w-full">
         <h2 className="font-bold uppercase">Upload Song Clip</h2>
         <div>
