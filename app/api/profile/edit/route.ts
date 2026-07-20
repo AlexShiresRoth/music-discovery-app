@@ -38,6 +38,30 @@ export const POST = async (request: Request) => {
 
     const p = foundProfile[0];
 
+    const urlsToValidate = [
+      { name: "website", url: data.website },
+      { name: "facebook", url: data.facebook },
+      { name: "instagram", url: data.instagram },
+      { name: "tiktok", url: data.tiktok },
+      { name: "spotify", url: data.spotify },
+      { name: "appleMusic", url: data.appleMusic },
+      { name: "soundcloud", url: data.soundcloud },
+      { name: "bandcamp", url: data.bandcamp },
+    ];
+
+    for (const { name, url } of urlsToValidate) {
+      if (url) {
+        const isValid = URL.canParse(url);
+        const containsName = name === "website" ? true : url.includes(name);
+        if (!isValid || !containsName) {
+          return NextResponse.json(
+            { error: `${name}: "${url}" is not a valid ${name} URL` },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
     await db
       .update(profilesSchema)
       .set({

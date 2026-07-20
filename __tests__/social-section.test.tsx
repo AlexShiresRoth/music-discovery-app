@@ -17,6 +17,7 @@ const baseProps = {
   spotify: null,
   appleMusic: null,
   soundcloud: null,
+  bandcamp: null,
 };
 
 function renderWithToast(props = {}, setToast = vi.fn()) {
@@ -43,23 +44,25 @@ describe("SocialSection", () => {
     it("renders all platform labels", () => {
       renderWithToast();
       expect(screen.getByText("Website")).toBeDefined();
-      expect(screen.getByText("Facebook")).toBeDefined();
       expect(screen.getByText("Instagram")).toBeDefined();
       expect(screen.getByText("TikTok")).toBeDefined();
       expect(screen.getByText("Spotify")).toBeDefined();
       expect(screen.getByText("Apple Music")).toBeDefined();
       expect(screen.getByText("SoundCloud")).toBeDefined();
+      expect(screen.getByText("Bandcamp")).toBeDefined();
     });
 
     it("shows fallback text when no links are set", () => {
       renderWithToast();
       expect(screen.getByText("www.mywebsite.com")).toBeDefined();
-      expect(screen.getByText("www.facebook.com/myprofile")).toBeDefined();
+      expect(screen.getByText("www.instagram.com/myprofile")).toBeDefined();
     });
 
-    it("shows the link value when a link is provided", () => {
+    it("shows the link value as a clickable URL when provided", () => {
       renderWithToast({ website: "https://myband.com" });
-      expect(screen.getByText("https://myband.com")).toBeDefined();
+      const link = screen.getByRole("link", { name: "https://myband.com" });
+      expect(link.getAttribute("href")).toBe("https://myband.com");
+      expect(link.getAttribute("target")).toBe("_blank");
     });
 
     it("shows an Edit link pointing to /profile/edit/social", () => {
@@ -79,13 +82,13 @@ describe("SocialSection", () => {
   describe("edit mode", () => {
     it("renders text inputs for each social platform", () => {
       renderWithToast({ mode: "Edit" });
-      expect(screen.getByPlaceholderText("Website")).toBeDefined();
-      expect(screen.getByPlaceholderText("Facebook")).toBeDefined();
-      expect(screen.getByPlaceholderText("Instagram")).toBeDefined();
-      expect(screen.getByPlaceholderText("TikTok")).toBeDefined();
-      expect(screen.getByPlaceholderText("Spotify")).toBeDefined();
-      expect(screen.getByPlaceholderText("Apple Music")).toBeDefined();
-      expect(screen.getByPlaceholderText("SoundCloud")).toBeDefined();
+      expect(screen.getByPlaceholderText("Website URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("Instagram URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("TikTok URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("Spotify URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("Apple Music URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("SoundCloud URL")).toBeDefined();
+      expect(screen.getByPlaceholderText("Bandcamp URL")).toBeDefined();
     });
 
     it("pre-fills inputs with existing values", () => {

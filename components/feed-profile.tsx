@@ -83,7 +83,6 @@ export default function FeedProfile({
 
   return (
     <div
-      key={profile.id}
       data-profile-slide
       className="flex flex-col justify-between snap-start min-h-screen p-8 rounded w-screen max-w-full overflow-hidden"
     >
@@ -104,7 +103,7 @@ export default function FeedProfile({
           >
             {profileLinks.map((link, index) => (
               <span
-                key={link.href}
+                key={link.href + index}
                 data-profile-link
                 className="relative whitespace-nowrap"
               >
