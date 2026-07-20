@@ -1,13 +1,18 @@
 "use client";
-import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
+import AppleMusicIcon from "@/icons/apple-music";
+import BandcampIcon from "@/icons/bandcamp";
+import InstagramIcon from "@/icons/instagram";
+import SocialSoundcloudIcon from "@/icons/soundcloud";
+import SocialSpotifyIcon from "@/icons/spotify";
+import TikTokIcon from "@/icons/tiktok";
 import clsx from "clsx";
-import { Pencil, X } from "lucide-react";
+import { Globe, Pencil, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import PreHeader from "./pre-header";
 import { profileFormFields, ProfileFormSchemaWithoutId } from "./schemas";
+import SocialField from "./social-field";
 import SocialLink from "./social-link";
 
 type Mode = "Edit" | "View";
@@ -16,30 +21,37 @@ const SOCIAL_FIELDS = [
   {
     key: "website" as const,
     fallback: "www.mywebsite.com",
-  },
-  {
-    key: "facebook" as const,
-    fallback: "www.facebook.com/myprofile",
+    icon: Globe,
   },
   {
     key: "instagram" as const,
     fallback: "www.instagram.com/myprofile",
+    icon: InstagramIcon,
   },
   {
     key: "tiktok" as const,
     fallback: "www.tiktok.com/myprofile",
+    icon: TikTokIcon,
   },
   {
     key: "spotify" as const,
     fallback: "www.spotify.com/myprofile",
+    icon: SocialSpotifyIcon,
   },
   {
     key: "appleMusic" as const,
     fallback: "www.applemusic.com/myprofile",
+    icon: AppleMusicIcon,
   },
   {
     key: "soundcloud" as const,
     fallback: "www.soundcloud.com/myprofile",
+    icon: SocialSoundcloudIcon,
+  },
+  {
+    key: "bandcamp" as const,
+    fallback: "artist-subdomain.bandcamp.com/",
+    icon: BandcampIcon,
   },
 ];
 
@@ -51,6 +63,7 @@ export default function SocialSection({
   spotify = "",
   appleMusic = "",
   soundcloud = "",
+  bandcamp = "",
   mode = "View",
 }: ProfileFormSchemaWithoutId & { mode?: Mode }) {
   const isEdit = mode === "Edit";
@@ -67,6 +80,7 @@ export default function SocialSection({
     spotify,
     appleMusic,
     soundcloud,
+    bandcamp,
   };
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -133,30 +147,34 @@ export default function SocialSection({
       </div>
       {isEdit ? (
         <div className="relative">
-          <div className="flex flex-col gap-4 h-[40vh] overflow-y-auto pb-10">
-            {SOCIAL_FIELDS.map(({ key }) => (
-              <div key={key} className="flex flex-col gap-2 border-b pb-4">
-                <PreHeader>{fields[key].label}</PreHeader>
-                <TextInput
+          <div className="flex flex-col gap-6 h-[40vh] overflow-y-auto pb-10">
+            {SOCIAL_FIELDS.map(({ key, icon }, index) => {
+              const IconComponent = icon;
+              return (
+                <SocialField
+                  key={key}
+                  label={fields[key].label}
+                  placeholder={fields[key].placeholder || ""}
                   name={fields[key].name}
-                  defaultValue={values[key] || ""}
-                  isPending={isFormPending}
-                  placeholder={fields[key].placeholder}
-                  isEdit
+                  value={values[key] || ""}
+                  isFormPending={isFormPending}
+                  index={index}
+                  icon={IconComponent && <IconComponent size={16} />}
                 />
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="absolute bottom-0 left-0 w-full h-5 backdrop-blur-sm" />
+          <div className="absolute bottom-0 left-0 w-full h-5 backdrop-blur-xs bg-background/50" />
         </div>
       ) : (
-        SOCIAL_FIELDS.map(({ key, fallback }) => (
+        SOCIAL_FIELDS.map(({ key, fallback, icon: IconComponent }) => (
           <SocialLink
             key={key}
             link={values[key]}
-            isActive={values[key] ? true : false}
+            isActive={Boolean(values[key])}
             platform={fields[key].label}
             fallback={fallback}
+            icon={IconComponent ? <IconComponent size={16} /> : undefined}
           />
         ))
       )}

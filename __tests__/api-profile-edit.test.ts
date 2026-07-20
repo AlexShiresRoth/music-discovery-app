@@ -86,6 +86,7 @@ const validUpdateData = {
   spotify: "",
   appleMusic: "",
   soundcloud: "",
+  bandcamp: "",
 };
 
 describe("POST /api/profile/edit", () => {
@@ -193,5 +194,102 @@ describe("POST /api/profile/edit", () => {
 
     expect(response.status).toBe(500);
     expect(body.error).toBe("DB write failed");
+  });
+
+  describe("social URL validation", () => {
+    beforeEach(() => {
+      mockGetUser.mockResolvedValue({
+        data: { user: { id: "user-1" } },
+        error: null,
+      });
+    });
+
+    it("accepts a parseable website URL without requiring a platform name", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          website: "https://myband.example",
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalled();
+    });
+
+    it("accepts platform URLs that include the platform name", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          instagram: "https://instagram.com/myband",
+          spotify: "https://open.spotify.com/artist/123",
+          bandcamp: "https://myband.bandcamp.com",
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalled();
+    });
+
+    it("skips validation when social URLs are empty", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          website: "",
+          instagram: "",
+          spotify: null,
+        }),
+      );
+
+      expect(response.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalled();
+    });
+
+    it("returns 400 for an unparseable website URL", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          website: "not-a-url",
+        }),
+      );
+      const body = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(body.error).toBe('website: "not-a-url" is not a valid website URL');
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
+
+    it("returns 400 when a platform URL is parseable but missing the platform name", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          instagram: "https://example.com/myband",
+        }),
+      );
+      const body = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(body.error).toBe(
+        'instagram: "https://example.com/myband" is not a valid instagram URL',
+      );
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
+
+    it("returns 400 for the first invalid social URL when several are provided", async () => {
+      const response = await POST(
+        makeRequest({
+          ...validUpdateData,
+          facebook: "https://facebook.com/ok",
+          tiktok: "not-a-tiktok-url",
+          spotify: "https://open.spotify.com/artist/123",
+        }),
+      );
+      const body = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(body.error).toBe(
+        'tiktok: "not-a-tiktok-url" is not a valid tiktok URL',
+      );
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
   });
 });
