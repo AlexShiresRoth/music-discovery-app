@@ -23,7 +23,7 @@ function ToastWrapper({
   return (
     <div
       className={clsx(
-        "relative border-2 p-4 rounded-md rounded-t-none w-fit flex flex-col",
+        "relative border-2 p-4 rounded-md rounded-t-none w-fit flex flex-col bg-background",
         {
           "border-green-500/20 text-green-500/80": type === "success",
           "border-red-500/20 text-red-500/80": type === "error",
