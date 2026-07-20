@@ -20,10 +20,35 @@ export default function EditClips({ clip, slot }: Props) {
   const router = useRouter();
   const { setToast } = useContext(ToastContext);
   const [isFormPending, setIsFormPending] = useState(false);
-
   const [draft, setDraft] = useState<ClipSlotDraft>(() =>
     clip ? songClipToDraft(clip) : emptySlot(),
   );
+
+  const handleNewUpload = async (draft: ClipSlotDraft) => {
+    if (!draft.selectedRegion || !draft.file) {
+      throw new Error("Select a file and clip region before uploading");
+    }
+
+    const trimmedWAVFile = await processAudioForUpload(
+      draft.file,
+      draft.selectedRegion.start,
+      draft.selectedRegion.end,
+    );
+
+    const draftWithClip: ClipSlotDraft = {
+      ...draft,
+      file: trimmedWAVFile,
+    };
+
+    const mb = trimmedWAVFile.size / 1024 ** 2;
+
+    // vercel limit is 4.5MB
+    if (mb > 4.5) {
+      throw new Error("File is too large");
+    }
+
+    return buildClipUploadFormData(draftWithClip, slot);
+  };
 
   // TODO - we may want to convert to MP3 instead of WAV
   // can use breazystack/lamejs package possibly
@@ -33,39 +58,26 @@ export default function EditClips({ clip, slot }: Props) {
     try {
       setIsFormPending(true);
 
-      if (!draft.file || !draft.selectedRegion) {
-        setToast({
-          message: "Select a file and clip region before uploading",
-          type: "error",
-        });
-        setIsFormPending(false);
-        return;
+      let formData: FormData;
+
+      // if the clip is not in the database, we need to upload a new one
+      if (!draft.dbUrl) {
+        try {
+          formData = await handleNewUpload(draft);
+        } catch (error) {
+          setToast({
+            message:
+              error instanceof Error
+                ? error.message
+                : "Failed to prepare upload",
+            type: "error",
+          });
+          setIsFormPending(false);
+          return;
+        }
+      } else {
+        formData = buildClipUploadFormData(draft, slot);
       }
-
-      const trimmedWAVFile = await processAudioForUpload(
-        draft.file,
-        draft.selectedRegion.start,
-        draft.selectedRegion.end,
-      );
-
-      const draftWithClip: ClipSlotDraft = {
-        ...draft,
-        file: trimmedWAVFile,
-      };
-
-      const mb = trimmedWAVFile.size / 1024 ** 2;
-
-      // vercel limit is 4.5MB
-      if (mb > 4.5) {
-        setToast({
-          message: "File is too large",
-          type: "error",
-        });
-        setIsFormPending(false);
-        return;
-      }
-
-      const formData = buildClipUploadFormData(draftWithClip, slot);
 
       const response = await fetch("/api/profile/upload-song-clip", {
         method: "POST",

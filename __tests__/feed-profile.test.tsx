@@ -120,6 +120,28 @@ describe("FeedProfile", () => {
     expect(screen.queryByRole("link", { name: "SoundCloud" })).toBeNull();
   });
 
+  it("hides social links when show is false", () => {
+    render(
+      <FeedProfile
+        profile={{
+          ...baseProfile,
+          spotify: { url: "https://open.spotify.com/artist/test", show: false },
+          appleMusic: {
+            url: "https://music.apple.com/artist/test",
+            show: true,
+          },
+          instagram: { url: "https://instagram.com/test", show: false },
+        }}
+        activeProfileIndex={0}
+        currentIndex={0}
+      />,
+    );
+
+    expect(screen.queryByRole("link", { name: "Spotify" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Apple Music" })).toBeDefined();
+  });
+
   it("shows separators between links on the same row", () => {
     const { container } = render(
       <FeedProfile
