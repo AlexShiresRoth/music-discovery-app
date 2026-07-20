@@ -112,9 +112,10 @@ export default function EditClips({ clip, slot }: Props) {
 
       const response = await fetch("/api/profile/edit-song-clip", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: draft.title,
-          full_song_url: draft.dbUrl,
+          full_song_url: draft.fullSongUrl,
           id: draft.id,
         }),
       });

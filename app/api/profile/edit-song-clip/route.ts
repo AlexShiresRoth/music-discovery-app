@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Profile not found" }, { status: 404 });
   }
 
-  const foundClip = await db
+  const [foundClip] = await db
     .select()
     .from(songClipsSchema)
     .where(eq(songClipsSchema.id, Number(data.id)));
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     .update(songClipsSchema)
     .set({
       title: data.title,
-      full_song_url: data.full_song_url.trim(),
+      full_song_url: data.full_song_url?.trim() || null,
     })
     .where(eq(songClipsSchema.id, Number(data.id)));
 

@@ -190,7 +190,7 @@ describe("POST /api/profile/upload-song-clip", () => {
     const body = await response.json();
 
     expect(response.status).toBe(400);
-    expect(body.error).toBe("At least one file is required");
+    expect(body.error).toBe("A file is required");
   });
 
   it("returns 400 when metadata is invalid JSON", async () => {
