@@ -14,13 +14,37 @@ export async function getProfile() {
       return null;
     }
 
-    const profile = await db
+    const [profile] = await db
       .select()
       .from(profilesSchema)
       .where(eq(profilesSchema.userRefId, user.id))
       .limit(1);
 
-    return profile[0] ?? null;
+    return profile;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return null;
+  }
+}
+
+export async function getProfileById(id: string) {
+  try {
+    const [profile] = await db
+      .select()
+      .from(profilesSchema)
+      .where(eq(profilesSchema.id, Number(id)));
+
+    if (!profile) {
+      return null;
+    }
+
+    const songClips = await getSongClipsByIds(
+      profile.songClips.map((clip) => clip.id),
+    );
+
+    const profileWithSongClips = { ...profile, songClips };
+
+    return profileWithSongClips;
   } catch (error) {
     console.error("Error fetching profile:", error);
     return null;
