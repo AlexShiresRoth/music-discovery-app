@@ -1,3 +1,4 @@
+import ProfileLinksDisplay from "@/components/profile-links-display";
 import type { Profile, SongClip } from "@/lib/db/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,10 +15,44 @@ type Props = {
 
 export default async function Profile({ profile, clips }: Props) {
   const isVerified = profile.isVerified;
+
   return (
-    <div className="flex flex-col w-full items-center p-8">
+    <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">
-        <header className="flex items-center gap-8 w-full justify-between">
+        <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col gap-8 items-center relative w-sm h-75 border rounded">
+              {profile.imageUrl && (
+                <Image
+                  src={profile.imageUrl}
+                  alt={profile.profileName ?? "Image"}
+                  fill
+                  loading="eager"
+                  className="object-cover rounded block"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              )}
+              <div className="md:visible hidden">
+                <UploadImage
+                  imageUrl={profile.imageUrl?.split("/").pop() || ""}
+                />
+              </div>
+            </div>
+            <div className="md:hidden visible">
+              <UploadImage
+                imageUrl={profile.imageUrl?.split("/").pop() || ""}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <h1 className="md:text-7xl text-3xl font-bold">
+              {profile.profileName}
+            </h1>
+            <ProfileLinksDisplay profile={profile} />
+            <p className="max-w-2xl">{profile.bio}</p>
+          </div>
+        </header>
+        <div className="flex flex-col gap-10 w-full">
           {!isVerified && (
             <Link
               href="/profile/verify"
@@ -29,37 +64,9 @@ export default async function Profile({ profile, clips }: Props) {
           {isVerified && (
             <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
           )}
-        </header>
-        <div className="w-full flex md:flex-row flex-col gap-10 md:h-full">
-          <div className="md:min-h-screen relative block">
-            <div className="sticky top-0">
-              {profile.imageUrl && (
-                <div className="flex flex-col gap-8 items-center relative md:w-sm w-full h-75 border rounded">
-                  <Image
-                    src={profile.imageUrl}
-                    alt={profile.profileName ?? "Image"}
-                    fill
-                    loading="eager"
-                    className="object-cover rounded block"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
-              )}
-              {!profile.imageUrl && (
-                <div className="w-sm h-75 border rounded flex items-center justify-center">
-                  <p className="text-gray-400/80">Upload an image</p>
-                </div>
-              )}
-              <UploadImage
-                imageUrl={profile.imageUrl?.split("/").pop() || ""}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-10 w-full">
-            <PublicInfo {...profile} />
-            <SocialSection {...profile} />
-            <PrivateInfo {...profile} />
-          </div>
+          <PublicInfo {...profile} />
+          <SocialSection {...profile} />
+          <PrivateInfo {...profile} />
         </div>
       </div>
     </div>
