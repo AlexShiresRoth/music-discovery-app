@@ -32,11 +32,13 @@ export default async function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex w-full">
-        <Navigation />
-        <ToastProvider>
-          <ToastWrapper>{children}</ToastWrapper>
-        </ToastProvider>
+      <body className="flex w-full justify-center">
+        <main className="max-w-450 w-11/12">
+          <Navigation />
+          <ToastProvider>
+            <ToastWrapper>{children}</ToastWrapper>
+          </ToastProvider>
+        </main>
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ function FeedAudioControls() {
   const { isMuted, toggleMute, isPlaying, togglePlayPause } = useFeedAudio();
 
   return (
-    <div className="fixed bottom-6 right-6 z-10 flex gap-2">
+    <div className="fixed bottom-6 right-6 md:right-20 z-10 flex gap-2">
       <button
         type="button"
         aria-label={isPlaying ? "Pause clips" : "Play clips"}

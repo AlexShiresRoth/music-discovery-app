@@ -138,7 +138,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           ) : (
             <ViewOrEditData title={fields.profileName.label}>
-              <h1 className="text-3xl font-bold uppercase">{profileName}</h1>
+              <h1 className="text-lg">{profileName}</h1>
             </ViewOrEditData>
           )}
         </header>
