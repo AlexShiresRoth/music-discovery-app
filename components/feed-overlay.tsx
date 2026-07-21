@@ -1,5 +1,6 @@
 "use client";
-import { useLocalStorage } from "@/stores/use-local-storage";
+import { setHasVisited, useLocalStorage } from "@/stores/use-local-storage";
+
 import clsx from "clsx";
 
 export default function IntroOverlay() {
@@ -10,6 +11,8 @@ export default function IntroOverlay() {
   }
   return (
     <div
+      onTouchEnd={setHasVisited}
+      onPointerUp={setHasVisited}
       className={clsx(
         "fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center",
         hasVisited && "animate-fade-out duration-300 -z-10",
@@ -23,6 +26,7 @@ export default function IntroOverlay() {
           </h1>
           <p className="text-white">Press the play button to start listening</p>
           <p className="text-white">Scroll to discover more artists</p>
+          <p className="text-white/80 text-xs">Touch anywhere to dismiss</p>
         </div>
       </div>
       <div className="w-full pb-4 relative">
