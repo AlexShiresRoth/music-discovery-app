@@ -3,6 +3,7 @@
 import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
 import ProfileLinksDisplay from "./profile-links-display";
@@ -46,9 +47,12 @@ export default function FeedProfile({
               {profile.city} - {profile.state}
             </p>
           </div>
-          <h2 className="text-4xl md:text-7xl font-bold text-black uppercase">
+          <Link
+            href={`/profiles/${profile.id}`}
+            className="text-4xl md:text-7xl font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
+          >
             {profile.profileName}
-          </h2>
+          </Link>
           <ProfileLinksDisplay profile={profile} />
         </div>
       </div>

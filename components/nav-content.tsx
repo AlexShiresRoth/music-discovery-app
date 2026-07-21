@@ -37,9 +37,12 @@ export default function NavContent({ user }: Props) {
           Profile
         </Link>
       )}
-      <span>
-        <Dot className="h-4 w-4" />
-      </span>
+      {user && (
+        <span>
+          <Dot className="h-4 w-4" />
+        </span>
+      )}
+
       {!user ? (
         <Link
           href="/login"
