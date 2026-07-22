@@ -3,10 +3,11 @@
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import { COUNTRIES, GENRES, STATES } from "@/constants";
+import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
+import GeoCityInput from "../geo-city-input";
 import { profileFormFields } from "../schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -90,17 +91,10 @@ export default function ProfileForm() {
             <Column>
               <TextInput {...fields.fullName} isPending={pending} />
               <TextInput {...fields.contactEmail} isPending={pending} />
-              <TextInput {...fields.city} isPending={pending} />
-            </Column>
-            <Column>
-              <SelectInput
-                {...fields.state}
-                options={STATES}
-                isPending={pending}
-              />
-              <SelectInput
-                {...fields.country}
-                options={COUNTRIES}
+              <GeoCityInput
+                name={fields.location.name}
+                placeholder="Enter your location (min 3 characters)"
+                defaultValue={null}
                 isPending={pending}
               />
             </Column>
