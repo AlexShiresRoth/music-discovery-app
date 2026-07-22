@@ -8,7 +8,8 @@ import { useState } from "react";
 
 export default function FeedAudioControls() {
   const hasVisited = useLocalStorage();
-  const { isMuted, toggleMute, isPlaying, togglePlayPause } = useFeedAudio();
+  const { isMuted, toggleMute, isPlaying, togglePlayPause, canPlay } =
+    useFeedAudio();
   const [animEnded, setAnimEnded] = useState(false);
   const handleAnimationEnd = () => {
     setAnimEnded(true);
@@ -16,6 +17,7 @@ export default function FeedAudioControls() {
   return (
     <div className="fixed bottom-6 right-6 md:right-20 z-10 flex gap-2">
       <button
+        disabled={!canPlay}
         type="button"
         aria-label={isPlaying ? "Pause clips" : "Play clips"}
         onClick={() => {
@@ -24,7 +26,7 @@ export default function FeedAudioControls() {
             setHasVisited();
           }
         }}
-        className="rounded-full bg-black p-3 text-white hover:bg-black transition-colors hover:cursor-pointer relative z-10 overflow-hidden"
+        className="disabled:animate-pulse disabled:opacity-50 rounded-full bg-black p-3 text-white hover:bg-black transition-colors hover:cursor-pointer relative z-10 overflow-hidden"
       >
         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
         {!hasVisited && (
@@ -39,10 +41,11 @@ export default function FeedAudioControls() {
         )}
       </button>
       <button
+        disabled={!canPlay}
         type="button"
         aria-label={isMuted ? "Unmute clips" : "Mute clips"}
         onClick={toggleMute}
-        className="rounded-full bg-black p-3 text-white hover:bg-black transition-colors hover:cursor-pointer"
+        className="disabled:animate-pulse disabled:opacity-50 rounded-full bg-black p-3 text-white hover:bg-black transition-colors hover:cursor-pointer"
       >
         {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
       </button>
