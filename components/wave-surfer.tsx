@@ -3,18 +3,12 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import {
-  ExternalLink,
-  Loader2,
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { ExternalLink, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
+import WaveformSkeleton from "./wave-form-skeleton";
 
 type ClipSelection = {
   start: number;
@@ -50,7 +44,11 @@ function WaveSurferBasic({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
-  const { isMuted: feedMuted, isPlaying: feedPlaying } = useFeedAudio();
+  const {
+    isMuted: feedMuted,
+    isPlaying: feedPlaying,
+    setCanPlay,
+  } = useFeedAudio();
   const [localPlaying, setLocalPlaying] = useState(false);
   const [localMuted, setLocalMuted] = useState(false);
   const isMuted = isOnFeed ? feedMuted : localMuted;
@@ -58,6 +56,7 @@ function WaveSurferBasic({
   const isActiveRef = useRef(isActive ?? false);
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying);
+  const setCanPlayRef = useRef(setCanPlay);
   const [isLoading, setIsLoading] = useState(true);
 
   const shouldPlay = useCallback(() => {
@@ -106,7 +105,13 @@ function WaveSurferBasic({
   };
 
   useEffect(() => {
+    setCanPlayRef.current = setCanPlay;
+  }, [setCanPlay]);
+
+  useEffect(() => {
     if (!containerRef.current || !url) return;
+
+    setIsLoading(true);
 
     const hover = HoverPlugin.create();
     const ws = WaveSurfer.create({
@@ -122,11 +127,12 @@ function WaveSurferBasic({
     wsRef.current = ws;
 
     const unsubReady = ws.on("ready", () => {
+      setIsLoading(false);
+      setCanPlayRef.current(true);
       if (shouldPlay()) {
         void ws.play();
       }
     });
-
     const unsubPlay = isOnFeed
       ? () => {}
       : ws.on("play", () => setLocalPlaying(true));
@@ -145,6 +151,8 @@ function WaveSurferBasic({
       ws.destroy();
       wsRef.current = null;
     };
+    // Keep this effect tied to url only — recreating on feed state
+    // changes reloads audio and makes loading feel much slower.
   }, [url, shouldPlay, isOnFeed]);
 
   useEffect(() => {
@@ -152,31 +160,26 @@ function WaveSurferBasic({
   }, [isMuted]);
 
   useEffect(() => {
-    if (!isOnFeed) return;
-
     syncPlayback();
+  }, [isActive, isPlaying, syncPlayback]);
 
-    const ws = wsRef.current;
-    if (!ws || ws.getDuration() > 0) return;
-
-    const unsubReady = ws.on("ready", () => {
-      syncPlayback();
-      setIsLoading(false);
-    });
-    return () => unsubReady();
-  }, [isOnFeed, isActive, isPlaying, syncPlayback]);
-
-  // TODO - add a loading state to the wave surfer
-  // TODO - add modal to play button on first visitx
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
-      <div ref={containerRef} className="w-full min-w-0 min-h-24 md:min-h-32">
-        {isLoading && !wsRef ? (
-          <div className="flex items-center justify-center h-32">
-            <Loader2 className="animate-spin" size={32} />
+    <div
+      className={clsx(
+        "flex flex-col gap-2 border rounded-md p-4 w-full min-w-0",
+        isLoading && "animate-pulse",
+      )}
+    >
+      <div className="relative w-full min-w-0 min-h-24 md:min-h-32">
+        {/* Dedicated mount node — keep React overlays out of this div */}
+        <div
+          ref={containerRef}
+          className="w-full min-w-0 min-h-24 md:min-h-32"
+        />
+        {isLoading && (
+          <div className="absolute top-0 left-0 flex items-center justify-center h-full w-full">
+            <WaveformSkeleton />
           </div>
-        ) : (
-          <></>
         )}
       </div>
       <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
