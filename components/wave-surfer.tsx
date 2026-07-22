@@ -170,18 +170,16 @@ function WaveSurferBasic({
         isLoading && "animate-pulse",
       )}
     >
-      <div className="relative w-full min-w-0 min-h-24 md:min-h-32">
+      <div className="relative w-full min-w-0 h-24 md:h-32">
         {/* Dedicated mount node — keep React overlays out of this div */}
-        <div
-          ref={containerRef}
-          className="w-full min-w-0 min-h-24 md:min-h-32"
-        />
+        <div ref={containerRef} className="w-full min-w-0 h-24 md:h-32" />
         {isLoading && (
           <div className="absolute top-0 left-0 flex items-center justify-center h-full w-full">
             <WaveformSkeleton />
           </div>
         )}
       </div>
+
       <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
         {!isOnFeed && (
           <div className="flex items-center gap-2">
