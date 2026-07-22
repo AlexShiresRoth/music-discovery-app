@@ -12,6 +12,8 @@ vi.mock("next/navigation", () => ({
 const joinedDate = new Date("2024-03-15");
 const formattedDate = joinedDate.toLocaleDateString();
 
+const social = (url = "", show = true) => ({ url, show });
+
 const baseProps = {
   fullName: "Test User",
   contactEmail: "test@example.com",
@@ -19,16 +21,15 @@ const baseProps = {
   profileName: null,
   genre: null,
   bio: null,
-  city: null,
-  state: null,
-  country: null,
-  website: null,
-  facebook: null,
-  instagram: null,
-  tiktok: null,
-  spotify: null,
-  appleMusic: null,
-  soundcloud: null,
+  location: { formattedLocation: "", lat: 0, lon: 0 },
+  website: social(),
+  facebook: social(),
+  instagram: social(),
+  tiktok: social(),
+  spotify: social(),
+  appleMusic: social(),
+  soundcloud: social(),
+  bandcamp: social(),
   imageUrl: null,
 };
 

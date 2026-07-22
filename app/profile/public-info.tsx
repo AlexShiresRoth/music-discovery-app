@@ -66,6 +66,13 @@ export default function PublicInfo({
       setIsFormPending(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
+      const locationRaw = profileData.location;
+      if (typeof locationRaw === "string") {
+        profileData.location =
+          locationRaw === "" || locationRaw === "null"
+            ? null
+            : JSON.parse(locationRaw);
+      }
 
       const response = await fetch("/api/profile/edit", {
         method: "POST",
