@@ -32,9 +32,14 @@ export const profilesSchema = pgTable("profiles", {
     .notNull()
     .default([]),
   imageUrl: text("image_url"),
-  city: text("city"),
-  state: text("state"),
-  country: text("country"),
+  location: jsonb("location")
+    .$type<{
+      formattedLocation: string;
+      lat: number;
+      lon: number;
+    }>()
+    .notNull()
+    .default({ formattedLocation: "", lat: 0, lon: 0 }),
   website: jsonb("website")
     .$type<SocialField>()
     .notNull()

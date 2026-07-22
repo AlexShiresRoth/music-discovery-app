@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ALTER COLUMN "location" SET DEFAULT '{"formattedLocation":"","lat":0,"lon":0}'::jsonb;

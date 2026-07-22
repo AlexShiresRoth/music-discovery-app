@@ -1,0 +1,38 @@
+.geoapify-autocomplete-input {
+  outline: none;
+  padding: 0 0px;
+  width: 100%;
+}
+.geoapify-geocoder-autocomplete-container {
+  position: relative;
+  width: 100%;
+}
+
+.geoapify-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.geoapify-autocomplete-items {
+  border: 1px solid #ccc;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 90;
+  background-color: var(--color-background);
+  border-radius: 4px;
+}
+
+.geoapify-autocomplete-item {
+  border-bottom: 1px solid #ccc;
+  padding: 4px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.geoapify-autocomplete-item:hover {
+  background-color: #e170004e;
+}

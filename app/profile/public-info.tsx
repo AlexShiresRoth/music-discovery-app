@@ -51,9 +51,7 @@ export default function PublicInfo({
   profileName,
   genre,
   bio,
-  city,
-  state,
-  country,
+  location,
   mode = "View",
 }: ProfileFormSchemaWithoutId & { mode?: Mode }) {
   const isEdit = mode === "Edit";
@@ -180,17 +178,17 @@ export default function PublicInfo({
         <div className="flex flex-col gap-10">
           <div className="border-b pb-4">
             {isEdit ? (
-              <ViewOrEditData title={fields.city.label}>
+              <ViewOrEditData title={fields.location.label}>
                 <GeoCityInput
                   isPending={isFormPending}
-                  name={fields.city.name}
-                  defaultValue={city ?? ""}
-                  placeholder={fields.city.placeholder ?? ""}
+                  name={fields.location.name}
+                  placeholder={fields.location.placeholder ?? ""}
+                  defaultValue={location ?? null}
                 />
               </ViewOrEditData>
             ) : (
-              <ViewOrEditData title={fields.city.label}>
-                <p className="text-lg">{city}</p>
+              <ViewOrEditData title={fields.location.label}>
+                <p className="text-lg">{location.formattedLocation}</p>
               </ViewOrEditData>
             )}
           </div>

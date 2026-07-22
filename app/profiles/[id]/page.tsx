@@ -37,9 +37,7 @@ export default async function ProfilePage({ params }: Props) {
           <div className="flex flex-col gap-4">
             <p>{profile.genre}</p>
             <div className="flex gap-2">
-              <p>
-                {profile.city} - {profile.state}
-              </p>
+              <p>{profile.location?.formattedLocation}</p>
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
               {profile.profileName}
