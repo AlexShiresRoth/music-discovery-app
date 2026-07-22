@@ -1,4 +1,3 @@
-import { Pencil } from "lucide-react";
 import { ComponentPropsWithoutRef } from "react";
 
 export default function SelectInput({
@@ -19,19 +18,18 @@ export default function SelectInput({
     <div className="flex flex-col">
       {label && (
         <div className="-mb-4 flex relative">
-          <label htmlFor={name} className="ml-4 p-2 text-sm">
+          <label htmlFor={name} className="ml-4 text-sm">
             {label}
           </label>
         </div>
       )}
       {isEdit ? (
         <div className="flex items-center gap-1 w-full">
-          <Pencil size={14} />
           <select
             {...props}
             name={name}
             disabled={isPending}
-            className="border-0 indent-1 disabled:opacity-50 focus:outline-none transition-all py-1 px-4 w-full"
+            className="border-0 -ml-1 disabled:opacity-50 focus:outline-none transition-all py-1 w-full"
           >
             {options.map((option) => (
               <option key={option.value} value={option.value}>
@@ -45,7 +43,7 @@ export default function SelectInput({
           {...props}
           name={name}
           disabled={isPending}
-          className="border rounded-md p-4.5 indent-1 disabled:opacity-50 focus:outline-none transition-all "
+          className="border rounded-md py-4.5 disabled:opacity-50 focus:outline-none transition-all "
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

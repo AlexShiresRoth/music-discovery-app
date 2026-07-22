@@ -9,22 +9,46 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));
 
+vi.mock("@/app/profile/geo-city-input", () => ({
+  default: ({
+    name,
+    defaultValue,
+  }: {
+    name: string;
+    defaultValue: { formattedLocation: string; lat: number; lon: number } | null;
+  }) => (
+    <input
+      name={name}
+      readOnly
+      value={JSON.stringify(defaultValue)}
+      data-testid="location-input"
+    />
+  ),
+}));
+
+const location = {
+  formattedLocation: "New York, NY, USA",
+  lat: 40.71,
+  lon: -74.0,
+};
+
+const social = (url = "", show = true) => ({ url, show });
+
 const baseProps = {
   profileName: "Test Profile",
   genre: "Rock",
   bio: "A test bio",
-  city: "New York",
-  state: "NY",
-  country: "US",
+  location,
   fullName: "Test User",
   contactEmail: "test@example.com",
-  website: null,
-  facebook: null,
-  instagram: null,
-  tiktok: null,
-  spotify: null,
-  appleMusic: null,
-  soundcloud: null,
+  website: social(),
+  facebook: social(),
+  instagram: social(),
+  tiktok: social(),
+  spotify: social(),
+  appleMusic: social(),
+  soundcloud: social(),
+  bandcamp: social(),
   imageUrl: null,
 };
 
@@ -54,17 +78,16 @@ describe("PublicInfo", () => {
       expect(screen.getByText("Test Profile")).toBeDefined();
     });
 
-    it("displays genre and bio", () => {
+    it("displays genre, bio, and formatted location", () => {
       renderWithToast();
       expect(screen.getByText("Rock")).toBeDefined();
       expect(screen.getByText("A test bio")).toBeDefined();
+      expect(screen.getByText("New York, NY, USA")).toBeDefined();
     });
 
     it("shows an Edit link pointing to /profile/edit/public", () => {
       const { container } = renderWithToast();
-      const link = container.querySelector(
-        'a[href="/profile/edit/public"]',
-      );
+      const link = container.querySelector('a[href="/profile/edit/public"]');
       expect(link).not.toBeNull();
     });
 
@@ -75,16 +98,13 @@ describe("PublicInfo", () => {
   });
 
   describe("edit mode", () => {
-    it("renders inputs pre-filled with current values", () => {
-      const { container } = renderWithToast({ mode: "Edit" });
+    it("renders inputs pre-filled with current values including location", () => {
+      renderWithToast({ mode: "Edit" });
       expect(screen.getByDisplayValue("Test Profile")).toBeDefined();
-      const cityInput =
-        container.querySelector<HTMLInputElement>('input[name="city"]');
-      expect(cityInput?.value).toBe("New York");
-      const countrySelect = container.querySelector<HTMLSelectElement>(
-        'select[name="country"]',
+      expect(screen.getByTestId("location-input")).toHaveProperty(
+        "value",
+        JSON.stringify(location),
       );
-      expect(countrySelect?.value).toBe("US");
     });
 
     it("shows the Save button", () => {
@@ -112,7 +132,7 @@ describe("PublicInfo", () => {
       expect(mockPush).toHaveBeenCalledWith("/profile");
     });
 
-    it("posts to /api/profile/edit on submit", async () => {
+    it("posts parsed location JSON to /api/profile/edit on submit", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -130,6 +150,11 @@ describe("PublicInfo", () => {
           }),
         );
       });
+
+      const body = JSON.parse(
+        (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body,
+      );
+      expect(body.location).toEqual(location);
     });
 
     it("shows success toast and navigates to /profile on success", async () => {

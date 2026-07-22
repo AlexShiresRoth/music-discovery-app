@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@geoapify/geocoder-autocomplete':
+        specifier: ^3.0.1
+        version: 3.0.1
       '@supabase/ssr':
         specifier: ^0.10.3
         version: 0.10.3(@supabase/supabase-js@2.108.0)
@@ -737,6 +740,9 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@geoapify/geocoder-autocomplete@3.0.1':
+    resolution: {integrity: sha512-zCvnDtRZKASUwJ9jNcYn1+g17IlouQQINLov/SkPC5/2e7N8CYkcMqj/SKK1ARvUkvqbFC0rMvvkJa7P6Rme7A==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -3730,6 +3736,8 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.15.1': {}
+
+  '@geoapify/geocoder-autocomplete@3.0.1': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

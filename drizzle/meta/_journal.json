@@ -36,6 +36,20 @@
       "when": 1784513664694,
       "tag": "0004_thin_hellcat",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784730861493,
+      "tag": "0005_many_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784731332874,
+      "tag": "0006_tranquil_killmonger",
+      "breakpoints": true
     }
   ]
 }

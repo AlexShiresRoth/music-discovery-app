@@ -56,9 +56,11 @@ const baseProfile = {
     },
   ],
   imageUrl: null,
-  city: "Austin",
-  state: "TX",
-  country: "US",
+  location: {
+    formattedLocation: "Austin, TX, USA",
+    lat: 30.27,
+    lon: -97.74,
+  },
   website: { url: "", show: true },
   facebook: { url: "", show: true },
   instagram: { url: "https://instagram.com/test", show: true },
@@ -98,7 +100,7 @@ describe("FeedProfile", () => {
 
     expect(screen.getByText("Test Band")).toBeDefined();
     expect(screen.getByText("Rock")).toBeDefined();
-    expect(screen.getByText("Austin - TX")).toBeDefined();
+    expect(screen.getByText("Austin, TX, USA")).toBeDefined();
   });
 
   it("renders only social links that are present", () => {

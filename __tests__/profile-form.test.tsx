@@ -8,6 +8,21 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+vi.mock("@/app/profile/geo-city-input", () => ({
+  default: ({ name }: { name: string }) => (
+    <input
+      name={name}
+      readOnly
+      data-testid="location-input"
+      value={JSON.stringify({
+        formattedLocation: "New York, NY, USA",
+        lat: 40.71,
+        lon: -74.0,
+      })}
+    />
+  ),
+}));
+
 function renderWithToast(setToast = vi.fn()) {
   const { container } = render(
     <ToastContext.Provider value={{ toast: null, setToast }}>
@@ -30,12 +45,12 @@ describe("ProfileForm", () => {
     expect(screen.getByText("Social")).toBeDefined();
   });
 
-  it("renders required fields", () => {
+  it("renders required fields including the geolocation input", () => {
     renderWithToast();
     expect(screen.getByPlaceholderText("Full Name")).toBeDefined();
     expect(screen.getByPlaceholderText("Contact Email")).toBeDefined();
     expect(screen.getByPlaceholderText("Display Name")).toBeDefined();
-    expect(screen.getByPlaceholderText("City")).toBeDefined();
+    expect(screen.getByTestId("location-input")).toBeDefined();
   });
 
   it("renders submit button with correct initial label", () => {
@@ -65,6 +80,15 @@ describe("ProfileForm", () => {
           headers: { "Content-Type": "application/json" },
         }),
       );
+    });
+
+    const body = JSON.parse(
+      (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body,
+    );
+    expect(body.location).toEqual({
+      formattedLocation: "New York, NY, USA",
+      lat: 40.71,
+      lon: -74.0,
     });
   });
 

@@ -42,17 +42,10 @@ const ProfileFormSchema: Record<
     placeholder: "Contact Email",
     required: true,
   },
-  city: { name: "city", label: "City", placeholder: "City", required: true },
-  state: {
-    name: "state",
-    label: "State",
-    placeholder: "State",
-    required: true,
-  },
-  country: {
-    name: "country",
-    label: "Country",
-    placeholder: "Country",
+  location: {
+    name: "location",
+    label: "Location",
+    placeholder: "Location",
     required: true,
   },
   website: {

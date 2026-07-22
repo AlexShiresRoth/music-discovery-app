@@ -3,7 +3,14 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import { Loader2, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import {
+  ExternalLink,
+  Loader2,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
@@ -193,19 +200,20 @@ function WaveSurferBasic({
             </button>
           </div>
         )}
-        <p className={clsx("text-sm truncate", isOnFeed && "text-xl")}>
-          {clipName}
-        </p>
-        {fullSongUrl && (
-          <a
-            href={fullSongUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm hover:cursor-pointer hover:text-gray-500 transition-colors"
-          >
-            Listen to full song
-          </a>
-        )}
+        <div className="flex gap-2 items-center">
+          <p className={clsx("text-sm truncate")}>{clipName}</p>
+          {fullSongUrl && <span>/</span>}
+          {fullSongUrl && (
+            <a
+              href={fullSongUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm hover:cursor-pointer hover:text-gray-500 transition-colors flex items-center gap-1"
+            >
+              <ExternalLink size={14} /> Listen to full song
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
