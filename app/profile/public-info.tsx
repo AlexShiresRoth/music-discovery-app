@@ -2,12 +2,13 @@
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import { COUNTRIES, GENRES, STATES } from "@/constants";
+import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { Pencil, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useContext, useState } from "react";
+import GeoCityInput from "./geo-city-input";
 import PreHeader from "./pre-header";
 import { profileFormFields, ProfileFormSchemaWithoutId } from "./schemas";
 
@@ -175,59 +176,23 @@ export default function PublicInfo({
             </ViewOrEditData>
           )}
         </div>
-        <div className="flex flex-col gap-2 border-b pb-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              {isEdit ? (
-                <ViewOrEditData title={fields.city.label}>
-                  <TextInput
-                    isEdit
-                    isPending={isFormPending}
-                    name={fields.city.name}
-                    defaultValue={city || ""}
-                    placeholder={fields.city.placeholder}
-                  />
-                </ViewOrEditData>
-              ) : (
-                <ViewOrEditData title={fields.city.label}>
-                  <p className="text-lg">{city}</p>
-                </ViewOrEditData>
-              )}
-            </div>
-            <div>
-              {isEdit ? (
-                <ViewOrEditData title={fields.state.label}>
-                  <SelectInput
-                    isEdit
-                    isPending={isFormPending}
-                    name={fields.state.name}
-                    defaultValue={state || ""}
-                    options={STATES}
-                  />
-                </ViewOrEditData>
-              ) : (
-                <ViewOrEditData title={fields.state.label}>
-                  <p className="text-lg">{state}</p>
-                </ViewOrEditData>
-              )}
-            </div>
-            <div>
-              {isEdit ? (
-                <ViewOrEditData title={fields.country.label}>
-                  <SelectInput
-                    isEdit
-                    isPending={isFormPending}
-                    name={fields.country.name}
-                    defaultValue={country || ""}
-                    options={COUNTRIES}
-                  />
-                </ViewOrEditData>
-              ) : (
-                <ViewOrEditData title={fields.country.label}>
-                  <p className="text-lg">{country}</p>
-                </ViewOrEditData>
-              )}
-            </div>
+
+        <div className="flex flex-col gap-10">
+          <div className="border-b pb-4">
+            {isEdit ? (
+              <ViewOrEditData title={fields.city.label}>
+                <GeoCityInput
+                  isPending={isFormPending}
+                  name={fields.city.name}
+                  defaultValue={city ?? ""}
+                  placeholder={fields.city.placeholder ?? ""}
+                />
+              </ViewOrEditData>
+            ) : (
+              <ViewOrEditData title={fields.city.label}>
+                <p className="text-lg">{city}</p>
+              </ViewOrEditData>
+            )}
           </div>
         </div>
         {isEdit && (

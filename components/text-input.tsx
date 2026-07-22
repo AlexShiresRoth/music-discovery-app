@@ -1,4 +1,3 @@
-import { Pencil } from "lucide-react";
 import { ComponentPropsWithoutRef } from "react";
 
 type Input = ComponentPropsWithoutRef<"input">;
@@ -13,20 +12,17 @@ export default function TextInput({
   return (
     <div className="flex flex-col gap-2 w-full">
       {label && (
-        <div className="-mb-6 flex relative">
-          <label htmlFor={name} className="ml-4 p-2 text-sm">
-            {label}
-          </label>
-        </div>
+        <label htmlFor={name} className="ml-4 p-2 text-sm font-semibold">
+          {label}
+        </label>
       )}
       {isEdit ? (
         <div className="flex items-center gap-1 w-full">
-          <Pencil size={14} />
           <input
             {...props}
             name={name}
             disabled={isPending}
-            className="px-4 py-1 border-0 focus:outline-0 w-full"
+            className="py-1 border-0 focus:outline-0 w-full"
           />
         </div>
       ) : (
@@ -35,7 +31,7 @@ export default function TextInput({
           name={name}
           disabled={isPending}
           type="text"
-          className="border rounded-md p-4 indent-1 disabled:opacity-50 focus:outline-none transition-all "
+          className="border rounded-md p-4 disabled:opacity-50 focus:outline-none transition-all "
         />
       )}
     </div>
