@@ -8,9 +8,14 @@ import { Pencil, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useContext, useState } from "react";
-import GeoCityInput from "./geo-city-input";
+import GeoCityInput from "../../components/geo-city-input";
+import ProfileLocationDisplay from "../../components/profile-location-display";
 import PreHeader from "./pre-header";
-import { profileFormFields, ProfileFormSchemaWithoutId } from "./schemas";
+import {
+  locationFormFields,
+  profileFormFields,
+  ProfileFormSchemaWithoutId,
+} from "./schemas";
 
 type Mode = "Edit" | "View";
 
@@ -51,7 +56,14 @@ export default function PublicInfo({
   profileName,
   genre,
   bio,
-  location,
+  city,
+  country,
+  countryCode,
+  state,
+  stateCode,
+  lat,
+  lon,
+  formattedLocation,
   mode = "View",
 }: ProfileFormSchemaWithoutId & { mode?: Mode }) {
   const isEdit = mode === "Edit";
@@ -66,13 +78,6 @@ export default function PublicInfo({
       setIsFormPending(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
-      const locationRaw = profileData.location;
-      if (typeof locationRaw === "string") {
-        profileData.location =
-          locationRaw === "" || locationRaw === "null"
-            ? null
-            : JSON.parse(locationRaw);
-      }
 
       const response = await fetch("/api/profile/edit", {
         method: "POST",
@@ -188,14 +193,28 @@ export default function PublicInfo({
               <ViewOrEditData title={fields.location.label}>
                 <GeoCityInput
                   isPending={isFormPending}
-                  name={fields.location.name}
-                  placeholder={fields.location.placeholder ?? ""}
-                  defaultValue={location ?? null}
+                  fields={locationFormFields}
+                  placeholder={fields.location.placeholder}
+                  defaultValue={{
+                    formattedLocation,
+                    city,
+                    country,
+                    countryCode,
+                    state,
+                    stateCode,
+                    lat,
+                    lon,
+                  }}
                 />
               </ViewOrEditData>
             ) : (
               <ViewOrEditData title={fields.location.label}>
-                <p className="text-lg">{location.formattedLocation}</p>
+                <ProfileLocationDisplay
+                  city={city}
+                  stateCode={stateCode}
+                  countryCode={countryCode}
+                  className="text-lg"
+                />
               </ViewOrEditData>
             )}
           </div>

@@ -1,5 +1,7 @@
 import {
   boolean,
+  customType,
+  doublePrecision,
   integer,
   jsonb,
   pgTable,
@@ -9,6 +11,13 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { SocialField, SongClipWithSlot } from "./types";
+
+/** PostGIS geography point in the Supabase `gis` schema (SRID 4326). */
+export const geographyPoint = customType<{ data: string | null }>({
+  dataType() {
+    return "gis.geography(Point, 4326)";
+  },
+});
 
 export const songClipsSchema = pgTable("song_clips", {
   id: serial("id").primaryKey(),
@@ -32,14 +41,15 @@ export const profilesSchema = pgTable("profiles", {
     .notNull()
     .default([]),
   imageUrl: text("image_url"),
-  location: jsonb("location")
-    .$type<{
-      formattedLocation: string;
-      lat: number;
-      lon: number;
-    }>()
-    .notNull()
-    .default({ formattedLocation: "", lat: 0, lon: 0 }),
+  city: text("city").notNull().default(""),
+  country: text("country").notNull().default(""),
+  countryCode: text("country_code").notNull().default(""),
+  state: text("state").notNull().default(""),
+  stateCode: text("state_code").notNull().default(""),
+  formattedLocation: text("formatted_location").notNull().default(""),
+  lat: doublePrecision("lat").notNull().default(0),
+  lon: doublePrecision("lon").notNull().default(0),
+  location: geographyPoint("location"),
   website: jsonb("website")
     .$type<SocialField>()
     .notNull()

@@ -8,18 +8,23 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-vi.mock("@/app/profile/geo-city-input", () => ({
-  default: ({ name }: { name: string }) => (
-    <input
-      name={name}
-      readOnly
-      data-testid="location-input"
-      value={JSON.stringify({
-        formattedLocation: "New York, NY, USA",
-        lat: 40.71,
-        lon: -74.0,
-      })}
-    />
+vi.mock("@/components/geo-city-input", () => ({
+  default: () => (
+    <>
+      <input
+        name="formattedLocation"
+        readOnly
+        data-testid="location-input"
+        value="New York, NY, USA"
+      />
+      <input name="city" readOnly value="New York" />
+      <input name="country" readOnly value="United States" />
+      <input name="countryCode" readOnly value="us" />
+      <input name="state" readOnly value="New York" />
+      <input name="stateCode" readOnly value="NY" />
+      <input name="lat" readOnly value="40" />
+      <input name="lon" readOnly value="-74" />
+    </>
   ),
 }));
 
@@ -85,11 +90,10 @@ describe("ProfileForm", () => {
     const body = JSON.parse(
       (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body,
     );
-    expect(body.location).toEqual({
-      formattedLocation: "New York, NY, USA",
-      lat: 40.71,
-      lon: -74.0,
-    });
+    expect(body.formattedLocation).toBe("New York, NY, USA");
+    expect(body.city).toBe("New York");
+    expect(body.lat).toBe("40");
+    expect(body.lon).toBe("-74");
   });
 
   it("shows success toast and redirects on successful submit", async () => {

@@ -3,10 +3,11 @@
 import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
-import ProfileLinksDisplay from "./profile-links-display";
+import ProfileLocationDisplay from "./profile-location-display";
 
 export default function FeedProfile({
   profile,
@@ -39,11 +40,24 @@ export default function FeedProfile({
       data-profile-slide
       className="flex flex-col justify-between snap-start min-h-screen py-16 rounded w-screen max-w-full overflow-hidden"
     >
-      <div className="flex gap-2 w-full justify-between">
+      <div className="flex items-center gap-8 w-full">
+        <div className="relative w-40 h-40 overflow-hidden rounded border">
+          <Image
+            src={profile.imageUrl ?? ""}
+            alt={profile.profileName ?? ""}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
         <div className="flex flex-col gap-2">
           <p>{profile.genre}</p>
           <div className="flex gap-2">
-            <p>{profile.location.formattedLocation}</p>
+            <ProfileLocationDisplay
+              city={profile.city}
+              stateCode={profile.stateCode}
+              countryCode={profile.countryCode}
+            />
           </div>
           <Link
             href={`/profiles/${profile.id}`}
@@ -51,7 +65,6 @@ export default function FeedProfile({
           >
             {profile.profileName}
           </Link>
-          <ProfileLinksDisplay profile={profile} />
         </div>
       </div>
       <div

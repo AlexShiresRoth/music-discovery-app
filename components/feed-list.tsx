@@ -8,6 +8,7 @@ import FeedAudioControls from "./audio-controls";
 import IntroOverlay from "./feed-overlay";
 import FeedProfile from "./feed-profile";
 
+// TODO handle search by location
 export default function FeedList({
   profiles,
 }: {

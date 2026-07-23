@@ -39,6 +39,9 @@ export async function POST(request: Request) {
       );
     }
 
+    const lat = Number(data.lat) || 0;
+    const lon = Number(data.lon) || 0;
+
     await db
       .insert(profilesSchema)
       .values({
@@ -47,7 +50,15 @@ export async function POST(request: Request) {
         bio: data.bio,
         profileName: data.profileName,
         isVerified: false,
-        location: data.location,
+        city: data.city ?? "",
+        country: data.country ?? "",
+        countryCode: data.countryCode ?? "",
+        state: data.state ?? "",
+        stateCode: data.stateCode ?? "",
+        formattedLocation: data.formattedLocation ?? "",
+        lat,
+        lon,
+        location: `POINT(${lon} ${lat})`,
         website: data.website,
         facebook: data.facebook,
         instagram: data.instagram,

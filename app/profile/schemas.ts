@@ -3,9 +3,80 @@ import { Profile, SongClip } from "@/lib/db/types";
 export const MAX_SONG_CLIPS = 3;
 export const MAX_SONG_CLIP_DURATION_SECONDS = 30;
 
+export type FormField = {
+  name: string;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+};
+
+/** Flat address fields collected by GeoCityInput (not the PostGIS `location` column). */
+export type ProfileLocation = Pick<
+  Profile,
+  | "formattedLocation"
+  | "city"
+  | "country"
+  | "countryCode"
+  | "state"
+  | "stateCode"
+  | "lat"
+  | "lon"
+>;
+
+export const locationFormFields: Record<keyof ProfileLocation, FormField> = {
+  formattedLocation: {
+    name: "formattedLocation",
+    label: "Formatted Location",
+    placeholder: "Formatted Location",
+    required: true,
+  },
+  city: {
+    name: "city",
+    label: "City",
+    placeholder: "City",
+    required: true,
+  },
+  country: {
+    name: "country",
+    label: "Country",
+    placeholder: "Country",
+    required: true,
+  },
+  countryCode: {
+    name: "countryCode",
+    label: "Country Code",
+    placeholder: "Country Code",
+    required: true,
+  },
+  state: {
+    name: "state",
+    label: "State",
+    placeholder: "State",
+    required: true,
+  },
+  stateCode: {
+    name: "stateCode",
+    label: "State Code",
+    placeholder: "State Code",
+    required: true,
+  },
+  lat: {
+    name: "lat",
+    label: "Latitude",
+    placeholder: "Latitude",
+    required: true,
+  },
+  lon: {
+    name: "lon",
+    label: "Longitude",
+    placeholder: "Longitude",
+    required: true,
+  },
+};
+
 export const songClipFormFields: Record<
   keyof Pick<SongClip, "title" | "full_song_url">,
-  { name: string; label: string; placeholder?: string; required?: boolean }
+  FormField
 > = {
   title: {
     name: "title",
@@ -26,10 +97,7 @@ export type ProfileFormSchemaWithoutId = Omit<
   "id" | "joinedDate" | "songClips" | "userRefId" | "isVerified"
 >;
 
-const ProfileFormSchema: Record<
-  keyof ProfileFormSchemaWithoutId,
-  { name: string; label: string; placeholder?: string; required?: boolean }
-> = {
+const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
   fullName: {
     name: "fullName",
     label: "Full Name",
@@ -42,10 +110,11 @@ const ProfileFormSchema: Record<
     placeholder: "Contact Email",
     required: true,
   },
+  // UI-only label for the geocoder section; PostGIS value is derived server-side
   location: {
     name: "location",
     label: "Location",
-    placeholder: "Location",
+    placeholder: "Enter your location (min 3 characters)",
     required: true,
   },
   website: {
@@ -120,6 +189,7 @@ const ProfileFormSchema: Record<
     placeholder: "Image URL",
     required: false,
   },
+  ...locationFormFields,
 };
 
 export const profileFormFields = ProfileFormSchema;

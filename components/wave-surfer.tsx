@@ -118,8 +118,10 @@ function WaveSurferBasic({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
       progressColor: PROGRESS_COLOR,
-      height: 100,
+      height: "auto",
       plugins: [hover],
+      barWidth: 3,
+      barHeight: 1.5,
       url,
     });
 
@@ -170,9 +172,14 @@ function WaveSurferBasic({
         isLoading && "animate-pulse",
       )}
     >
-      <div className="relative w-full min-w-0 h-24 md:h-32">
+      <div
+        className={clsx(
+          "relative w-full min-w-0 h-24 md:h-32",
+          isOnFeed && "md:h-50",
+        )}
+      >
         {/* Dedicated mount node — keep React overlays out of this div */}
-        <div ref={containerRef} className="w-full min-w-0 h-24 md:h-32" />
+        <div ref={containerRef} className="w-full min-w-0 h-full" />
         {isLoading && (
           <div className="absolute top-0 left-0 flex items-center justify-center h-full w-full">
             <WaveformSkeleton />

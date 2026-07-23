@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ComponentPropsWithoutRef } from "react";
 
 type Input = ComponentPropsWithoutRef<"input">;
@@ -10,7 +11,12 @@ export default function TextInput({
   ...props
 }: Input & { label?: string; isPending: boolean; isEdit?: boolean }) {
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div
+      className={clsx(
+        "flex flex-col gap-2 w-full",
+        props.hidden && "h-0 w-0 hidden",
+      )}
+    >
       {label && (
         <label htmlFor={name} className="ml-4 p-2 text-sm font-semibold">
           {label}

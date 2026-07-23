@@ -7,7 +7,7 @@ import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import GeoCityInput from "../geo-city-input";
+import GeoCityInput from "../../../components/geo-city-input";
 import { profileFormFields } from "../schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -46,13 +46,6 @@ export default function ProfileForm() {
       setIsFormPending(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
-      const locationRaw = profileData.location;
-      if (typeof locationRaw === "string") {
-        profileData.location =
-          locationRaw === "" || locationRaw === "null"
-            ? null
-            : JSON.parse(locationRaw);
-      }
 
       const response = await fetch("/api/profile/create", {
         method: "POST",
@@ -99,8 +92,7 @@ export default function ProfileForm() {
               <TextInput {...fields.fullName} isPending={pending} />
               <TextInput {...fields.contactEmail} isPending={pending} />
               <GeoCityInput
-                name={fields.location.name}
-                placeholder="Enter your location (min 3 characters)"
+                placeholder={fields.location.placeholder}
                 defaultValue={null}
                 isPending={pending}
               />

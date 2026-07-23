@@ -54,7 +54,7 @@ export async function getProfileById(id: string) {
 // TODO - we should shuffle the profiles
 export async function getProfilesWithSongClips(
   startIndex: number = 0,
-  limit: number = 100,
+  limit: number = 15,
 ): Promise<ProfileWithSongClips[]> {
   try {
     const profiles = await db

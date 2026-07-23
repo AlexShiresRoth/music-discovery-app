@@ -1,4 +1,5 @@
 import ProfileLinksDisplay from "@/components/profile-links-display";
+import ProfileLocationDisplay from "@/components/profile-location-display";
 import type { Profile, SongClip } from "@/lib/db/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,7 +48,11 @@ export default async function Profile({ profile, clips }: Props) {
           <div className="flex flex-col gap-4">
             <p>{profile.genre}</p>
             <div className="flex gap-2">
-              <p>{profile.location.formattedLocation}</p>
+              <ProfileLocationDisplay
+                city={profile.city}
+                stateCode={profile.stateCode}
+                countryCode={profile.countryCode}
+              />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
               {profile.profileName}

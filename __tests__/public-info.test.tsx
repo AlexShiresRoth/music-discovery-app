@@ -9,28 +9,42 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));
 
-vi.mock("@/app/profile/geo-city-input", () => ({
+vi.mock("@/components/geo-city-input", () => ({
   default: ({
-    name,
     defaultValue,
   }: {
-    name: string;
-    defaultValue: { formattedLocation: string; lat: number; lon: number } | null;
+    defaultValue: {
+      formattedLocation: string;
+      city: string;
+      country: string;
+      countryCode: string;
+      state: string;
+      stateCode: string;
+      lat: number;
+      lon: number;
+    } | null;
   }) => (
-    <input
-      name={name}
-      readOnly
-      value={JSON.stringify(defaultValue)}
-      data-testid="location-input"
-    />
+    <>
+      <input
+        name="formattedLocation"
+        readOnly
+        value={defaultValue?.formattedLocation ?? ""}
+        data-testid="location-input"
+      />
+      <input name="city" readOnly value={defaultValue?.city ?? ""} />
+      <input name="country" readOnly value={defaultValue?.country ?? ""} />
+      <input
+        name="countryCode"
+        readOnly
+        value={defaultValue?.countryCode ?? ""}
+      />
+      <input name="state" readOnly value={defaultValue?.state ?? ""} />
+      <input name="stateCode" readOnly value={defaultValue?.stateCode ?? ""} />
+      <input name="lat" readOnly value={String(defaultValue?.lat ?? "")} />
+      <input name="lon" readOnly value={String(defaultValue?.lon ?? "")} />
+    </>
   ),
 }));
-
-const location = {
-  formattedLocation: "New York, NY, USA",
-  lat: 40.71,
-  lon: -74.0,
-};
 
 const social = (url = "", show = true) => ({ url, show });
 
@@ -38,7 +52,15 @@ const baseProps = {
   profileName: "Test Profile",
   genre: "Rock",
   bio: "A test bio",
-  location,
+  formattedLocation: "New York, NY, USA",
+  city: "New York",
+  country: "United States",
+  countryCode: "us",
+  state: "New York",
+  stateCode: "NY",
+  lat: 40,
+  lon: -74,
+  location: null,
   fullName: "Test User",
   contactEmail: "test@example.com",
   website: social(),
@@ -103,7 +125,7 @@ describe("PublicInfo", () => {
       expect(screen.getByDisplayValue("Test Profile")).toBeDefined();
       expect(screen.getByTestId("location-input")).toHaveProperty(
         "value",
-        JSON.stringify(location),
+        "New York, NY, USA",
       );
     });
 
@@ -132,7 +154,7 @@ describe("PublicInfo", () => {
       expect(mockPush).toHaveBeenCalledWith("/profile");
     });
 
-    it("posts parsed location JSON to /api/profile/edit on submit", async () => {
+    it("posts flat location fields to /api/profile/edit on submit", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         json: async () => ({ success: true }),
@@ -154,7 +176,10 @@ describe("PublicInfo", () => {
       const body = JSON.parse(
         (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body,
       );
-      expect(body.location).toEqual(location);
+      expect(body.formattedLocation).toBe("New York, NY, USA");
+      expect(body.city).toBe("New York");
+      expect(body.lat).toBe("40");
+      expect(body.lon).toBe("-74");
     });
 
     it("shows success toast and navigates to /profile on success", async () => {
