@@ -2,6 +2,7 @@
 import { Profile } from "@/lib/db/types";
 import { Loader2, MapPinIcon, Music, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 type SearchLocationResult = Pick<Profile, "id" | "city" | "lat" | "lon">;
@@ -9,9 +10,8 @@ type SearchLocationResult = Pick<Profile, "id" | "city" | "lat" | "lon">;
 type SearchArtistResult = Pick<Profile, "id" | "profileName">;
 
 const DEBOUNCE_DELAY = 300;
-// TODO - fix navigation on mobile with search
-// TODO - fix feed profile layout on mobile
-export default function Search() {
+
+function SearchUI() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchLocationResults, setSearchLocationResults] = useState<
@@ -21,6 +21,7 @@ export default function Search() {
   const [searchArtistResults, setSearchArtistResults] = useState<
     SearchArtistResult[]
   >([]);
+  const [shouldOpen, setShouldOpen] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const searchResTotal =
@@ -49,6 +50,7 @@ export default function Search() {
       setSearchLocationResults(uniqueLocations);
       setSearchArtistResults(artists);
       setIsLoading(false);
+      setShouldOpen(true);
     }
     if (
       (searchLocationResults.length > 0 || searchArtistResults.length > 0) &&
@@ -56,6 +58,7 @@ export default function Search() {
     ) {
       setSearchLocationResults([]);
       setSearchArtistResults([]);
+      setShouldOpen(false);
     }
   };
 
@@ -63,10 +66,11 @@ export default function Search() {
     setSearchQuery("");
     setSearchLocationResults([]);
     setSearchArtistResults([]);
+    setShouldOpen(false);
   };
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-3/4 md:w-full max-w-sm">
       <div className="flex items-center gap-2 border-b relative" tabIndex={-1}>
         <button>
           <SearchIcon className="w-4 h-4" />
@@ -96,7 +100,7 @@ export default function Search() {
           </button>
         )}
 
-        {searchResTotal > 0 && (
+        {shouldOpen && searchResTotal > 0 && (
           <div
             className="absolute top-full left-0 w-full bg-background border rounded z-20 flex flex-col gap-4 pt-4"
             id="search-results"
@@ -158,4 +162,11 @@ export default function Search() {
       </div>
     </div>
   );
+}
+// TODO - fix navigation on mobile with search
+// TODO - fix feed profile layout on mobile
+export default function Search() {
+  const search = useSearchParams();
+  const q = search.get("q");
+  return <SearchUI key={q ?? ""} />;
 }

@@ -16,17 +16,18 @@ export default function IntroOverlay() {
       className={clsx(
         "fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center",
         hasVisited && "animate-fade-out duration-300 -z-10",
-        !hasVisited && "animate-fade-in duration-300 bg-black/90 z-10",
+        !hasVisited &&
+          "animate-fade-in duration-300 bg-background/50 z-10 backdrop-blur-md",
       )}
     >
       <div className="flex flex-col justify-center h-full w-11/12">
         <div className="flex flex-col max-w-5xl gap-4">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">
+          <h1 className="text-4xl md:text-6xl font-bold">
             Discover your local underground music scene
           </h1>
-          <p className="text-white">Press the play button to start listening</p>
-          <p className="text-white">Scroll to discover more artists</p>
-          <p className="text-white/80 text-xs">Touch anywhere to dismiss</p>
+          <p>Press the play button to start listening</p>
+          <p>Scroll to discover more artists</p>
+          <p className="text-xs">Touch anywhere to dismiss</p>
         </div>
       </div>
       <div className="w-full pb-4 relative">

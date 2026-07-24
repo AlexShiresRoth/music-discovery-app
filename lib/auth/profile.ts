@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { asc, eq, sql } from "drizzle-orm";
+import { asc, eq, ilike, sql } from "drizzle-orm";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -63,6 +63,36 @@ export async function getProfilesWithSongClips(
       .offset(startIndex)
       .limit(limit);
 
+    if (profiles.length === 0) {
+      return [];
+    }
+
+    return await Promise.all(
+      profiles.map(async (profile) => {
+        const songClips = await getSongClipsByIds(
+          profile.songClips.map((clip) => clip.id),
+        );
+        return { ...profile, songClips };
+      }),
+    );
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    return [];
+  }
+}
+
+export async function getProfilesWithSongClipsByQuery(
+  query: string,
+  startIndex: number = 0,
+  limit: number = 15,
+): Promise<ProfileWithSongClips[]> {
+  try {
+    const profiles = await db
+      .select()
+      .from(profilesSchema)
+      .where(ilike(profilesSchema.profileName, `${query}%`))
+      .offset(startIndex)
+      .limit(limit);
     if (profiles.length === 0) {
       return [];
     }

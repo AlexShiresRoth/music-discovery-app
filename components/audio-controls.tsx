@@ -33,8 +33,7 @@ export default function FeedAudioControls() {
           <div
             className={clsx(
               "absolute bottom-0 left-0 w-full h-full bg-amber-500 opacity-0 animate-grow-width-delay -z-10",
-              animEnded &&
-                "border-2 border-white rounded-full transition-all duration-300",
+              animEnded && "rounded-full transition-all duration-300",
             )}
             onAnimationEnd={handleAnimationEnd}
           />

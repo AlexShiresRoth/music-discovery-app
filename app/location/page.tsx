@@ -13,10 +13,9 @@ export default async function LocationPage({ searchParams }: Props) {
     parseFloat(lat),
   );
 
-  console.log(results);
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Artists in & nearby {q}</h1>
+      <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
       <FeedList profiles={results} />
     </div>
   );
