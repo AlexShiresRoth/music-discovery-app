@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -60,6 +60,52 @@ export async function getProfilesWithSongClips(
     const profiles = await db
       .select()
       .from(profilesSchema)
+      .offset(startIndex)
+      .limit(limit);
+
+    if (profiles.length === 0) {
+      return [];
+    }
+
+    return await Promise.all(
+      profiles.map(async (profile) => {
+        const songClips = await getSongClipsByIds(
+          profile.songClips.map((clip) => clip.id),
+        );
+        return { ...profile, songClips };
+      }),
+    );
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    return [];
+  }
+}
+
+export async function getProfilesWithSongClipsByLocation(
+  longitude: number,
+  latitude: number,
+  startIndex: number = 0,
+  limit: number = 15,
+): Promise<ProfileWithSongClips[]> {
+  try {
+    const searchPoint = sql`
+    ST_SetSRID(
+      ST_MakePoint(${longitude}, ${latitude}),
+      4326
+    )::geography
+  `;
+
+    const distance = sql<number>`
+    ST_Distance(${profilesSchema.location}, ${searchPoint})
+  `;
+
+    const profiles = await db
+      .select()
+      .from(profilesSchema)
+      .where(
+        sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, 40_000)`,
+      )
+      .orderBy(asc(distance))
       .offset(startIndex)
       .limit(limit);
 

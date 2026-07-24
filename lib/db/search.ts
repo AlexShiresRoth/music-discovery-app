@@ -6,17 +6,22 @@ export async function searchProfiles(query: string, limit = 10) {
   return await db
     .select({
       id: profilesSchema.id,
-      city: profilesSchema.city,
-      fullName: profilesSchema.fullName,
-      state: profilesSchema.state,
-      country: profilesSchema.country,
+      profileName: profilesSchema.profileName,
     })
     .from(profilesSchema)
-    .where(
-      or(
-        ilike(profilesSchema.city, `${query}%`),
-        ilike(profilesSchema.profileName, `${query}%`),
-      ),
-    )
+    .where(or(ilike(profilesSchema.profileName, `${query}%`)))
+    .limit(limit);
+}
+
+export async function searchCities(query: string, limit = 10) {
+  return await db
+    .select({
+      id: profilesSchema.id,
+      city: profilesSchema.city,
+      lat: profilesSchema.lat,
+      lon: profilesSchema.lon,
+    })
+    .from(profilesSchema)
+    .where(ilike(profilesSchema.city, `${query}%`))
     .limit(limit);
 }

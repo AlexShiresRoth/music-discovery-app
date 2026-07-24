@@ -1,4 +1,4 @@
-import { searchProfiles } from "@/lib/db/search";
+import { searchCities, searchProfiles } from "@/lib/db/search";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request): Promise<Response> {
@@ -10,11 +10,13 @@ export async function GET(req: Request): Promise<Response> {
       return NextResponse.json({ error: "No query provided" }, { status: 400 });
     }
 
-    console.log(query);
+    const searchProfilesResults = await searchProfiles(query, 5);
+    const searchCitiesResults = await searchCities(query, 5);
 
-    const searchResults = await searchProfiles(query, 5);
-
-    return NextResponse.json(searchResults);
+    return NextResponse.json({
+      cities: searchCitiesResults,
+      artists: searchProfilesResults,
+    });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
