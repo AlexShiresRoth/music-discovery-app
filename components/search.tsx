@@ -115,7 +115,9 @@ function SearchUI() {
             )}
             {searchLocationResults.length > 0 && !isLoading && (
               <div className="flex flex-col">
-                <h3 className="font-semibold px-2 pb-2">Locations</h3>
+                <div className="w-full border-b">
+                  <h3 className="font-semibold px-4 pb-2">Locations</h3>
+                </div>
                 {searchLocationResults.map((city) => (
                   <Link
                     href={`/location?q=${city.city}&lat=${city.lat}&lon=${city.lon}`}
@@ -130,7 +132,9 @@ function SearchUI() {
             )}
             {searchArtistResults.length > 0 && !isLoading && (
               <div className="flex flex-col">
-                <h3 className="font-semibold px-2 pb-2">Artists</h3>
+                <div className="w-full border-b">
+                  <h3 className="font-semibold px-4 pb-2">Artists</h3>
+                </div>
                 {searchArtistResults.map((artist) => (
                   <Link
                     href={`/artist?q=${artist.profileName}`}

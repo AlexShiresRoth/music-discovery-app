@@ -111,6 +111,37 @@ export async function getProfilesWithSongClipsByQuery(
   }
 }
 
+export async function getProfilesWithSongClipsByGenre(
+  query: string,
+  startIndex: number = 0,
+  limit: number = 15,
+): Promise<ProfileWithSongClips[]> {
+  try {
+    const profiles = await db
+      .select()
+      .from(profilesSchema)
+      .where(ilike(profilesSchema.genre, `${query}%`))
+      .offset(startIndex)
+      .limit(limit);
+
+    if (profiles.length === 0) {
+      return [];
+    }
+
+    return await Promise.all(
+      profiles.map(async (profile) => {
+        const songClips = await getSongClipsByIds(
+          profile.songClips.map((clip) => clip.id),
+        );
+        return { ...profile, songClips };
+      }),
+    );
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    return [];
+  }
+}
+
 export async function getProfilesWithSongClipsByLocation(
   longitude: number,
   latitude: number,
