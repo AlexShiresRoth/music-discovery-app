@@ -3,10 +3,11 @@
 import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
-import ProfileLinksDisplay from "./profile-links-display";
+import ProfileLocationDisplay from "./profile-location-display";
 
 export default function FeedProfile({
   profile,
@@ -37,21 +38,34 @@ export default function FeedProfile({
   return (
     <div
       data-profile-slide
-      className="flex flex-col justify-between snap-start min-h-screen py-16 rounded w-screen max-w-full overflow-hidden"
+      className="flex flex-col justify-between snap-start min-h-screen py-20 md:py-32 rounded w-screen max-w-full overflow-hidden"
     >
-      <div className="flex gap-2 w-full justify-between">
+      <div className="flex md:flex-row flex-col md:items-center gap-8 w-full">
+        <div className="relative w-20 h-20  md:w-40 md:h-40 overflow-hidden rounded border">
+          <Image
+            src={profile.imageUrl ?? ""}
+            alt={profile.profileName ?? ""}
+            fill
+            loading="eager"
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
         <div className="flex flex-col gap-2">
           <p>{profile.genre}</p>
           <div className="flex gap-2">
-            <p>{profile.location.formattedLocation}</p>
+            <ProfileLocationDisplay
+              city={profile.city}
+              stateCode={profile.stateCode}
+              countryCode={profile.countryCode}
+            />
           </div>
           <Link
             href={`/profiles/${profile.id}`}
-            className="text-4xl md:text-7xl font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
+            className="text-3xl md:text-7xl font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
           >
             {profile.profileName}
           </Link>
-          <ProfileLinksDisplay profile={profile} />
         </div>
       </div>
       <div
@@ -71,7 +85,7 @@ export default function FeedProfile({
             />
           ))}
       </div>
-      <div className="flex justify-center gap-2 w-full">
+      <div className="flex justify-center gap-2 w-full pb-8 md:pb-0">
         {Array.from({ length: profile.songClips.length }).map((_, index) => (
           <button
             key={index}

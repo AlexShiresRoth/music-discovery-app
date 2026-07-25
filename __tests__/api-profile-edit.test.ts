@@ -48,18 +48,20 @@ function makeRequest(body: object) {
 
 const social = (url = "", show = true) => ({ url, show });
 
-const location = (
-  formattedLocation = "",
-  lat = 0,
-  lon = 0,
-) => ({ formattedLocation, lat, lon });
-
 const existingProfile = {
   id: "profile-1",
   profileName: "Old Profile",
   fullName: "Old Name",
   contactEmail: "old@example.com",
-  location: location("San Francisco, CA, USA", 37.77, -122.42),
+  formattedLocation: "San Francisco, CA, USA",
+  city: "San Francisco",
+  country: "United States",
+  countryCode: "us",
+  state: "California",
+  stateCode: "CA",
+  lat: 37,
+  lon: -122,
+  location: "POINT(-122 37)",
   genre: "Jazz",
   bio: "Old bio",
   imageUrl: null,
@@ -81,7 +83,14 @@ const validUpdateData = {
   profileName: "New Profile",
   fullName: "New Name",
   contactEmail: "new@example.com",
-  location: location("New York, NY, USA", 40.71, -74.0),
+  formattedLocation: "New York, NY, USA",
+  city: "New York",
+  country: "United States",
+  countryCode: "us",
+  state: "New York",
+  stateCode: "NY",
+  lat: 40,
+  lon: -74,
   genre: "Rock",
   bio: "New bio",
   website: social("https://new.com"),
@@ -167,26 +176,41 @@ describe("POST /api/profile/edit", () => {
         profileName: "Old Profile",
         fullName: "Old Name",
         contactEmail: "old@example.com",
-        location: existingProfile.location,
+        formattedLocation: "San Francisco, CA, USA",
+        location: "POINT(-122 37)",
       }),
     );
   });
 
-  it("updates location when a new geolocation object is provided", async () => {
+  it("updates location fields and derives a PostGIS point", async () => {
     mockGetUser.mockResolvedValue({
       data: { user: { id: "user-1" } },
       error: null,
     });
 
-    const nextLocation = location("Austin, TX, USA", 30.27, -97.74);
-    const response = await POST(makeRequest({ location: nextLocation }));
+    const response = await POST(
+      makeRequest({
+        formattedLocation: "Austin, TX, USA",
+        city: "Austin",
+        country: "United States",
+        countryCode: "us",
+        state: "Texas",
+        stateCode: "TX",
+        lat: 30,
+        lon: -97,
+      }),
+    );
     const body = await response.json();
 
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
     expect(mockSet).toHaveBeenCalledWith(
       expect.objectContaining({
-        location: nextLocation,
+        formattedLocation: "Austin, TX, USA",
+        city: "Austin",
+        lat: 30,
+        lon: -97,
+        location: "POINT(-97 30)",
       }),
     );
   });

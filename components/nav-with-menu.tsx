@@ -11,7 +11,7 @@ type Props = {
   user: User | null;
 };
 
-export default function NavContent({ user }: Props) {
+export default function NavWithMenu({ user }: Props) {
   const pathname = usePathname();
   const [menuState, setMenuState] = useState<{
     open: boolean;
@@ -31,7 +31,7 @@ export default function NavContent({ user }: Props) {
         aria-label="Open menu"
         aria-expanded={showMenu}
         className={clsx(
-          "fixed top-8 right-8 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black text-white transition-opacity duration-200 hover:cursor-pointer",
+          "z-50 flex h-10 w-10 items-center justify-center rounded-full transition-opacity duration-200 hover:cursor-pointer",
           showMenu && "pointer-events-none opacity-0",
         )}
       >
@@ -40,7 +40,7 @@ export default function NavContent({ user }: Props) {
 
       <div
         className={clsx(
-          "fixed inset-0 z-50 bg-black text-white transition-opacity duration-200",
+          "fixed inset-0 z-50 bg-background transition-opacity duration-200",
           showMenu ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         aria-hidden={!showMenu}
@@ -49,7 +49,7 @@ export default function NavContent({ user }: Props) {
           type="button"
           onClick={closeMenu}
           aria-label="Close menu"
-          className="absolute top-8 right-8 hover:cursor-pointer h-10 w-10"
+          className="absolute top-4 right-2 hover:cursor-pointer h-10 w-10"
         >
           <XIcon className="h-6 w-6" />
         </button>

@@ -77,13 +77,24 @@ export const POST = async (request: Request) => {
       ]),
     );
 
+    const lat = Number(data.lat ?? p.lat) || 0;
+    const lon = Number(data.lon ?? p.lon) || 0;
+
     await db
       .update(profilesSchema)
       .set({
         ...socialUpdates,
         bio: data.bio || p.bio,
+        city: data.city || p.city,
+        country: data.country || p.country,
+        countryCode: data.countryCode || p.countryCode,
+        state: data.state || p.state,
+        stateCode: data.stateCode || p.stateCode,
+        formattedLocation: data.formattedLocation || p.formattedLocation,
+        lat,
+        lon,
         profileName: data.profileName || p.profileName,
-        location: data.location || p.location,
+        location: `POINT(${lon} ${lat})`,
         genre: data.genre || p.genre,
         fullName: data.fullName || p.fullName,
         contactEmail: data.contactEmail || p.contactEmail,

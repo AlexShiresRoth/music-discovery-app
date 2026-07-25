@@ -1,4 +1,5 @@
 import ProfileLinksDisplay from "@/components/profile-links-display";
+import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
 import { getProfileById } from "@/lib/auth";
 import Image from "next/image";
@@ -22,7 +23,7 @@ export default async function ProfilePage({ params }: Props) {
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center relative w-full md:w-sm h-75 border rounded">
-              {profile.imageUrl && (
+              {profile?.imageUrl && (
                 <Image
                   src={profile.imageUrl}
                   alt={profile.profileName ?? "Image"}
@@ -37,7 +38,11 @@ export default async function ProfilePage({ params }: Props) {
           <div className="flex flex-col gap-4">
             <p>{profile.genre}</p>
             <div className="flex gap-2">
-              <p>{profile.location?.formattedLocation}</p>
+              <ProfileLocationDisplay
+                city={profile.city}
+                stateCode={profile.stateCode}
+                countryCode={profile.countryCode}
+              />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
               {profile.profileName}

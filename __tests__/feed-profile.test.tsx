@@ -1,6 +1,6 @@
 import FeedProfile from "@/components/feed-profile";
 import type { ProfileWithSongClips } from "@/lib/db/types";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/hooks/intersectionobserver", () => ({
@@ -13,16 +13,9 @@ vi.mock("@/components/clip-display", () => ({
   ),
 }));
 
-let resizeCallback: ResizeObserverCallback | null = null;
-
-class MockResizeObserver {
-  constructor(callback: ResizeObserverCallback) {
-    resizeCallback = callback;
-  }
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
+vi.mock("next/image", () => ({
+  default: ({ alt }: { alt: string }) => <img alt={alt} />,
+}));
 
 const baseProfile = {
   id: 1,
@@ -56,11 +49,15 @@ const baseProfile = {
     },
   ],
   imageUrl: null,
-  location: {
-    formattedLocation: "Austin, TX, USA",
-    lat: 30.27,
-    lon: -97.74,
-  },
+  formattedLocation: "Austin, TX, USA",
+  city: "Austin",
+  country: "United States",
+  countryCode: "us",
+  state: "Texas",
+  stateCode: "TX",
+  lat: 30,
+  lon: -97,
+  location: null,
   website: { url: "", show: true },
   facebook: { url: "", show: true },
   instagram: { url: "https://instagram.com/test", show: true },
@@ -72,21 +69,9 @@ const baseProfile = {
   userRefId: "user-1",
 } as unknown as ProfileWithSongClips;
 
-function setLinkOffsetTops(tops: number[]) {
-  const links = document.querySelectorAll<HTMLElement>("[data-profile-link]");
-  links.forEach((link, index) => {
-    Object.defineProperty(link, "offsetTop", {
-      configurable: true,
-      get: () => tops[index] ?? 0,
-    });
-  });
-}
-
 describe("FeedProfile", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resizeCallback = null;
-    vi.stubGlobal("ResizeObserver", MockResizeObserver);
   });
 
   it("renders profile name, genre, and location", () => {
@@ -100,10 +85,10 @@ describe("FeedProfile", () => {
 
     expect(screen.getByText("Test Band")).toBeDefined();
     expect(screen.getByText("Rock")).toBeDefined();
-    expect(screen.getByText("Austin, TX, USA")).toBeDefined();
+    expect(screen.getByText("Austin, TX, US")).toBeDefined();
   });
 
-  it("renders only social links that are present", () => {
+  it("links the profile name to the public profile page", () => {
     render(
       <FeedProfile
         profile={baseProfile}
@@ -112,76 +97,23 @@ describe("FeedProfile", () => {
       />,
     );
 
-    expect(screen.getByRole("link", { name: "Spotify" })).toHaveProperty(
+    expect(screen.getByRole("link", { name: "Test Band" })).toHaveProperty(
       "href",
-      "https://open.spotify.com/artist/test",
+      "http://localhost:3000/profiles/1",
     );
-    expect(screen.getByRole("link", { name: "Apple Music" })).toBeDefined();
-    expect(screen.getByRole("link", { name: "Instagram" })).toBeDefined();
-    expect(screen.queryByRole("link", { name: "Bandcamp" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "SoundCloud" })).toBeNull();
   });
 
-  it("hides social links when show is false", () => {
+  it("renders a clip display per song clip", () => {
     render(
       <FeedProfile
-        profile={{
-          ...baseProfile,
-          spotify: { url: "https://open.spotify.com/artist/test", show: false },
-          appleMusic: {
-            url: "https://music.apple.com/artist/test",
-            show: true,
-          },
-          instagram: { url: "https://instagram.com/test", show: false },
-        }}
-        activeProfileIndex={0}
-        currentIndex={0}
-      />,
-    );
-
-    expect(screen.queryByRole("link", { name: "Spotify" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Instagram" })).toBeNull();
-    expect(screen.getByRole("link", { name: "Apple Music" })).toBeDefined();
-  });
-
-  it("shows separators between links on the same row", () => {
-    const { container } = render(
-      <FeedProfile
         profile={baseProfile}
         activeProfileIndex={0}
         currentIndex={0}
       />,
     );
 
-    setLinkOffsetTops([0, 0, 0]);
-    act(() => {
-      resizeCallback?.([], {} as ResizeObserver);
-    });
-
-    const separators = container.querySelectorAll('[aria-hidden="true"]');
-    expect(separators).toHaveLength(2);
-    separators.forEach((separator) => {
-      expect(separator.textContent).toBe("/");
-    });
-  });
-
-  it("hides separators when links wrap to a new row", () => {
-    const { container } = render(
-      <FeedProfile
-        profile={baseProfile}
-        activeProfileIndex={0}
-        currentIndex={0}
-      />,
-    );
-
-    setLinkOffsetTops([0, 0, 20]);
-    act(() => {
-      resizeCallback?.([], {} as ResizeObserver);
-    });
-
-    const separators = container.querySelectorAll('[aria-hidden="true"]');
-    expect(separators).toHaveLength(1);
-    expect(separators[0]?.textContent).toBe("/");
+    expect(screen.getByTestId("clip-0")).toBeDefined();
+    expect(screen.getByTestId("clip-1")).toBeDefined();
   });
 
   it("renders a clip indicator button per song clip", () => {

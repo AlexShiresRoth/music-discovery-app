@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["vaporescent-admonitorily-ramon.ngrok-free.dev"],
   turbopack: {
     // ffmpeg-static is externalized but still associates next.config with the
     // upload route NFT graph; safe to ignore that false-positive.
@@ -15,6 +16,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         hostname: "lebfkqasauzemindwngx.supabase.co",
+        protocol: "https",
+      },
+      {
+        hostname: "picsum.photos",
         protocol: "https",
       },
     ],

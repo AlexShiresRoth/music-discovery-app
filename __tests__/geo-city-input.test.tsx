@@ -1,36 +1,41 @@
-import GeoCityInput from "@/app/profile/geo-city-input";
+import type { ProfileLocation } from "@/app/profile/schemas";
+import GeoCityInput from "@/components/geo-city-input";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockOn, mockSetValue, MockGeocoderAutocomplete, listeners } =
-  vi.hoisted(() => {
-    const listeners: Record<string, Array<(payload?: unknown) => void>> = {};
-    const mockOn = vi.fn((event: string, cb: (payload?: unknown) => void) => {
-      listeners[event] = listeners[event] ?? [];
-      listeners[event].push(cb);
-    });
-    const mockSetValue = vi.fn();
-
-    const MockGeocoderAutocomplete = vi.fn(function MockGeocoderAutocomplete(
-      this: { on: typeof mockOn; setValue: typeof mockSetValue },
-      container: HTMLElement,
-    ) {
-      const input = document.createElement("input");
-      input.setAttribute("data-testid", "geoapify-input");
-      container.appendChild(input);
-      this.on = mockOn;
-      this.setValue = mockSetValue;
-    });
-
-    return { mockOn, mockSetValue, MockGeocoderAutocomplete, listeners };
+const { mockSetValue, MockGeocoderAutocomplete, listeners } = vi.hoisted(() => {
+  const listeners: Record<string, Array<(payload?: unknown) => void>> = {};
+  const mockOn = vi.fn((event: string, cb: (payload?: unknown) => void) => {
+    listeners[event] = listeners[event] ?? [];
+    listeners[event].push(cb);
   });
+  const mockSetValue = vi.fn();
+
+  const MockGeocoderAutocomplete = vi.fn(function MockGeocoderAutocomplete(
+    this: { on: typeof mockOn; setValue: typeof mockSetValue },
+    container: HTMLElement,
+  ) {
+    const input = document.createElement("input");
+    input.setAttribute("data-testid", "geoapify-input");
+    container.appendChild(input);
+    this.on = mockOn;
+    this.setValue = mockSetValue;
+  });
+
+  return { mockOn, mockSetValue, MockGeocoderAutocomplete, listeners };
+});
 
 vi.mock("@geoapify/geocoder-autocomplete", () => ({
   GeocoderAutocomplete: MockGeocoderAutocomplete,
 }));
 
-const defaultLocation = {
+const defaultLocation: ProfileLocation = {
   formattedLocation: "Austin, TX, USA",
+  city: "Austin",
+  country: "United States",
+  countryCode: "us",
+  state: "Texas",
+  stateCode: "TX",
   lat: 30.27,
   lon: -97.74,
 };
@@ -54,7 +59,6 @@ describe("GeoCityInput", () => {
     render(
       <GeoCityInput
         isPending={false}
-        name="location"
         placeholder="Location"
         defaultValue={defaultLocation}
       />,
@@ -69,16 +73,14 @@ describe("GeoCityInput", () => {
       }),
     );
     expect(mockSetValue).toHaveBeenCalledWith("Austin, TX, USA");
-    expect(
-      screen.getByDisplayValue(JSON.stringify(defaultLocation)),
-    ).toBeDefined();
+    expect(screen.getByDisplayValue("Austin, TX, USA")).toBeDefined();
+    expect(screen.getByDisplayValue("Austin")).toBeDefined();
   });
 
-  it("writes the selected place into the hidden location field", async () => {
+  it("writes selected place fields into hidden inputs", async () => {
     render(
       <GeoCityInput
         isPending={false}
-        name="location"
         placeholder="Location"
         defaultValue={null}
       />,
@@ -88,6 +90,11 @@ describe("GeoCityInput", () => {
       emit("select", {
         properties: {
           formatted: "Brooklyn, NY, USA",
+          city: "Brooklyn",
+          country: "United States",
+          country_code: "us",
+          state: "New York",
+          state_code: "NY",
           lat: 40.68,
           lon: -73.94,
         },
@@ -95,34 +102,36 @@ describe("GeoCityInput", () => {
     });
 
     await waitFor(() => {
-      expect(
-        screen.getByDisplayValue(
-          JSON.stringify({
-            formattedLocation: "Brooklyn, NY, USA",
-            lat: 40.68,
-            lon: -73.94,
-          }),
-        ),
-      ).toBeDefined();
+      expect(screen.getByDisplayValue("Brooklyn, NY, USA")).toBeDefined();
+      expect(screen.getByDisplayValue("Brooklyn")).toBeDefined();
+      expect(screen.getByDisplayValue("40.68")).toBeDefined();
+      expect(screen.getByDisplayValue("-73.94")).toBeDefined();
     });
   });
 
-  it("clears the hidden field when the autocomplete is cleared", async () => {
+  it("clears hidden fields when the autocomplete is cleared", async () => {
     render(
       <GeoCityInput
         isPending={false}
-        name="location"
         placeholder="Location"
         defaultValue={defaultLocation}
       />,
     );
+
+    expect(
+      (document.querySelector('input[name="formattedLocation"]') as HTMLInputElement)
+        .value,
+    ).toBe("Austin, TX, USA");
 
     await act(async () => {
       emit("clear");
     });
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("null")).toBeDefined();
+      const formatted = document.querySelector(
+        'input[name="formattedLocation"]',
+      ) as HTMLInputElement;
+      expect(formatted.value).toBe("");
     });
   });
 
@@ -130,7 +139,6 @@ describe("GeoCityInput", () => {
     const { container } = render(
       <GeoCityInput
         isPending={false}
-        name="location"
         placeholder="Location"
         defaultValue={null}
       />,
@@ -153,7 +161,6 @@ describe("GeoCityInput", () => {
     const { unmount } = render(
       <GeoCityInput
         isPending={false}
-        name="location"
         placeholder="Location"
         defaultValue={null}
       />,
