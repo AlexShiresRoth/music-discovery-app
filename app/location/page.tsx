@@ -2,15 +2,15 @@ import FeedList from "@/components/feed-list";
 import { getProfilesWithSongClipsByLocation } from "@/lib/auth";
 
 type Props = {
-  searchParams: Promise<{ q: string; lat: string; lon: string }>;
+  searchParams: Promise<{ q: string; lat: string; lon: string; g: string }>;
 };
 
-// TODO - this partly works but problem is subsequent searches wont work because we redirect to same page
 export default async function LocationPage({ searchParams }: Props) {
-  const { q, lat, lon } = await searchParams;
+  const { q, lat, lon, g } = await searchParams;
   const results = await getProfilesWithSongClipsByLocation(
     parseFloat(lon),
     parseFloat(lat),
+    g === "None" ? undefined : g,
   );
 
   return (

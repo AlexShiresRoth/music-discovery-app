@@ -167,8 +167,7 @@ function SearchUI() {
     </div>
   );
 }
-// TODO - fix navigation on mobile with search
-// TODO - fix feed profile layout on mobile
+
 export default function Search() {
   const search = useSearchParams();
   const q = search.get("q");
