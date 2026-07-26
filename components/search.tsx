@@ -12,6 +12,8 @@ type SearchArtistResult = Pick<Profile, "id" | "profileName">;
 const DEBOUNCE_DELAY = 300;
 
 function SearchUI() {
+  const searchParams = useSearchParams();
+  const genres = searchParams.getAll("g");
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchLocationResults, setSearchLocationResults] = useState<
@@ -69,6 +71,24 @@ function SearchUI() {
     setShouldOpen(false);
   };
 
+  const buildQueryString = (
+    pathname: string,
+    query: string,
+    lat: string | null,
+    lon: string | null,
+  ) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (genres.length > 0) {
+      for (const genre of genres) {
+        params.append("g", genre);
+      }
+    }
+    if (lat) params.set("lat", lat);
+    if (lon) params.set("lon", lon);
+    return `${pathname}?${params.toString()}` as const;
+  };
+
   return (
     <div className="w-3/4 md:w-full max-w-sm">
       <div className="flex items-center gap-2 border-b relative" tabIndex={-1}>
@@ -102,7 +122,7 @@ function SearchUI() {
 
         {shouldOpen && searchResTotal > 0 && (
           <div
-            className="absolute top-full left-0 w-full bg-background border rounded z-20 flex flex-col gap-4 pt-4"
+            className="absolute top-full left-0 w-full bg-background border border-b-4 rounded z-20 flex flex-col gap-4 pt-4"
             id="search-results"
             data-search-results
             onMouseDown={(e) => e.preventDefault()}
@@ -120,7 +140,12 @@ function SearchUI() {
                 </div>
                 {searchLocationResults.map((city) => (
                   <Link
-                    href={`/location?q=${city.city}&lat=${city.lat}&lon=${city.lon}`}
+                    href={buildQueryString(
+                      "/location",
+                      city.city,
+                      city.lat.toString(),
+                      city.lon.toString(),
+                    )}
                     key={city.id}
                     className="p-2 px-4 border-b last:border-b-0 hover:bg-muted flex items-center gap-2 hover:bg-amber-500/30 transition-colors"
                   >

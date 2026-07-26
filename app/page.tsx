@@ -3,16 +3,17 @@ import { getProfilesWithSongClips } from "@/lib/auth";
 
 type Props = {
   searchParams: Promise<{
-    g?: string;
+    g?: string[] | string;
   }>;
 };
 
 export default async function Home({ searchParams }: Props) {
   const { g } = await searchParams;
+
   const profiles = await getProfilesWithSongClips(
     0,
     15,
-    g === "None" ? undefined : g,
+    Array.isArray(g) ? g : g ? [g as string] : [],
   );
 
   return <FeedList profiles={profiles} />;

@@ -1,5 +1,4 @@
 export const GENRES = [
-  { value: "None", label: "None" },
   { value: "Rock", label: "Rock" },
   { value: "Pop", label: "Pop" },
   { value: "Hip-Hop", label: "Hip-Hop" },
@@ -15,9 +14,13 @@ export const GENRES = [
   { value: "Punk", label: "Punk" },
   { value: "Metal", label: "Metal" },
   { value: "Post-Rock", label: "Post-Rock" },
+  { value: "Surf Rock", label: "Surf Rock" },
+  { value: "Emo", label: "Emo" },
+  { value: "Grunge", label: "Grunge" },
+  { value: "Ambient", label: "Ambient" },
+  { value: "Industrial", label: "Industrial" },
   { value: "Folk", label: "Folk" },
   { value: "Indie", label: "Indie" },
   { value: "Alternative", label: "Alternative" },
   { value: "Experimental", label: "Experimental" },
-  { value: "Classical", label: "Classical" },
 ];
