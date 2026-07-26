@@ -100,11 +100,11 @@ describe("PublicInfo", () => {
       expect(screen.getByText("Test Profile")).toBeDefined();
     });
 
-    it("displays genre, bio, and formatted location", () => {
+    it("displays genre, bio, and location", () => {
       renderWithToast();
       expect(screen.getByText("Rock")).toBeDefined();
       expect(screen.getByText("A test bio")).toBeDefined();
-      expect(screen.getByText("New York, NY, USA")).toBeDefined();
+      expect(screen.getByText("New York, NY, US")).toBeDefined();
     });
 
     it("shows an Edit link pointing to /profile/edit/public", () => {

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { asc, eq, ilike, sql } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, sql } from "drizzle-orm";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -55,11 +55,15 @@ export async function getProfileById(id: string) {
 export async function getProfilesWithSongClips(
   startIndex: number = 0,
   limit: number = 15,
+  genres: string[] = [],
 ): Promise<ProfileWithSongClips[]> {
   try {
     const profiles = await db
       .select()
       .from(profilesSchema)
+      .where(
+        genres.length > 0 ? inArray(profilesSchema.genre, genres) : undefined,
+      )
       .offset(startIndex)
       .limit(limit);
 
@@ -145,6 +149,7 @@ export async function getProfilesWithSongClipsByGenre(
 export async function getProfilesWithSongClipsByLocation(
   longitude: number,
   latitude: number,
+  genre?: string,
   startIndex: number = 0,
   limit: number = 15,
 ): Promise<ProfileWithSongClips[]> {
@@ -160,11 +165,18 @@ export async function getProfilesWithSongClipsByLocation(
     ST_Distance(${profilesSchema.location}, ${searchPoint})
   `;
 
+    const RADIUS = 40_000;
+
     const profiles = await db
       .select()
       .from(profilesSchema)
       .where(
-        sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, 40_000)`,
+        genre
+          ? and(
+              eq(profilesSchema.genre, genre),
+              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+            )
+          : sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
       )
       .orderBy(asc(distance))
       .offset(startIndex)

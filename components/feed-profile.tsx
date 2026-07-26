@@ -85,7 +85,7 @@ export default function FeedProfile({
             />
           ))}
       </div>
-      <div className="flex justify-center gap-2 w-full pb-8 md:pb-0">
+      <div className="flex justify-center gap-2 w-full pb-16 md:pb-0">
         {Array.from({ length: profile.songClips.length }).map((_, index) => (
           <button
             key={index}
