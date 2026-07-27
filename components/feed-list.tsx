@@ -81,7 +81,6 @@ export default function FeedList({
   const longitude = searchParams.get("lon") || "";
   const latitude = searchParams.get("lat") || "";
 
-  console.log(longitude, latitude, genres);
   return (
     <FeedAudioProvider>
       <Feed

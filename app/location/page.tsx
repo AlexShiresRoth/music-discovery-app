@@ -12,7 +12,6 @@ export default async function LocationPage({ searchParams }: Props) {
     parseFloat(lat),
     Array.isArray(g) ? g : g ? [g as string] : [],
   );
-  console.log("results", g);
 
   return (
     <div>
