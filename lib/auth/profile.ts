@@ -149,7 +149,7 @@ export async function getProfilesWithSongClipsByGenre(
 export async function getProfilesWithSongClipsByLocation(
   longitude: number,
   latitude: number,
-  genre?: string,
+  genres: string[] = [],
   startIndex: number = 0,
   limit: number = 15,
 ): Promise<ProfileWithSongClips[]> {
@@ -171,9 +171,9 @@ export async function getProfilesWithSongClipsByLocation(
       .select()
       .from(profilesSchema)
       .where(
-        genre
+        genres.length > 0
           ? and(
-              eq(profilesSchema.genre, genre),
+              inArray(profilesSchema.genre, genres),
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
             )
           : sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,

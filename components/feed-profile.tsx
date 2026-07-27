@@ -5,11 +5,11 @@ import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
 import ProfileLocationDisplay from "./profile-location-display";
 
-export default function FeedProfile({
+function FeedProfile({
   profile,
   activeProfileIndex,
   currentIndex,
@@ -109,3 +109,5 @@ export default function FeedProfile({
     </div>
   );
 }
+
+export default memo(FeedProfile);
