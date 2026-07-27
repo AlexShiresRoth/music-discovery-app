@@ -9,15 +9,19 @@ export const useFetchMoreProfiles = ({
   limit = 15,
   genres = [],
   profiles = [],
+  longitude,
+  latitude,
 }: {
   profiles: ProfileWithSongClips[];
   currentProfileIndex: number;
   limit: number;
   genres?: string[];
+  longitude?: number;
+  latitude?: number;
 }) => {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(profiles.length >= limit);
   const [fetchedProfiles, setFetchedProfiles] =
     useState<ProfileWithSongClips[]>(profiles);
 
@@ -30,9 +34,21 @@ export const useFetchMoreProfiles = ({
       (async () => {
         try {
           setIsLoading(true);
-          const res = await fetch(
-            `/api/profiles/with-song-clips?start=${fetchedProfiles.length}&limit=${limit}&g=${genres}`,
+          const url = new URL(
+            "/api/profiles/with-song-clips",
+            window.location.origin,
           );
+          url.searchParams.set("start", fetchedProfiles.length.toString());
+          url.searchParams.set("limit", limit.toString());
+
+          url.searchParams.set("lon", longitude?.toString() || "");
+          url.searchParams.set("lat", latitude?.toString() || "");
+
+          for (const genre of genres) {
+            url.searchParams.append("g", genre);
+          }
+
+          const res = await fetch(url);
           const data = (await res.json()) as unknown as ProfileWithSongClips[];
           setFetchedProfiles((prev) => [...prev, ...data]);
           setIsLoading(false);
@@ -54,6 +70,8 @@ export const useFetchMoreProfiles = ({
     fetchedProfiles.length,
     isLoading,
     hasMore,
+    longitude,
+    latitude,
   ]);
 
   return { fetchedProfiles, error, isLoading };

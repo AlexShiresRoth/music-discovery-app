@@ -15,9 +15,13 @@ import FeedProfile from "./feed-profile";
 function Feed({
   profiles,
   genres,
+  longitude,
+  latitude,
 }: {
   profiles: ProfileWithSongClips[];
   genres: string[];
+  longitude?: number;
+  latitude?: number;
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [profileIndex, setProfileIndex] = useState(0);
@@ -26,6 +30,8 @@ function Feed({
     currentProfileIndex: profileIndex,
     limit: 15,
     genres: [...(genres || [])],
+    longitude,
+    latitude,
   });
 
   useIntersectionObserver({
@@ -72,10 +78,19 @@ export default function FeedList({
 }) {
   const searchParams = useSearchParams();
   const genres = searchParams.getAll("g") || [];
+  const longitude = searchParams.get("lon") || "";
+  const latitude = searchParams.get("lat") || "";
 
+  console.log(longitude, latitude, genres);
   return (
     <FeedAudioProvider>
-      <Feed profiles={profiles} genres={genres} key={genres.join(",")} />
+      <Feed
+        profiles={profiles}
+        genres={genres}
+        key={genres.join(",")}
+        longitude={longitude ? parseFloat(longitude) : undefined}
+        latitude={latitude ? parseFloat(latitude) : undefined}
+      />
       <IntroOverlay />
       <FeedAudioControls />
     </FeedAudioProvider>
