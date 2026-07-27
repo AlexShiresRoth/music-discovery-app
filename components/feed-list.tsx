@@ -5,23 +5,27 @@ import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import { useFetchMoreProfiles } from "@/lib/hooks/useFetchMoreProfiles";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import FeedAudioControls from "./audio-controls";
 import IntroOverlay from "./feed-overlay";
 import FeedProfile from "./feed-profile";
 
-export default function FeedList({
+// TODO - need to implement infinite load for search
+function Feed({
   profiles,
+  genres,
 }: {
   profiles: ProfileWithSongClips[];
+  genres: string[];
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [profileIndex, setProfileIndex] = useState(0);
   const { fetchedProfiles, error, isLoading } = useFetchMoreProfiles({
     profiles,
     currentProfileIndex: profileIndex,
-    limit: 50,
-    genres: [],
+    limit: 15,
+    genres: [...(genres || [])],
   });
 
   useIntersectionObserver({
@@ -31,7 +35,7 @@ export default function FeedList({
   });
 
   return (
-    <FeedAudioProvider>
+    <>
       <main className="flex flex-col gap-4 items-center">
         <div
           ref={scrollRef}
@@ -57,6 +61,21 @@ export default function FeedList({
           <p>{error?.message || "Could not load more"}</p>
         </div>
       )}
+    </>
+  );
+}
+
+export default function FeedList({
+  profiles,
+}: {
+  profiles: ProfileWithSongClips[];
+}) {
+  const searchParams = useSearchParams();
+  const genres = searchParams.getAll("g") || [];
+
+  return (
+    <FeedAudioProvider>
+      <Feed profiles={profiles} genres={genres} key={genres.join(",")} />
       <IntroOverlay />
       <FeedAudioControls />
     </FeedAudioProvider>

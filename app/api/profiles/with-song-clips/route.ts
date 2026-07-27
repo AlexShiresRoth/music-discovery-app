@@ -7,16 +7,17 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const genres = searchParams.get("g") || [];
+    const genres = searchParams.get("g") || "";
     const startIndex = searchParams.get("start") || "0";
     const limit = searchParams.get("limit") || "15";
+    const genresArray = genres.split(",");
 
     const profiles = await db
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? inArray(profilesSchema.genre, genres as string[])
+        genresArray.length > 0
+          ? inArray(profilesSchema.genre, genresArray as string[])
           : undefined,
       )
       .offset(Number(startIndex))

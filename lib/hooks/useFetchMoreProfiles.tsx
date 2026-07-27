@@ -31,7 +31,7 @@ export const useFetchMoreProfiles = ({
         try {
           setIsLoading(true);
           const res = await fetch(
-            `/api/profiles/with-song-clips?start=${fetchedProfiles.length}&limit=${limit}&g=${genres.join(",")}`,
+            `/api/profiles/with-song-clips?start=${fetchedProfiles.length}&limit=${limit}&g=${genres}`,
           );
           const data = (await res.json()) as unknown as ProfileWithSongClips[];
           setFetchedProfiles((prev) => [...prev, ...data]);
