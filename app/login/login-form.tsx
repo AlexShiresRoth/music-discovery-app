@@ -4,15 +4,22 @@ import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
 type Props = {
   isSignUp?: boolean;
 };
 export default function LoginForm({ isSignUp = false }: Props) {
+  const router = useRouter();
   const { setToast } = useContext(ToastContext);
   const [isPending, setIsPending] = useState(false);
   const [registerEmailSent, setRegisterEmailSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     setIsPending(true);
@@ -46,11 +53,13 @@ export default function LoginForm({ isSignUp = false }: Props) {
       }
       if (isSignUp) {
         setRegisterEmailSent(true);
+        setToast({
+          message: "Email sent",
+          type: "success",
+        });
+        return;
       }
-      setToast({
-        message: "Email sent",
-        type: "success",
-      });
+      router.refresh();
     } catch (error) {
       setToast({
         message: error instanceof Error ? error.message : "An error occurred",
@@ -80,18 +89,20 @@ export default function LoginForm({ isSignUp = false }: Props) {
         required
       />
       <TextInput
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder="Password"
         name="password"
         isPending={isPending}
+        togglePasswordVisibility={togglePasswordVisibility}
         required
       />
       {isSignUp && (
         <TextInput
-          type="password"
+          type={showConfirmPassword ? "text" : "password"}
           placeholder="Confirm Password"
           name="confirmPassword"
           isPending={isPending}
+          togglePasswordVisibility={toggleConfirmPasswordVisibility}
           required
         />
       )}

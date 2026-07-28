@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}`,
       },
     });
     if (error) {
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       email,
       password,
     });
+    console.log(data);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

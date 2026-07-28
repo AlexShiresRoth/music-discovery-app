@@ -1,3 +1,4 @@
+import BackButton from "@/components/breadcrumbs";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
@@ -20,6 +21,7 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">
+        <BackButton />
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center relative w-full md:w-sm h-75 border rounded">
