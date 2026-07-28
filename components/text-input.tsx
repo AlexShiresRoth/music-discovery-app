@@ -8,6 +8,7 @@ export default function TextInput({
   isPending,
   name,
   isEdit,
+  type = "text",
   ...props
 }: Input & { label?: string; isPending: boolean; isEdit?: boolean }) {
   return (
@@ -18,7 +19,7 @@ export default function TextInput({
       )}
     >
       {label && (
-        <label htmlFor={name} className="ml-4 p-2 text-sm font-semibold">
+        <label htmlFor={name} className="ml-2 text-sm font-semibold">
           {label}
         </label>
       )}
@@ -26,6 +27,7 @@ export default function TextInput({
         <div className="flex items-center gap-1 w-full">
           <input
             {...props}
+            type={type}
             name={name}
             disabled={isPending}
             className="py-1 border-0 focus:outline-0 w-full"
@@ -34,9 +36,9 @@ export default function TextInput({
       ) : (
         <input
           {...props}
+          type={type}
           name={name}
           disabled={isPending}
-          type="text"
           className="border rounded-md p-4 disabled:opacity-50 focus:outline-none transition-all "
         />
       )}

@@ -158,20 +158,20 @@ export default function UploadImage({ imageUrl }: Props) {
   return (
     <div
       className={clsx(
-        "flex flex-col items-center justify-center md:absolute md:bottom-0 md:right-0 w-full h-full bg-background transition-all duration-300",
+        "flex flex-col items-center justify-center md:absolute md:bottom-0 md:z-10 md:right-0 w-full h-full bg-background transition-all duration-300",
         !imageUrl && "opacity-100",
         imageUrl && "md:hover:opacity-80 md:opacity-0 opacity-100",
       )}
     >
-      <div className="text-sm text-gray-400/80 my-4">
+      <div className="text-sm my-4">
         <p>{imageUrl ? imageUrl : file?.name}</p>
-        {!imageUrl && <p className="text-gray-400/80">Upload an image</p>}
+        {!imageUrl && <p>Upload an image</p>}
       </div>
       <div className="flex gap-4">
         <button
           disabled={isDeleting || isUploading}
           onClick={handleImageUpload}
-          className="p-2 hover:cursor-pointer border rounded-full hover:border-amber-500/80 transition-all text-gray-400/80 hover:text-amber-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
+          className="p-2 hover:cursor-pointer border rounded-full hover:border-amber-500/80 transition-all hover:text-amber-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
         >
           {isUploading ? (
             <Loader2 className="animate-spin" size={16} />
@@ -182,7 +182,7 @@ export default function UploadImage({ imageUrl }: Props) {
         <button
           disabled={isDeleting || isUploading || !imageUrl}
           onClick={handleDeleteImage}
-          className="p-2 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all text-gray-400/80 hover:text-red-500 disabled:hover:cursor-not-allowed"
+          className="p-2 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all hover:text-red-500 disabled:hover:cursor-not-allowed"
         >
           <Trash size={16} />
         </button>

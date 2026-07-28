@@ -2,7 +2,7 @@
 import { Profile } from "@/lib/db/types";
 import { Loader2, MapPinIcon, Music, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 type SearchLocationResult = Pick<Profile, "id" | "city" | "lat" | "lon">;
@@ -194,7 +194,13 @@ function SearchUI() {
 }
 
 export default function Search() {
+  const pathname = usePathname();
   const search = useSearchParams();
   const q = search.get("q");
+
+  if (pathname.includes("login") || pathname.includes("signup")) {
+    return null;
+  }
+
   return <SearchUI key={q ?? ""} />;
 }
