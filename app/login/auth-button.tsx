@@ -31,5 +31,12 @@ export default function SignInButton({
     }
   }
 
-  return <button onClick={handleSignIn}>{children}</button>;
+  return (
+    <button
+      onClick={handleSignIn}
+      className="w-full border rounded-md p-2 hover:cursor-pointer hover:bg-gray-100 transition-all"
+    >
+      {children}
+    </button>
+  );
 }

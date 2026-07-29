@@ -21,8 +21,8 @@ export default async function Profile({ profile, clips }: Props) {
     <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
-          <div className="flex flex-col items-center">
-            <div className="flex flex-col gap-8 items-center relative w-sm h-75 border rounded">
+          <div className="flex flex-col items-center w-full md:w-auto">
+            <div className="flex flex-col gap-8 items-center w-full md:w-sm h-75 border rounded relative">
               {profile.imageUrl && (
                 <Image
                   src={profile.imageUrl}
@@ -33,7 +33,7 @@ export default async function Profile({ profile, clips }: Props) {
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               )}
-              <div className="md:visible hidden">
+              <div className="md:visible hidden h-full w-full relative md:flex flex-col">
                 <UploadImage
                   imageUrl={profile.imageUrl?.split("/").pop() || ""}
                 />
@@ -45,7 +45,7 @@ export default async function Profile({ profile, clips }: Props) {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 w-full">
             <p>{profile.genre}</p>
             <div className="flex gap-2">
               <ProfileLocationDisplay

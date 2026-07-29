@@ -90,7 +90,7 @@ describe("PrivateInfo", () => {
   describe("edit mode", () => {
     it("renders text inputs for fullName and contactEmail", () => {
       renderWithToast({ mode: "Edit" });
-      expect(screen.getByPlaceholderText("Full Name")).toBeDefined();
+      expect(screen.getByPlaceholderText("Contact Name")).toBeDefined();
       expect(screen.getByPlaceholderText("Contact Email")).toBeDefined();
     });
 

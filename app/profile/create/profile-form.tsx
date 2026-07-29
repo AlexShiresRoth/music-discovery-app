@@ -1,5 +1,6 @@
 "use client";
 
+import GeoCityInput from "@/components/geo-city-input";
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
@@ -7,7 +8,6 @@ import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-import GeoCityInput from "../../../components/geo-city-input";
 import { profileFormFields } from "../schemas";
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -18,8 +18,16 @@ function Columns({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-2 gap-4">{children}</div>;
 }
 
-function Column({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-3">{children}</div>;
+function Column({
+  children,
+  span = 1,
+}: {
+  children: React.ReactNode;
+  span?: number;
+}) {
+  return (
+    <div className={`flex flex-col gap-3 col-span-${span}`}>{children}</div>
+  );
 }
 
 function WideColumn({ children }: { children: React.ReactNode }) {
@@ -90,12 +98,24 @@ export default function ProfileForm() {
           <Columns>
             <Column>
               <TextInput {...fields.fullName} isPending={pending} />
+            </Column>
+            <Column>
               <TextInput {...fields.contactEmail} isPending={pending} />
-              <GeoCityInput
-                placeholder={fields.location.placeholder}
-                defaultValue={null}
-                isPending={pending}
-              />
+            </Column>
+            <Column span={2}>
+              <label
+                htmlFor={fields.location.name}
+                className="ml-2 text-sm font-semibold"
+              >
+                {fields.location.label}
+              </label>
+              <div className="border rounded-md p-2 py-4">
+                <GeoCityInput
+                  placeholder={fields.location.placeholder}
+                  defaultValue={null}
+                  isPending={pending}
+                />
+              </div>
             </Column>
           </Columns>
         </Section>

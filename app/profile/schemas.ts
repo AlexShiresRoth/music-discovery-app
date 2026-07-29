@@ -100,8 +100,8 @@ export type ProfileFormSchemaWithoutId = Omit<
 const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
   fullName: {
     name: "fullName",
-    label: "Full Name",
-    placeholder: "Full Name",
+    label: "Contact Name",
+    placeholder: "Contact Name",
     required: true,
   },
   contactEmail: {

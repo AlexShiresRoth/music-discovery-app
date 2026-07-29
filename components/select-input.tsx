@@ -15,10 +15,10 @@ export default function SelectInput({
   isEdit?: boolean;
 }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-2 w-full">
       {label && (
-        <div className="-mb-4 flex relative">
-          <label htmlFor={name} className="ml-4 text-sm">
+        <div className="flex relative">
+          <label htmlFor={name} className="ml-2  text-sm font-semibold">
             {label}
           </label>
         </div>
@@ -29,7 +29,7 @@ export default function SelectInput({
             {...props}
             name={name}
             disabled={isPending}
-            className="border-0 -ml-1 disabled:opacity-50 focus:outline-none transition-all py-1 w-full"
+            className="border-0 disabled:opacity-50 focus:outline-none transition-all px-2 py-1 w-full"
           >
             {options.map((option) => (
               <option key={option.value} value={option.value}>
@@ -43,7 +43,7 @@ export default function SelectInput({
           {...props}
           name={name}
           disabled={isPending}
-          className="border rounded-md py-4.5 disabled:opacity-50 focus:outline-none transition-all "
+          className="border rounded-md py-4.5 px-2 disabled:opacity-50 focus:outline-none transition-all "
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

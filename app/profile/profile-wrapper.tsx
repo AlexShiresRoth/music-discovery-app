@@ -1,5 +1,4 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import BackButton from "@/components/breadcrumbs";
 
 export default function ProfileWrapper({
   children,
@@ -13,13 +12,7 @@ export default function ProfileWrapper({
       <div className="md:w-3/4 w-full flex flex-col">
         <div className="w-full flex items-end justify-between border-b pb-4">
           <h1 className="text-5xl font-bold uppercase">{title}</h1>
-          <Link
-            href="/profile"
-            className="flex items-center gap-2 hover:  transition-all hover:cursor-pointer"
-          >
-            <ArrowLeft className="text-sm" />
-            Back
-          </Link>
+          <BackButton />
         </div>
         {children}
       </div>
