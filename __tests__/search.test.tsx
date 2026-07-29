@@ -1,11 +1,14 @@
 import Search from "@/components/search";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockFetch = vi.fn();
+const mockUsePathname = vi.fn(() => "/");
+const mockUseSearchParams = vi.fn(() => new URLSearchParams());
 
 vi.mock("next/navigation", () => ({
-  useSearchParams: vi.fn(() => new URLSearchParams()),
+  usePathname: () => mockUsePathname(),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 function mockSearchResponse({
@@ -45,12 +48,15 @@ describe("Search", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.stubGlobal("fetch", mockFetch);
+    mockUsePathname.mockReturnValue("/");
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
     mockSearchResponse();
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
+    vi.clearAllMocks();
   });
 
   it("renders the search input", () => {
@@ -59,6 +65,18 @@ describe("Search", () => {
     expect(
       screen.getByPlaceholderText("Search artists or locations"),
     ).toBeDefined();
+  });
+
+  it("hides search on login routes", () => {
+    mockUsePathname.mockReturnValue("/login");
+    const { container } = render(<Search />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it("hides search on signup routes", () => {
+    mockUsePathname.mockReturnValue("/signup");
+    const { container } = render(<Search />);
+    expect(container.firstChild).toBeNull();
   });
 
   it("does not fetch until the query is longer than two characters", async () => {

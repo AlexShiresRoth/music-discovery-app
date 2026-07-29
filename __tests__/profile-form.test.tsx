@@ -45,14 +45,14 @@ describe("ProfileForm", () => {
 
   it("renders all form sections", () => {
     renderWithToast();
-    expect(screen.getByText("Location")).toBeDefined();
-    expect(screen.getByText("About You")).toBeDefined();
-    expect(screen.getByText("Social")).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Location" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "About You" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Social" })).toBeDefined();
   });
 
   it("renders required fields including the geolocation input", () => {
     renderWithToast();
-    expect(screen.getByPlaceholderText("Full Name")).toBeDefined();
+    expect(screen.getByPlaceholderText("Contact Name")).toBeDefined();
     expect(screen.getByPlaceholderText("Contact Email")).toBeDefined();
     expect(screen.getByPlaceholderText("Display Name")).toBeDefined();
     expect(screen.getByTestId("location-input")).toBeDefined();
