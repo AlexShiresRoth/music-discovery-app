@@ -189,6 +189,18 @@ const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
     placeholder: "Image URL",
     required: false,
   },
+  updatedAt: {
+    name: "updatedAt",
+    label: "Updated At",
+    placeholder: "Updated At",
+    required: false,
+  },
+  createdAt: {
+    name: "createdAt",
+    label: "Created At",
+    placeholder: "Created At",
+    required: false,
+  },
   ...locationFormFields,
 };
 
