@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { and, asc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -51,7 +51,6 @@ export async function getProfileById(id: string) {
   }
 }
 
-// TODO - we should shuffle the profiles
 export async function getProfilesWithSongClips(
   startIndex: number = 0,
   limit: number = 15,
@@ -64,6 +63,7 @@ export async function getProfilesWithSongClips(
       .where(
         genres.length > 0 ? inArray(profilesSchema.genre, genres) : undefined,
       )
+      .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)
       .limit(limit);
 

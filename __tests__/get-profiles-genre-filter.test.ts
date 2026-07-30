@@ -1,22 +1,34 @@
 import { getProfilesWithSongClips } from "@/lib/auth/profile";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockSelect, mockFrom, mockWhere, mockOffset, mockLimit } = vi.hoisted(
-  () => ({
-    mockSelect: vi.fn(),
-    mockFrom: vi.fn(),
-    mockWhere: vi.fn(),
-    mockOffset: vi.fn(),
-    mockLimit: vi.fn(),
-  }),
-);
+const {
+  mockSelect,
+  mockFrom,
+  mockWhere,
+  mockOrderBy,
+  mockOffset,
+  mockLimit,
+  mockDesc,
+} = vi.hoisted(() => ({
+  mockSelect: vi.fn(),
+  mockFrom: vi.fn(),
+  mockWhere: vi.fn(),
+  mockOrderBy: vi.fn(),
+  mockOffset: vi.fn(),
+  mockLimit: vi.fn(),
+  mockDesc: vi.fn((column) => ({ column, direction: "desc" })),
+}));
 
 vi.mock("@/lib/db", () => ({
   db: { select: mockSelect },
 }));
 
 vi.mock("@/lib/db/schema", () => ({
-  profilesSchema: { genre: "genre", songClips: "songClips" },
+  profilesSchema: {
+    genre: "genre",
+    songClips: "songClips",
+    updatedAt: "updatedAt",
+  },
 }));
 
 vi.mock("@/lib/db/song-clips", () => ({
@@ -29,6 +41,7 @@ vi.mock("drizzle-orm", () => ({
   ilike: vi.fn(),
   and: vi.fn(),
   asc: vi.fn(),
+  desc: mockDesc,
   sql: vi.fn(),
 }));
 
@@ -44,7 +57,8 @@ describe("getProfilesWithSongClips genre filter", () => {
     vi.clearAllMocks();
     mockSelect.mockReturnValue({ from: mockFrom });
     mockFrom.mockReturnValue({ where: mockWhere });
-    mockWhere.mockReturnValue({ offset: mockOffset });
+    mockWhere.mockReturnValue({ orderBy: mockOrderBy });
+    mockOrderBy.mockReturnValue({ offset: mockOffset });
     mockOffset.mockReturnValue({ limit: mockLimit });
   });
 
@@ -54,6 +68,10 @@ describe("getProfilesWithSongClips genre filter", () => {
     const results = await getProfilesWithSongClips(0, 15, []);
 
     expect(mockWhere).toHaveBeenCalledWith(undefined);
+    expect(mockOrderBy).toHaveBeenCalledWith({
+      column: "updatedAt",
+      direction: "desc",
+    });
     expect(results).toHaveLength(1);
     expect(results[0]?.genre).toBe("Rock");
   });
@@ -67,6 +85,10 @@ describe("getProfilesWithSongClips genre filter", () => {
       column: "genre",
       values: ["Rock", "Jazz"],
       type: "inArray",
+    });
+    expect(mockOrderBy).toHaveBeenCalledWith({
+      column: "updatedAt",
+      direction: "desc",
     });
   });
 

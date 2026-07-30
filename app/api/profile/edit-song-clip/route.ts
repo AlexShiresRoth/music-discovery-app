@@ -1,6 +1,7 @@
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
+import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -44,6 +45,13 @@ export async function POST(request: Request) {
       full_song_url: data.full_song_url?.trim() || null,
     })
     .where(eq(songClipsSchema.id, Number(data.id)));
+
+  await db
+    .update(profilesSchema)
+    .set({
+      updatedAt: nextUpdatedAt(profile.updatedAt),
+    })
+    .where(eq(profilesSchema.userRefId, user.id));
 
   return NextResponse.json({ success: true });
 }

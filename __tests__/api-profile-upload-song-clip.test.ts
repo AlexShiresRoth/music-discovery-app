@@ -68,6 +68,7 @@ const verifiedProfile = {
   id: 1,
   isVerified: true,
   songClips: [{ slot: 1, id: "10" }],
+  updatedAt: null as Date | null,
 };
 
 const defaultMetadata = {
@@ -283,7 +284,64 @@ describe("POST /api/profile/upload-song-clip", () => {
         { slot: 1, id: "10" },
         { slot: 0, id: "42" },
       ],
+      updatedAt: expect.any(Date),
     });
+  });
+
+  it("bumps updatedAt when the profile has never been updated", async () => {
+    mockLimit.mockResolvedValue([{ ...verifiedProfile, updatedAt: null }]);
+
+    const before = Date.now();
+    const response = await POST(makeUploadRequest());
+    const after = Date.now();
+
+    expect(response.status).toBe(200);
+    const payload = mockSet.mock.calls[0][0] as {
+      songClips: unknown[];
+      updatedAt: Date;
+    };
+    expect(payload.updatedAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(payload.updatedAt.getTime()).toBeLessThanOrEqual(after);
+  });
+
+  it("preserves updatedAt when the last bump is still within the cooldown", async () => {
+    const recentUpdatedAt = new Date(Date.now() - 10 * 60 * 1000);
+    mockLimit.mockResolvedValue([
+      { ...verifiedProfile, updatedAt: recentUpdatedAt },
+    ]);
+
+    const response = await POST(makeUploadRequest());
+
+    expect(response.status).toBe(200);
+    expect(mockSet).toHaveBeenCalledWith({
+      songClips: [
+        { slot: 1, id: "10" },
+        { slot: 0, id: "42" },
+      ],
+      updatedAt: recentUpdatedAt,
+    });
+  });
+
+  it("bumps updatedAt when the cooldown has passed", async () => {
+    const staleUpdatedAt = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    mockLimit.mockResolvedValue([
+      { ...verifiedProfile, updatedAt: staleUpdatedAt },
+    ]);
+
+    const response = await POST(makeUploadRequest());
+
+    expect(response.status).toBe(200);
+    const payload = mockSet.mock.calls[0][0] as {
+      songClips: unknown[];
+      updatedAt: Date;
+    };
+    expect(payload.songClips).toEqual([
+      { slot: 1, id: "10" },
+      { slot: 0, id: "42" },
+    ]);
+    expect(payload.updatedAt.getTime()).toBeGreaterThan(
+      staleUpdatedAt.getTime(),
+    );
   });
 
   it("sanitizes path separators in the clip title for storage", async () => {
