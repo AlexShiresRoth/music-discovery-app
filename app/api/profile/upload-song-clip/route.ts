@@ -2,6 +2,7 @@ import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { SongClipWithSlot } from "@/lib/db/types";
+import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { env } from "process";
@@ -153,7 +154,10 @@ export async function POST(request: Request) {
 
   await db
     .update(profilesSchema)
-    .set({ songClips: [...clipMap.values()] })
+    .set({
+      songClips: [...clipMap.values()],
+      updatedAt: nextUpdatedAt(profile.updatedAt),
+    })
     .where(eq(profilesSchema.userRefId, user.id));
 
   return NextResponse.json({

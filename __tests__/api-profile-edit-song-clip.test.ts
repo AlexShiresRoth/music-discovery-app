@@ -48,6 +48,7 @@ const profile = {
   userRefId: "user-1",
   isVerified: true,
   songClips: [{ slot: 0, id: "10" }],
+  updatedAt: null as Date | null,
 };
 
 const existingClip = {
@@ -170,6 +171,9 @@ describe("POST /api/profile/edit-song-clip", () => {
       title: "New Title",
       full_song_url: "https://example.com/track",
     });
+    expect(mockSet).toHaveBeenCalledWith({
+      updatedAt: expect.any(Date),
+    });
   });
 
   it("stores null when full_song_url is empty", async () => {
@@ -187,6 +191,77 @@ describe("POST /api/profile/edit-song-clip", () => {
     expect(mockSet).toHaveBeenCalledWith({
       title: "New Title",
       full_song_url: null,
+    });
+  });
+
+  it("bumps profile updatedAt when the cooldown has passed", async () => {
+    const staleUpdatedAt = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    mockLimit.mockReset();
+    mockWhere.mockReset();
+    mockFrom.mockReset();
+    mockSelect.mockReset();
+
+    mockLimit.mockResolvedValueOnce([
+      { ...profile, updatedAt: staleUpdatedAt },
+    ]);
+    mockWhere
+      .mockReturnValueOnce({ limit: mockLimit })
+      .mockResolvedValueOnce([existingClip]);
+    mockFrom.mockReturnValue({ where: mockWhere });
+    mockSelect.mockReturnValue({ from: mockFrom });
+
+    const response = await POST(
+      makeRequest({
+        id: "10",
+        title: "New Title",
+        full_song_url: "https://example.com/track",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockSet).toHaveBeenCalledWith({
+      title: "New Title",
+      full_song_url: "https://example.com/track",
+    });
+    const profileUpdate = mockSet.mock.calls.find(
+      (call) => call[0] && "updatedAt" in call[0],
+    )?.[0] as { updatedAt: Date };
+    expect(profileUpdate.updatedAt.getTime()).toBeGreaterThan(
+      staleUpdatedAt.getTime(),
+    );
+  });
+
+  it("preserves profile updatedAt when still within the cooldown", async () => {
+    const recentUpdatedAt = new Date(Date.now() - 10 * 60 * 1000);
+    mockLimit.mockReset();
+    mockWhere.mockReset();
+    mockFrom.mockReset();
+    mockSelect.mockReset();
+
+    mockLimit.mockResolvedValueOnce([
+      { ...profile, updatedAt: recentUpdatedAt },
+    ]);
+    mockWhere
+      .mockReturnValueOnce({ limit: mockLimit })
+      .mockResolvedValueOnce([existingClip]);
+    mockFrom.mockReturnValue({ where: mockWhere });
+    mockSelect.mockReturnValue({ from: mockFrom });
+
+    const response = await POST(
+      makeRequest({
+        id: "10",
+        title: "New Title",
+        full_song_url: "https://example.com/track",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockSet).toHaveBeenCalledWith({
+      title: "New Title",
+      full_song_url: "https://example.com/track",
+    });
+    expect(mockSet).toHaveBeenCalledWith({
+      updatedAt: recentUpdatedAt,
     });
   });
 });

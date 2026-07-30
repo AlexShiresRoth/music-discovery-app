@@ -50,6 +50,8 @@ export const profilesSchema = pgTable("profiles", {
   lat: doublePrecision("lat").notNull().default(0),
   lon: doublePrecision("lon").notNull().default(0),
   location: geographyPoint("location"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
   website: jsonb("website")
     .$type<SocialField>()
     .notNull()
