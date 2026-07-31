@@ -39,11 +39,17 @@ vi.mock("drizzle-orm", () => ({
   inArray: vi.fn((column, values) => ({ column, values, type: "inArray" })),
   eq: vi.fn(),
   ilike: vi.fn(),
-  and: vi.fn(),
+  and: vi.fn((...conditions) => ({ conditions, type: "and" })),
   asc: vi.fn(),
   desc: mockDesc,
-  sql: vi.fn(),
+  sql: vi.fn((strings, ...values) => ({ strings, values, type: "sql" })),
 }));
+
+const hasSongClipsFilter = {
+  strings: ["jsonb_array_length(", ") > 0"],
+  values: ["songClips"],
+  type: "sql",
+};
 
 const profile = {
   id: 1,
@@ -62,12 +68,12 @@ describe("getProfilesWithSongClips genre filter", () => {
     mockOffset.mockReturnValue({ limit: mockLimit });
   });
 
-  it("returns all profiles when no genres are provided", async () => {
+  it("returns profiles with song clips when no genres are provided", async () => {
     mockLimit.mockResolvedValue([profile]);
 
     const results = await getProfilesWithSongClips(0, 15, []);
 
-    expect(mockWhere).toHaveBeenCalledWith(undefined);
+    expect(mockWhere).toHaveBeenCalledWith(hasSongClipsFilter);
     expect(mockOrderBy).toHaveBeenCalledWith({
       column: "updatedAt",
       direction: "desc",
@@ -82,9 +88,15 @@ describe("getProfilesWithSongClips genre filter", () => {
     await getProfilesWithSongClips(0, 15, ["Rock", "Jazz"]);
 
     expect(mockWhere).toHaveBeenCalledWith({
-      column: "genre",
-      values: ["Rock", "Jazz"],
-      type: "inArray",
+      conditions: [
+        {
+          column: "genre",
+          values: ["Rock", "Jazz"],
+          type: "inArray",
+        },
+        hasSongClipsFilter,
+      ],
+      type: "and",
     });
     expect(mockOrderBy).toHaveBeenCalledWith({
       column: "updatedAt",

@@ -92,9 +92,19 @@ describe("GET /api/profiles/with-song-clips", () => {
       { ...profile, songClips: [] },
     ]);
     expect(mockWhere).toHaveBeenCalledWith({
-      column: "genre",
-      values: ["Rock", "Jazz"],
-      type: "inArray",
+      conditions: [
+        {
+          column: "genre",
+          values: ["Rock", "Jazz"],
+          type: "inArray",
+        },
+        {
+          strings: ["jsonb_array_length(", ") > 0"],
+          values: ["songClips"],
+          type: "sql",
+        },
+      ],
+      type: "and",
     });
     expect(mockOffset).toHaveBeenCalledWith(15);
     expect(mockLimit).toHaveBeenCalledWith(15);
