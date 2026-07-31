@@ -24,6 +24,7 @@ type Props = {
   isActive?: boolean;
   isOnFeed?: boolean;
   fullSongUrl?: string;
+  onFinish?: () => void;
 };
 
 const WAVE_COLOR = "#FACE85";
@@ -35,12 +36,14 @@ function WaveSurferBasic({
   isActive,
   isOnFeed,
   fullSongUrl,
+  onFinish,
 }: {
   url: string;
   clipName: string;
   isActive?: boolean;
   isOnFeed?: boolean;
   fullSongUrl?: string;
+  onFinish?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
@@ -57,6 +60,7 @@ function WaveSurferBasic({
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying);
   const setCanPlayRef = useRef(setCanPlay);
+  const onFinishRef = useRef(onFinish);
   const [isLoading, setIsLoading] = useState(true);
 
   const shouldPlay = useCallback(() => {
@@ -109,11 +113,16 @@ function WaveSurferBasic({
   }, [setCanPlay]);
 
   useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
+  useEffect(() => {
     if (!containerRef.current || !url) return;
 
     setIsLoading(true);
 
     const hover = HoverPlugin.create();
+
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
@@ -141,9 +150,16 @@ function WaveSurferBasic({
     const unsubPause = isOnFeed
       ? () => {}
       : ws.on("pause", () => setLocalPlaying(false));
-    const unsubFinish = isOnFeed
-      ? () => {}
-      : ws.on("finish", () => setLocalPlaying(false));
+    const unsubFinish = ws.on("finish", () => {
+      if (isOnFeed) {
+        // Only the active clip should advance the playlist.
+        if (isActiveRef.current && isPlayingRef.current) {
+          onFinishRef.current?.();
+        }
+        return;
+      }
+      setLocalPlaying(false);
+    });
 
     return () => {
       unsubReady();
@@ -388,6 +404,7 @@ export default function WaveSurferUI({
   isActive,
   isOnFeed,
   fullSongUrl,
+  onFinish,
 }: Props) {
   if (url) {
     return (
@@ -397,6 +414,7 @@ export default function WaveSurferUI({
         clipName={clipName || ""}
         isActive={isActive}
         fullSongUrl={fullSongUrl}
+        onFinish={onFinish}
       />
     );
   }

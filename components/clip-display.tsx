@@ -7,10 +7,12 @@ export default function ClipDisplay({
   clip,
   index,
   isActive,
+  onFinish,
 }: {
   clip: SongClip;
   index: number;
   isActive: boolean;
+  onFinish: () => void;
 }) {
   return (
     <div
@@ -24,6 +26,7 @@ export default function ClipDisplay({
         isActive={isActive}
         fullSongUrl={clip.full_song_url || ""}
         isOnFeed
+        onFinish={onFinish}
       />
     </div>
   );

@@ -61,7 +61,12 @@ export async function getProfilesWithSongClips(
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0 ? inArray(profilesSchema.genre, genres) : undefined,
+        genres.length > 0
+          ? and(
+              inArray(profilesSchema.genre, genres),
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            )
+          : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
       )
       .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)

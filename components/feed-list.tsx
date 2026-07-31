@@ -1,6 +1,6 @@
 "use client";
 
-import FeedAudioProvider from "@/context/feed-audio";
+import FeedAudioProvider, { useFeedAudio } from "@/context/feed-audio";
 import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import { useFetchMoreProfiles } from "@/lib/hooks/useFetchMoreProfiles";
@@ -11,7 +11,6 @@ import FeedAudioControls from "./audio-controls";
 import IntroOverlay from "./feed-overlay";
 import FeedProfile from "./feed-profile";
 
-// TODO - need to implement infinite load for search
 function Feed({
   profiles,
   genres,
@@ -23,6 +22,7 @@ function Feed({
   longitude?: number;
   latitude?: number;
 }) {
+  const { onFinish } = useFeedAudio();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [profileIndex, setProfileIndex] = useState(0);
   const { fetchedProfiles, error, isLoading } = useFetchMoreProfiles({
@@ -33,6 +33,21 @@ function Feed({
     longitude,
     latitude,
   });
+
+  const handleAdvanceToNextProfile = (index: number) => {
+    if (index < fetchedProfiles.length) {
+      setProfileIndex(index);
+      const profileToScrollTo = scrollRef.current?.querySelector<HTMLElement>(
+        `[data-profile-slide][data-profile-index="${index}"]`,
+      );
+      profileToScrollTo?.scrollIntoView({
+        behavior: "smooth",
+        inline: "start",
+      });
+    } else {
+      onFinish();
+    }
+  };
 
   useIntersectionObserver({
     selector: "[data-profile-slide]",
@@ -53,6 +68,8 @@ function Feed({
               profile={profile}
               activeProfileIndex={profileIndex}
               currentIndex={index}
+              advanceToNextProfile={handleAdvanceToNextProfile}
+              clipsLength={profile.songClips.length}
             />
           ))}
         </div>
