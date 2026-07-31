@@ -1,3 +1,4 @@
+import BackButton from "@/components/breadcrumbs";
 import FeedList from "@/components/feed-list";
 import { getProfilesWithSongClipsByQuery } from "@/lib/auth";
 
@@ -11,7 +12,10 @@ export default async function ArtistsPage({ searchParams }: Props) {
   const profiles = await getProfilesWithSongClipsByQuery(q);
   return (
     <div>
-      <h1 className="md:text-2xl text-lg font-semibold">{q}</h1>
+      <div className="w-full flex justify-between items-center">
+        <h1 className="md:text-2xl text-lg font-semibold">{q}</h1>
+        <BackButton />
+      </div>
       <FeedList profiles={profiles} />
     </div>
   );

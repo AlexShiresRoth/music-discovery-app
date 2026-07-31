@@ -29,6 +29,7 @@ type Props = {
 
 const WAVE_COLOR = "#FACE85";
 const PROGRESS_COLOR = "black";
+const FADE_SECONDS = 1;
 
 function WaveSurferBasic({
   url,
@@ -160,12 +161,26 @@ function WaveSurferBasic({
       }
       setLocalPlaying(false);
     });
+    const unsubTimeupdate = ws.on("timeupdate", () => {
+      if (ws.getMuted() && !isOnFeed) return;
+      const currentTime = ws.getCurrentTime();
+      const clipDuration = ws.getDuration();
+      const remainingDuration = clipDuration - FADE_SECONDS;
+      const volume = currentTime / FADE_SECONDS;
+      if (currentTime < FADE_SECONDS) {
+        ws.setVolume(volume);
+      }
+      if (currentTime > remainingDuration && currentTime < clipDuration) {
+        ws.setVolume(1 - (currentTime - remainingDuration) / FADE_SECONDS);
+      }
+    });
 
     return () => {
       unsubReady();
       unsubPlay();
       unsubPause();
       unsubFinish();
+      unsubTimeupdate();
       ws.destroy();
       wsRef.current = null;
     };
