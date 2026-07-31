@@ -24,10 +24,12 @@ type Props = {
   isActive?: boolean;
   isOnFeed?: boolean;
   fullSongUrl?: string;
+  onFinish?: () => void;
 };
 
 const WAVE_COLOR = "#FACE85";
 const PROGRESS_COLOR = "black";
+const FADE_SECONDS = 1;
 
 function WaveSurferBasic({
   url,
@@ -35,12 +37,14 @@ function WaveSurferBasic({
   isActive,
   isOnFeed,
   fullSongUrl,
+  onFinish,
 }: {
   url: string;
   clipName: string;
   isActive?: boolean;
   isOnFeed?: boolean;
   fullSongUrl?: string;
+  onFinish?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
@@ -57,6 +61,7 @@ function WaveSurferBasic({
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying);
   const setCanPlayRef = useRef(setCanPlay);
+  const onFinishRef = useRef(onFinish);
   const [isLoading, setIsLoading] = useState(true);
 
   const shouldPlay = useCallback(() => {
@@ -109,11 +114,16 @@ function WaveSurferBasic({
   }, [setCanPlay]);
 
   useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
+  useEffect(() => {
     if (!containerRef.current || !url) return;
 
     setIsLoading(true);
 
     const hover = HoverPlugin.create();
+
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
@@ -141,15 +151,36 @@ function WaveSurferBasic({
     const unsubPause = isOnFeed
       ? () => {}
       : ws.on("pause", () => setLocalPlaying(false));
-    const unsubFinish = isOnFeed
-      ? () => {}
-      : ws.on("finish", () => setLocalPlaying(false));
+    const unsubFinish = ws.on("finish", () => {
+      if (isOnFeed) {
+        // Only the active clip should advance the playlist.
+        if (isActiveRef.current && isPlayingRef.current) {
+          onFinishRef.current?.();
+        }
+        return;
+      }
+      setLocalPlaying(false);
+    });
+    const unsubTimeupdate = ws.on("timeupdate", () => {
+      if (ws.getMuted() && !isOnFeed) return;
+      const currentTime = ws.getCurrentTime();
+      const clipDuration = ws.getDuration();
+      const remainingDuration = clipDuration - FADE_SECONDS;
+      const volume = currentTime / FADE_SECONDS;
+      if (currentTime < FADE_SECONDS) {
+        ws.setVolume(volume);
+      }
+      if (currentTime > remainingDuration && currentTime < clipDuration) {
+        ws.setVolume(1 - (currentTime - remainingDuration) / FADE_SECONDS);
+      }
+    });
 
     return () => {
       unsubReady();
       unsubPlay();
       unsubPause();
       unsubFinish();
+      unsubTimeupdate();
       ws.destroy();
       wsRef.current = null;
     };
@@ -388,6 +419,7 @@ export default function WaveSurferUI({
   isActive,
   isOnFeed,
   fullSongUrl,
+  onFinish,
 }: Props) {
   if (url) {
     return (
@@ -397,6 +429,7 @@ export default function WaveSurferUI({
         clipName={clipName || ""}
         isActive={isActive}
         fullSongUrl={fullSongUrl}
+        onFinish={onFinish}
       />
     );
   }

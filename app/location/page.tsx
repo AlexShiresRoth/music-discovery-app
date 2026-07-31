@@ -1,3 +1,4 @@
+import BackButton from "@/components/breadcrumbs";
 import FeedList from "@/components/feed-list";
 import { getProfilesWithSongClipsByLocation } from "@/lib/auth";
 
@@ -15,7 +16,10 @@ export default async function LocationPage({ searchParams }: Props) {
 
   return (
     <div>
-      <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
+      <div className="w-full flex justify-between items-center">
+        <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
+        <BackButton />
+      </div>
       <FeedList profiles={results} />
     </div>
   );

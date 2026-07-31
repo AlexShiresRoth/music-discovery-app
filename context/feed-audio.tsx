@@ -15,6 +15,7 @@ type FeedAudioContextType = {
   togglePlayPause: () => void;
   canPlay: boolean;
   setCanPlay: (canPlay: boolean) => void;
+  onFinish: () => void;
 };
 
 export const FeedAudioContext = createContext<FeedAudioContextType>({
@@ -24,6 +25,7 @@ export const FeedAudioContext = createContext<FeedAudioContextType>({
   togglePlayPause: () => {},
   canPlay: false,
   setCanPlay: () => {},
+  onFinish: () => {},
 });
 
 export function useFeedAudio() {
@@ -51,6 +53,10 @@ export default function FeedAudioProvider({
     setCanPlayState(next);
   }, []);
 
+  const onFinish = useCallback(() => {
+    setIsPlaying(false);
+  }, []);
+
   const value = useMemo(
     () => ({
       isMuted,
@@ -59,8 +65,17 @@ export default function FeedAudioProvider({
       togglePlayPause,
       canPlay,
       setCanPlay,
+      onFinish,
     }),
-    [isMuted, toggleMute, isPlaying, togglePlayPause, canPlay, setCanPlay],
+    [
+      isMuted,
+      toggleMute,
+      isPlaying,
+      togglePlayPause,
+      canPlay,
+      setCanPlay,
+      onFinish,
+    ],
   );
 
   return (

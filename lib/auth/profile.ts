@@ -61,7 +61,12 @@ export async function getProfilesWithSongClips(
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0 ? inArray(profilesSchema.genre, genres) : undefined,
+        genres.length > 0
+          ? and(
+              inArray(profilesSchema.genre, genres),
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            )
+          : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
       )
       .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)
@@ -124,7 +129,12 @@ export async function getProfilesWithSongClipsByGenre(
     const profiles = await db
       .select()
       .from(profilesSchema)
-      .where(ilike(profilesSchema.genre, `${query}%`))
+      .where(
+        and(
+          ilike(profilesSchema.genre, `${query}%`),
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+        ),
+      )
       .offset(startIndex)
       .limit(limit);
 
@@ -175,8 +185,12 @@ export async function getProfilesWithSongClipsByLocation(
           ? and(
               inArray(profilesSchema.genre, genres),
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             )
-          : sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+          : and(
+              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            ),
       )
       .orderBy(asc(distance))
       .offset(startIndex)

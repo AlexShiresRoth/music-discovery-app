@@ -1,18 +1,19 @@
 import FeedList from "@/components/feed-list";
 import type { ProfileWithSongClips } from "@/lib/db/types";
-import { useFetchMoreProfiles } from "@/lib/hooks/useFetchMoreProfiles";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockUseSearchParams = vi.fn();
 const mockUseFetchMoreProfiles = vi.fn();
+const mockOnFinish = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useSearchParams: () => mockUseSearchParams(),
 }));
 
 vi.mock("@/lib/hooks/useFetchMoreProfiles", () => ({
-  useFetchMoreProfiles: (...args: unknown[]) => mockUseFetchMoreProfiles(...args),
+  useFetchMoreProfiles: (...args: unknown[]) =>
+    mockUseFetchMoreProfiles(...args),
 }));
 
 vi.mock("@/lib/hooks/intersectionobserver", () => ({
@@ -20,8 +21,25 @@ vi.mock("@/lib/hooks/intersectionobserver", () => ({
 }));
 
 vi.mock("@/components/feed-profile", () => ({
-  default: ({ profile }: { profile: ProfileWithSongClips }) => (
-    <div data-profile-slide>{profile.profileName}</div>
+  default: ({
+    profile,
+    currentIndex,
+    advanceToNextProfile,
+  }: {
+    profile: ProfileWithSongClips;
+    currentIndex: number;
+    advanceToNextProfile: (index: number) => void;
+  }) => (
+    <div data-profile-slide data-profile-index={currentIndex}>
+      <span>{profile.profileName}</span>
+      <button
+        type="button"
+        aria-label={`Advance from ${profile.profileName}`}
+        onClick={() => advanceToNextProfile(currentIndex + 1)}
+      >
+        Advance
+      </button>
+    </div>
   ),
 }));
 
@@ -35,11 +53,20 @@ vi.mock("@/components/feed-overlay", () => ({
 
 vi.mock("@/context/feed-audio", () => ({
   default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useFeedAudio: () => ({
+    onFinish: mockOnFinish,
+    isMuted: false,
+    isPlaying: true,
+    canPlay: true,
+    toggleMute: vi.fn(),
+    togglePlayPause: vi.fn(),
+    setCanPlay: vi.fn(),
+  }),
 }));
 
 const initialProfiles = [
-  { id: 1, profileName: "Band One", songClips: [] },
-  { id: 2, profileName: "Band Two", songClips: [] },
+  { id: 1, profileName: "Band One", songClips: [{ id: "1", slot: 0 }] },
+  { id: 2, profileName: "Band Two", songClips: [{ id: "2", slot: 0 }] },
 ] as unknown as ProfileWithSongClips[];
 
 describe("FeedList infinite load", () => {
@@ -110,5 +137,38 @@ describe("FeedList infinite load", () => {
     render(<FeedList profiles={initialProfiles} />);
 
     expect(screen.getByText("Network error")).toBeDefined();
+  });
+
+  describe("continuous play", () => {
+    it("scrolls to the next profile when advancing within the feed", () => {
+      const scrollIntoView = vi.fn();
+      HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+      render(<FeedList profiles={initialProfiles} />);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Advance from Band One" }),
+      );
+
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        behavior: "smooth",
+        inline: "start",
+      });
+      expect(mockOnFinish).not.toHaveBeenCalled();
+    });
+
+    it("calls feed audio onFinish when advancing past the last profile", () => {
+      const scrollIntoView = vi.fn();
+      HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+      render(<FeedList profiles={initialProfiles} />);
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Advance from Band Two" }),
+      );
+
+      expect(mockOnFinish).toHaveBeenCalled();
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    });
   });
 });

@@ -113,10 +113,12 @@ export default function FeedFilter() {
   const lon = searchParams.get("lon");
   const genres = searchParams.getAll("g");
   const q = searchParams.get("q");
+  const notAllowedPaths = ["/login", "/signup", "/profile", "/profiles"];
 
-  if (pathname.includes("login") || pathname.includes("signup")) {
+  if (notAllowedPaths.some((path) => pathname.startsWith(path))) {
     return null;
   }
+
   return (
     <Filters
       lat={lat}

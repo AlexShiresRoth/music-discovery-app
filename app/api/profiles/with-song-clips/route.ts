@@ -50,8 +50,11 @@ async function fetchProfilesByGenres(
     .from(profilesSchema)
     .where(
       genres.length > 0
-        ? inArray(profilesSchema.genre, genres as string[])
-        : undefined,
+        ? and(
+            inArray(profilesSchema.genre, genres as string[]),
+            sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          )
+        : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
     )
     .offset(Number(startIndex))
     .limit(Number(limit));

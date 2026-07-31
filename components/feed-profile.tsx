@@ -5,7 +5,7 @@ import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { memo, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
 import ProfileLocationDisplay from "./profile-location-display";
 
@@ -13,20 +13,18 @@ function FeedProfile({
   profile,
   activeProfileIndex,
   currentIndex,
+  advanceToNextProfile,
+  clipsLength,
 }: {
   profile: ProfileWithSongClips;
   activeProfileIndex: number;
   currentIndex: number;
+  clipsLength: number;
+  advanceToNextProfile: (index: number) => void;
 }) {
   const [clipIndex, setClipIndex] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  useIntersectionObserver({
-    selector: "[data-clip-slide]",
-    callback: (index: number) => setClipIndex(index),
-    scrollRef,
-  });
 
   const scrollToClip = (index: number) => {
     const clip = scrollRef.current?.querySelector<HTMLElement>(
@@ -35,9 +33,27 @@ function FeedProfile({
     clip?.scrollIntoView({ behavior: "smooth", inline: "start" });
   };
 
+  const handleAdvancePlayback = useCallback(() => {
+    if (clipIndex < clipsLength - 1) {
+      setClipIndex(clipIndex + 1);
+      scrollToClip(clipIndex + 1);
+      return;
+    } else {
+      setClipIndex(0);
+      advanceToNextProfile(activeProfileIndex + 1);
+    }
+  }, [activeProfileIndex, advanceToNextProfile, clipsLength, clipIndex]);
+
+  useIntersectionObserver({
+    selector: "[data-clip-slide]",
+    callback: (index: number) => setClipIndex(index),
+    scrollRef,
+  });
+
   return (
     <div
       data-profile-slide
+      data-profile-index={currentIndex}
       className="flex flex-col justify-between snap-start min-h-screen py-20 md:py-32 rounded w-screen max-w-full overflow-hidden"
     >
       <div className="flex md:flex-row flex-col md:items-center gap-8 w-full">
@@ -82,6 +98,7 @@ function FeedProfile({
               isActive={
                 clipIndex === index && activeProfileIndex === currentIndex
               }
+              onFinish={handleAdvancePlayback}
             />
           ))}
       </div>
