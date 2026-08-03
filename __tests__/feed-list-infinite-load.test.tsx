@@ -6,9 +6,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mockUseSearchParams = vi.fn();
 const mockUseFetchMoreProfiles = vi.fn();
 const mockOnFinish = vi.fn();
+const mockBack = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useSearchParams: () => mockUseSearchParams(),
+  useRouter: () => ({ back: mockBack, push: vi.fn() }),
 }));
 
 vi.mock("@/lib/hooks/useFetchMoreProfiles", () => ({
@@ -137,6 +139,34 @@ describe("FeedList infinite load", () => {
     render(<FeedList profiles={initialProfiles} />);
 
     expect(screen.getByText("Network error")).toBeDefined();
+  });
+
+  describe("empty state", () => {
+    it("shows an empty state without mounting the feed audio UI", () => {
+      render(<FeedList profiles={[]} searchTerm="Austin" />);
+
+      expect(screen.getByText(/No Artists Yet/)).toBeDefined();
+      expect(screen.getByText("Austin")).toBeDefined();
+      expect(mockUseFetchMoreProfiles).not.toHaveBeenCalled();
+    });
+
+    it("omits the for-clause when there is no search term or genre filter", () => {
+      render(<FeedList profiles={[]} />);
+
+      expect(
+        screen.getByText(
+          (_, node) => node?.textContent === "No Artists Yet. Be the first.",
+        ),
+      ).toBeDefined();
+      expect(screen.queryByText(/ for /)).toBeNull();
+    });
+
+    it("goes back when the empty-state button is clicked", () => {
+      render(<FeedList profiles={[]} searchTerm="Austin" />);
+
+      fireEvent.click(screen.getByRole("button", { name: "Go Back" }));
+      expect(mockBack).toHaveBeenCalled();
+    });
   });
 
   describe("continuous play", () => {

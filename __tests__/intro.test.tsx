@@ -13,5 +13,6 @@ describe("ChooseProfile", () => {
     const link = screen.getByRole("link", { name: "Create Profile" });
     expect(link.getAttribute("href")).toBe("/profile/create");
     expect(link.className).toContain("bg-amber-500");
+    expect(link.className).toContain("shadow-[2px_2px_0_0_black]");
   });
 });

@@ -7,6 +7,21 @@ vi.mock("@/lib/hooks/intersectionobserver", () => ({
   useIntersectionObserver: vi.fn(),
 }));
 
+vi.mock("@/components/empty-state", () => ({
+  default: ({
+    message,
+    icon,
+  }: {
+    message: string;
+    icon?: React.ReactNode;
+  }) => (
+    <div data-testid="empty-state">
+      {icon}
+      <p>{message}</p>
+    </div>
+  ),
+}));
+
 vi.mock("@/components/clip-display", () => ({
   default: ({
     index,
@@ -127,6 +142,15 @@ describe("FeedProfile", () => {
     expect(screen.getByText("Test Band")).toBeDefined();
     expect(screen.getByText("Rock")).toBeDefined();
     expect(screen.getByText("Austin, TX, US")).toBeDefined();
+  });
+
+  it("shows a shared empty image state when there is no image", () => {
+    renderFeedProfile({
+      profile: { ...baseProfile, imageUrl: null } as ProfileWithSongClips,
+    });
+
+    expect(screen.getByTestId("empty-state")).toBeDefined();
+    expect(screen.getByText("No Image Yet.")).toBeDefined();
   });
 
   it("links the profile name to the public profile page", () => {

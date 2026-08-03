@@ -1,6 +1,8 @@
+import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import type { Profile, SongClip } from "@/lib/db/types";
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import PrivateInfo from "./private-info";
@@ -23,7 +25,7 @@ export default async function Profile({ profile, clips }: Props) {
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center w-full md:w-sm h-75 border rounded relative">
-              {profile.imageUrl && (
+              {profile.imageUrl ? (
                 <Image
                   src={profile.imageUrl}
                   alt={profile.profileName ?? "Image"}
@@ -31,6 +33,11 @@ export default async function Profile({ profile, clips }: Props) {
                   loading="eager"
                   className="object-cover rounded block"
                   sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              ) : (
+                <EmptyState
+                  message="No Image Yet."
+                  icon={<ImageIcon className="w-10 h-10" />}
                 />
               )}
               <div className="md:visible hidden h-full w-full relative md:flex flex-col">
@@ -58,14 +65,18 @@ export default async function Profile({ profile, clips }: Props) {
               {profile.profileName}
             </h1>
             <ProfileLinksDisplay profile={profile} />
-            <p className="max-w-2xl">{profile.bio}</p>
+            {profile.bio ? (
+              <p className="max-w-2xl">{profile.bio}</p>
+            ) : (
+              <EmptyState message="No Bio Yet." className="items-start h-auto" />
+            )}
           </div>
         </header>
         <div className="flex flex-col gap-10 w-full">
           {!isVerified && (
             <Link
               href="/profile/verify"
-              className="text-white px-4 py-2 rounded-md bg-gray-700/10 border hover:cursor-pointer  transition-all"
+              className="p-2 rounded border-2 bg-amber-500 shadow-[2px_2px_0_0_black] hover:shadow-none uppercase text-black font-bold hover:cursor-pointer transition-all"
             >
               Get Verified
             </Link>

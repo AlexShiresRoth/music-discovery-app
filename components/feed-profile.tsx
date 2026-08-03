@@ -3,10 +3,12 @@
 import { ProfileWithSongClips } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import clsx from "clsx";
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useRef, useState } from "react";
 import ClipDisplay from "./clip-display";
+import EmptyState from "./empty-state";
 import ProfileLocationDisplay from "./profile-location-display";
 
 function FeedProfile({
@@ -58,14 +60,22 @@ function FeedProfile({
     >
       <div className="flex md:flex-row flex-col md:items-center gap-8 w-full">
         <div className="relative w-20 h-20  md:w-40 md:h-40 overflow-hidden rounded border">
-          <Image
-            src={profile.imageUrl ?? ""}
-            alt={profile.profileName ?? ""}
-            fill
-            loading="eager"
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
+          {profile.imageUrl && (
+            <Image
+              src={profile.imageUrl}
+              alt={profile.profileName ?? "Profile Image"}
+              fill
+              loading="eager"
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          )}
+          {!profile.imageUrl && (
+            <EmptyState
+              message="No Image Yet."
+              icon={<ImageIcon className="w-10 h-10" />}
+            />
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <p>{profile.genre}</p>

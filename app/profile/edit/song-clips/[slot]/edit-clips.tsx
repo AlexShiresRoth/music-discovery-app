@@ -1,5 +1,6 @@
 "use client";
 
+import ActionButton from "@/components/action-button";
 import { ToastContext } from "@/context/toast";
 import { processAudioForUpload } from "@/lib/audio/trim-clip";
 import type { SongClip } from "@/lib/db/types";
@@ -177,13 +178,9 @@ export default function EditClips({ clip, slot }: Props) {
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={isFormPending}
-        className="self-end px-4 py-2 rounded bg-amber-500 uppercase font-bold hover:cursor-pointer hover:bg-amber-600 transition-colors disabled:bg-amber-500/30"
-      >
+      <ActionButton type="submit" disabled={isFormPending}>
         {isFormPending ? "Uploading" : `Save`}
-      </button>
+      </ActionButton>
     </form>
   );
 }

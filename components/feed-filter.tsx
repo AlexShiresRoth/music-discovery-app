@@ -39,7 +39,7 @@ function Filters({
 
   return (
     <div
-      className="relative flex items-center gap-2"
+      className="relative flex items-center gap-2 z-20"
       onBlur={() => setShowFilters(false)}
     >
       <button
