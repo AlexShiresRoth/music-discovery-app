@@ -1,5 +1,7 @@
 "use client";
 
+import ActionButton from "@/components/action-button";
+import BackButton from "@/components/breadcrumbs";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useTransition } from "react";
@@ -24,18 +26,20 @@ export default function VerifyPage() {
       }
     });
   };
+
   return (
-    <div className="flex flex-col items-center gap-4 justify-center h-screen">
-      <h1 className="text-2xl font-bold">
-        In order to upload song clips we need to verify your account.
-      </h1>
-      <button
-        onClick={handleVerify}
-        disabled={isPending}
-        className="px-4 py-2 rounded-md bg-gray-700/10 border border-white/20 hover:cursor-pointer hover:bg-gray-400/20 transition-all"
-      >
-        {isPending ? "Verifying..." : "Verify"}
-      </button>
-    </div>
+    <main className="flex flex-col items-center gap-4 justify-center w-full">
+      <div className="self-end">
+        <BackButton />
+      </div>
+      <div className="md:w-1/3 w-full flex flex-col items-center mt-24 justify-center gap-4 text-center">
+        <h1 className="text-2xl md:text-4xl">
+          In order to upload song clips we need to verify your account.
+        </h1>
+        <ActionButton onClick={handleVerify} disabled={isPending}>
+          {isPending ? "Verifying..." : "Verify"}
+        </ActionButton>
+      </div>
+    </main>
   );
 }

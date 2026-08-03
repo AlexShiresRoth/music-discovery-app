@@ -183,7 +183,7 @@ function SearchUI() {
                   <p>Loading...</p>
                 </>
               ) : (
-                <p>No results found</p>
+                <p className="text-sm">No Results Yet.</p>
               )}
             </div>
           </div>

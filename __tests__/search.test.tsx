@@ -146,13 +146,13 @@ describe("Search", () => {
     expect(screen.getAllByRole("link", { name: "Austin" })).toHaveLength(1);
   });
 
-  it('shows "No results found" when the search returns empty', async () => {
+  it('shows "No Results Yet." when the search returns empty', async () => {
     mockSearchResponse({ cities: [], artists: [] });
 
     render(<Search />);
     await typeSearchQuery("zzz");
 
-    expect(screen.getByText("No results found")).toBeDefined();
+    expect(screen.getByText("No Results Yet.")).toBeDefined();
   });
 
   it("clears the query and results when the clear button is clicked", async () => {

@@ -1,3 +1,4 @@
+import EmptyState from "@/components/empty-state";
 import WaveSurferUI from "@/components/wave-surfer";
 import type { SongClip } from "@/lib/db/types";
 import { Edit, Upload } from "lucide-react";
@@ -42,7 +43,10 @@ function ClipSlotView({
       {clip ? (
         <ExistingClipContent clip={clip} />
       ) : (
-        <p className="text-sm ">No clip uploaded</p>
+        <EmptyState
+          message="Upload a song clip."
+          className="items-start h-auto py-2"
+        />
       )}
     </div>
   );

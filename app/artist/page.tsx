@@ -16,7 +16,7 @@ export default async function ArtistsPage({ searchParams }: Props) {
         <h1 className="md:text-2xl text-lg font-semibold">{q}</h1>
         <BackButton />
       </div>
-      <FeedList profiles={profiles} />
+      <FeedList profiles={profiles} searchTerm={q} />
     </div>
   );
 }

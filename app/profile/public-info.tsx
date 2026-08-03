@@ -1,4 +1,5 @@
 "use client";
+import ActionButton from "@/components/action-button";
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
@@ -220,13 +221,9 @@ export default function PublicInfo({
           </div>
         </div>
         {isEdit && (
-          <button
-            type="submit"
-            disabled={isFormPending}
-            className="self-end px-4 py-2 rounded bg-amber-500 uppercase text-black font-bold hover:cursor-pointer hover:bg-amber-600 transition-colors disabled:bg-amber-500/30"
-          >
+          <ActionButton type="submit" disabled={isFormPending}>
             {isFormPending ? "Saving" : "Save"}
-          </button>
+          </ActionButton>
         )}
       </div>
     </ViewOrEditForm>

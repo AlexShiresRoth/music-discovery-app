@@ -1,5 +1,6 @@
 "use client";
 
+import ActionButton from "@/components/action-button";
 import GeoCityInput from "@/components/geo-city-input";
 import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
@@ -37,7 +38,7 @@ function WideColumn({ children }: { children: React.ReactNode }) {
 function Heading({ children }: { children: React.ReactNode }) {
   return (
     <div className="border-b pb-2 mb-4">
-      <h2 className="text-2xl   uppercase">{children}</h2>
+      <h2 className="text-2xl uppercase">{children}</h2>
     </div>
   );
 }
@@ -154,13 +155,9 @@ export default function ProfileForm() {
           </Columns>
         </Section>
 
-        <button
-          disabled={pending}
-          type="submit"
-          className="self-end px-4 py-2 bg-amber-500 text-black rounded-md uppercase font-bold hover:bg-amber-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
-        >
+        <ActionButton disabled={pending} type="submit">
           {pending ? "Creating Profile..." : "Create Profile"}
-        </button>
+        </ActionButton>
       </form>
     </div>
   );

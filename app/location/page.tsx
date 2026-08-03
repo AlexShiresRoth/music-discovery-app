@@ -20,7 +20,7 @@ export default async function LocationPage({ searchParams }: Props) {
         <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
         <BackButton />
       </div>
-      <FeedList profiles={results} />
+      <FeedList profiles={results} searchTerm={q} />
     </div>
   );
 }
