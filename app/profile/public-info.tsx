@@ -178,12 +178,12 @@ export default function PublicInfo({
               <ViewOrEditData title={fields.influences.label}>
                 <MultiSelectInput
                   name={fields.influences.name}
-                  defaultValues={influences}
+                  defaultValues={influences ?? []}
                 />
               </ViewOrEditData>
             ) : (
               <ViewOrEditData title={fields.influences.label}>
-                <p className="text-lg">{influences.join(", ")}</p>
+                <p className="text-lg">{(influences ?? []).join(", ")}</p>
               </ViewOrEditData>
             )}
           </div>

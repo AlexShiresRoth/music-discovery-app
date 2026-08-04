@@ -71,6 +71,7 @@ const baseProps = {
   soundcloud: social(),
   bandcamp: social(),
   imageUrl: null,
+  influences: ["Radiohead", "Bjork"],
 };
 
 function renderWithToast(props = {}, setToast = vi.fn()) {
@@ -99,10 +100,11 @@ describe("PublicInfo", () => {
       expect(screen.getByText("Test Profile")).toBeDefined();
     });
 
-    it("displays bio and location", () => {
+    it("displays bio, influences, and location", () => {
       renderWithToast();
       expect(screen.queryByText("Rock")).toBeNull();
       expect(screen.getByText("A test bio")).toBeDefined();
+      expect(screen.getByText("Radiohead, Bjork")).toBeDefined();
       expect(screen.getByText("New York, NY, US")).toBeDefined();
     });
 
