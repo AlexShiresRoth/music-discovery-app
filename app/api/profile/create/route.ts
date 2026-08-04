@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import "server-only";
 
+const MAX_INFLUENCES = 5;
+
 export async function POST(request: Request) {
   const supabase = await createServerClient();
 
@@ -42,6 +44,13 @@ export async function POST(request: Request) {
     const lat = Number(data.lat) || 0;
     const lon = Number(data.lon) || 0;
 
+    const influences = data.influences
+      ? data.influences
+          .split(",")
+          .map((influence: string) => influence.trim())
+          .slice(0, MAX_INFLUENCES)
+      : [];
+
     await db
       .insert(profilesSchema)
       .values({
@@ -56,6 +65,7 @@ export async function POST(request: Request) {
         state: data.state ?? "",
         stateCode: data.stateCode ?? "",
         formattedLocation: data.formattedLocation ?? "",
+        influences,
         lat,
         lon,
         location: `POINT(${lon} ${lat})`,

@@ -8,7 +8,6 @@ export default function TextArea({
 }: ComponentPropsWithoutRef<"textarea"> & {
   label?: string;
   isPending: boolean;
-  isEdit?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">

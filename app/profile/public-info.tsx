@@ -4,6 +4,7 @@ import MultiSelectInput from "@/components/multi-select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
+import clsx from "clsx";
 import { Pencil, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -157,7 +158,6 @@ export default function PublicInfo({
           {isEdit ? (
             <ViewOrEditData title={fields.bio.label}>
               <TextArea
-                isEdit
                 defaultValue={bio || ""}
                 name={fields.bio.name}
                 isPending={isFormPending}
@@ -171,7 +171,9 @@ export default function PublicInfo({
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2">
+          <div
+            className={clsx("flex flex-col gap-2", !isEdit && "border-b pb-2")}
+          >
             {isEdit ? (
               <ViewOrEditData title={fields.influences.label}>
                 <MultiSelectInput
