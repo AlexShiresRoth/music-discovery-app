@@ -50,7 +50,6 @@ const social = (url = "", show = true) => ({ url, show });
 
 const baseProps = {
   profileName: "Test Profile",
-  genre: "Rock",
   bio: "A test bio",
   formattedLocation: "New York, NY, USA",
   city: "New York",
@@ -100,9 +99,9 @@ describe("PublicInfo", () => {
       expect(screen.getByText("Test Profile")).toBeDefined();
     });
 
-    it("displays genre, bio, and location", () => {
+    it("displays bio and location", () => {
       renderWithToast();
-      expect(screen.getByText("Rock")).toBeDefined();
+      expect(screen.queryByText("Rock")).toBeNull();
       expect(screen.getByText("A test bio")).toBeDefined();
       expect(screen.getByText("New York, NY, US")).toBeDefined();
     });

@@ -78,7 +78,6 @@ function FeedProfile({
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <p>{profile.genre}</p>
           <div className="flex gap-2">
             <ProfileLocationDisplay
               city={profile.city}

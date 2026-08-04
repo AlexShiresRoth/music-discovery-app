@@ -34,6 +34,7 @@ export const profilesSchema = pgTable("profiles", {
   profileName: text("profile_name"),
   bio: text("bio"),
   genre: text("genre"),
+  influences: jsonb("influences").$type<string[]>().notNull().default([]),
   joinedDate: timestamp("joined_date").defaultNow(),
   isVerified: boolean("is_verified").default(false),
   songClips: jsonb("song_clips")

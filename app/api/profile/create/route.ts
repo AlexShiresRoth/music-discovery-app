@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         spotify: data.spotify,
         appleMusic: data.appleMusic,
         soundcloud: data.soundcloud,
-        genre: data.genre,
+        genre: null,
         fullName: data.fullName,
         contactEmail: data.contactEmail,
         userRefId: user.id,

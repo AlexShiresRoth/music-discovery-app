@@ -94,7 +94,7 @@ export const songClipFormFields: Record<
 
 export type ProfileFormSchemaWithoutId = Omit<
   Profile,
-  "id" | "joinedDate" | "songClips" | "userRefId" | "isVerified"
+  "id" | "joinedDate" | "songClips" | "userRefId" | "isVerified" | "genre"
 >;
 
 const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
@@ -109,6 +109,12 @@ const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
     label: "Contact Email",
     placeholder: "Contact Email",
     required: true,
+  },
+  influences: {
+    name: "influences",
+    label: "Influences",
+    placeholder: "Influences",
+    required: false,
   },
   // UI-only label for the geocoder section; PostGIS value is derived server-side
   location: {
@@ -176,12 +182,6 @@ const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
     label: "Bio",
     placeholder: "Bio",
     required: false,
-  },
-  genre: {
-    name: "genre",
-    label: "Genre",
-    placeholder: "Genre",
-    required: true,
   },
   imageUrl: {
     name: "imageUrl",

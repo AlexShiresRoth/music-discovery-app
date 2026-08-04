@@ -1,9 +1,8 @@
 "use client";
 import ActionButton from "@/components/action-button";
-import SelectInput from "@/components/select-input";
+import MultiSelectInput from "@/components/multi-select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { Pencil, X } from "lucide-react";
 import Link from "next/link";
@@ -55,7 +54,6 @@ function ViewOrEditForm({
 
 export default function PublicInfo({
   profileName,
-  genre,
   bio,
   city,
   country,
@@ -65,6 +63,7 @@ export default function PublicInfo({
   lat,
   lon,
   formattedLocation,
+  influences,
   mode = "View",
 }: ProfileFormSchemaWithoutId & { mode?: Mode }) {
   const isEdit = mode === "Edit";
@@ -136,7 +135,7 @@ export default function PublicInfo({
             </button>
           )}
         </div>
-        <header className="flex justify-between gap-2 border-b pb-4">
+        <header className="flex justify-between gap-2 border-b pb-2">
           {isEdit ? (
             <ViewOrEditData title={fields.profileName.label}>
               <TextInput
@@ -154,24 +153,7 @@ export default function PublicInfo({
             </ViewOrEditData>
           )}
         </header>
-        <div className="flex flex-col border-b pb-4">
-          {isEdit ? (
-            <ViewOrEditData title={fields.genre.label}>
-              <SelectInput
-                name={fields.genre.name}
-                defaultValue={genre || ""}
-                isPending={isFormPending}
-                options={GENRES}
-                isEdit
-              />
-            </ViewOrEditData>
-          ) : (
-            <ViewOrEditData title={fields.genre.label}>
-              <p className="text-lg">{genre}</p>
-            </ViewOrEditData>
-          )}
-        </div>
-        <div className={isEdit ? "" : "border-b pb-4"}>
+        <div className={isEdit ? "" : "border-b pb-2"}>
           {isEdit ? (
             <ViewOrEditData title={fields.bio.label}>
               <TextArea
@@ -188,8 +170,25 @@ export default function PublicInfo({
           )}
         </div>
 
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
+            {isEdit ? (
+              <ViewOrEditData title={fields.influences.label}>
+                <MultiSelectInput
+                  name={fields.influences.name}
+                  defaultValues={influences}
+                />
+              </ViewOrEditData>
+            ) : (
+              <ViewOrEditData title={fields.influences.label}>
+                <p className="text-lg">{influences.join(", ")}</p>
+              </ViewOrEditData>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-10">
-          <div className="border-b pb-4">
+          <div className="border-b pb-2">
             {isEdit ? (
               <ViewOrEditData title={fields.location.label}>
                 <GeoCityInput

@@ -47,7 +47,6 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            {profile.genre && <p>{profile.genre}</p>}
             <div className="flex gap-2">
               <ProfileLocationDisplay
                 city={profile.city}

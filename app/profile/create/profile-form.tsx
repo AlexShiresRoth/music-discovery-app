@@ -2,10 +2,8 @@
 
 import ActionButton from "@/components/action-button";
 import GeoCityInput from "@/components/geo-city-input";
-import SelectInput from "@/components/select-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
-import { GENRES } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
@@ -125,13 +123,6 @@ export default function ProfileForm() {
           <Columns>
             <Column>
               <TextInput {...fields.profileName} isPending={pending} />
-            </Column>
-            <Column>
-              <SelectInput
-                {...fields.genre}
-                options={GENRES}
-                isPending={pending}
-              />
             </Column>
             <WideColumn>
               <TextArea {...fields.bio} isPending={pending} />

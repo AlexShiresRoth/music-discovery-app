@@ -58,7 +58,6 @@ const validProfileData = {
   stateCode: "NY",
   lat: 40,
   lon: -74,
-  genre: "Rock",
   bio: "A test bio",
   website: { url: "https://testprofile.com", show: true },
   facebook: { url: "", show: true },
@@ -145,6 +144,7 @@ describe("POST /api/profile/create", () => {
         location: "POINT(-74 40)",
         userRefId: "user-1",
         songClips: [],
+        genre: null,
       }),
     );
   });

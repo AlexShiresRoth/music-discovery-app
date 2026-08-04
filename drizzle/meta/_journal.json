@@ -71,6 +71,13 @@
       "when": 1785448282426,
       "tag": "0009_third_forgotten_one",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1785805151967,
+      "tag": "0010_fixed_bishop",
+      "breakpoints": true
     }
   ]
 }
