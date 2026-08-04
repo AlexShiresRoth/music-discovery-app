@@ -11,6 +11,7 @@ export type ClipSlotDraft = {
   fullSongUrl: string;
   dbUrl?: string | null;
   selectedRegion?: ClipSelection | null;
+  genre: string;
 };
 
 export type ClipUploadMetadata = {

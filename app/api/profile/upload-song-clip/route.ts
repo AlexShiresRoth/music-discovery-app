@@ -59,7 +59,6 @@ export async function POST(request: Request) {
       { status: 403 },
     );
   }
-  // TODO editing song clips is not set up yet, could probably just be a new route with a json payload instead of a form data
   const formData = await request.formData();
   const file = formData.get("file") as File;
   const metadataEntry = formData.get("metadata") as string;

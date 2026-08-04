@@ -14,7 +14,12 @@ type Props = {
 function ExistingClipContent({ clip }: { clip: SongClip }) {
   return (
     clip.db_url && (
-      <WaveSurferUI url={clip.db_url} clipName={clip.title || ""} />
+      <WaveSurferUI
+        url={clip.db_url}
+        clipName={clip.title || ""}
+        genre={clip.genre || undefined}
+        genreFilterUrl={`/clips?genre=${clip.genre}`}
+      />
     )
   );
 }

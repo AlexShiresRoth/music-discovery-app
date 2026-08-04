@@ -10,6 +10,7 @@ export function emptySlot(): ClipSlotDraft {
     fullSongUrl: "",
     dbUrl: null,
     selectedRegion: null,
+    genre: "",
   };
 }
 
@@ -21,6 +22,7 @@ export function songClipToDraft(clip: SongClip): ClipSlotDraft {
     title: clip.title ?? "",
     fullSongUrl: clip.full_song_url ?? "",
     dbUrl: clip.db_url,
+    genre: clip.genre ?? "",
     selectedRegion: null,
   };
 }

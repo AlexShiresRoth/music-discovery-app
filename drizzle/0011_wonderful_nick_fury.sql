@@ -1,0 +1,1 @@
+ALTER TABLE "song_clips" ADD COLUMN "genre" text;

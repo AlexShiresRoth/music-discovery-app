@@ -1,26 +1,76 @@
-export const GENRES = [
-  { value: "Rock", label: "Rock" },
-  { value: "Pop", label: "Pop" },
-  { value: "Hip-Hop", label: "Hip-Hop" },
-  { value: "Electronic", label: "Electronic" },
-  { value: "Country", label: "Country" },
-  { value: "Latin", label: "Latin" },
-  { value: "Reggae", label: "Reggae" },
-  { value: "Jazz", label: "Jazz" },
-  { value: "Blues", label: "Blues" },
-  { value: "Soul", label: "Soul" },
-  { value: "Funk", label: "Funk" },
-  { value: "R&B", label: "R&B" },
-  { value: "Punk", label: "Punk" },
-  { value: "Metal", label: "Metal" },
-  { value: "Post-Rock", label: "Post-Rock" },
-  { value: "Surf Rock", label: "Surf Rock" },
-  { value: "Emo", label: "Emo" },
-  { value: "Grunge", label: "Grunge" },
-  { value: "Ambient", label: "Ambient" },
-  { value: "Industrial", label: "Industrial" },
-  { value: "Folk", label: "Folk" },
-  { value: "Indie", label: "Indie" },
-  { value: "Alternative", label: "Alternative" },
-  { value: "Experimental", label: "Experimental" },
+export type GenreOption = {
+  value: string;
+  label: string;
+};
+
+export type GenreGroup = {
+  label: string;
+  options: GenreOption[];
+};
+
+const genre = (name: string): GenreOption => ({ value: name, label: name });
+
+/** Source of truth — grouped for UI, flat `GENRES` derived below. */
+export const GENRE_GROUPS: GenreGroup[] = [
+  {
+    label: "Rock & Alternative",
+    options: [
+      genre("Alternative"),
+      genre("Emo"),
+      genre("Grunge"),
+      genre("Indie"),
+      genre("Metal"),
+      genre("Post-Rock"),
+      genre("Punk"),
+      genre("Rock"),
+      genre("Surf Rock"),
+    ],
+  },
+  {
+    label: "Pop & R&B",
+    options: [
+      genre("Funk"),
+      genre("Pop"),
+      genre("R&B"),
+      genre("Soul"),
+    ],
+  },
+  {
+    label: "Hip-Hop",
+    options: [genre("Hip-Hop"), genre("Rap")],
+  },
+  {
+    label: "Electronic & Dance",
+    options: [
+      genre("Ambient"),
+      genre("Dubstep"),
+      genre("Electronic"),
+      genre("House"),
+      genre("Industrial"),
+      genre("Techno"),
+      genre("Trance"),
+    ],
+  },
+  {
+    label: "Jazz, Blues & Folk",
+    options: [
+      genre("Blues"),
+      genre("Country"),
+      genre("Folk"),
+      genre("Jazz"),
+    ],
+  },
+  {
+    label: "World & Roots",
+    options: [genre("Dub"), genre("Latin"), genre("Reggae")],
+  },
+  {
+    label: "Other",
+    options: [genre("Experimental")],
+  },
 ];
+
+/** Flat list for selects / filters that don't need group headers. */
+export const GENRES: GenreOption[] = GENRE_GROUPS.flatMap(
+  (group) => group.options,
+);

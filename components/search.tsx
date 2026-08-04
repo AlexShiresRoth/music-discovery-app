@@ -122,7 +122,7 @@ function SearchUI() {
 
         {shouldOpen && searchResTotal > 0 && (
           <div
-            className="absolute top-full left-0 w-full bg-background border border-b-4 rounded z-20 flex flex-col gap-4 pt-4"
+            className="absolute top-full left-0 w-full bg-background border border-b-4 rounded z-20 flex flex-col"
             id="search-results"
             data-search-results
             onMouseDown={(e) => e.preventDefault()}
@@ -136,7 +136,7 @@ function SearchUI() {
             {searchLocationResults.length > 0 && !isLoading && (
               <div className="flex flex-col">
                 <div className="w-full border-b">
-                  <h3 className="font-semibold px-4 pb-2">Locations</h3>
+                  <h3 className="font-semibold px-4 py-2">Locations</h3>
                 </div>
                 {searchLocationResults.map((city) => (
                   <Link
@@ -155,10 +155,14 @@ function SearchUI() {
                 ))}
               </div>
             )}
+            {searchArtistResults.length > 0 &&
+              searchLocationResults.length > 0 && (
+                <div className="w-full border-b" />
+              )}
             {searchArtistResults.length > 0 && !isLoading && (
               <div className="flex flex-col">
                 <div className="w-full border-b">
-                  <h3 className="font-semibold px-4 pb-2">Artists</h3>
+                  <h3 className="font-semibold px-4 py-2">Artists</h3>
                 </div>
                 {searchArtistResults.map((artist) => (
                   <Link

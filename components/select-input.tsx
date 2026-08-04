@@ -1,17 +1,55 @@
 import { ComponentPropsWithoutRef } from "react";
 
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+type SelectOptionGroup = {
+  label: string;
+  options: SelectOption[];
+};
+
+function OptionList({
+  options,
+  groups,
+}: {
+  options?: SelectOption[];
+  groups?: SelectOptionGroup[];
+}) {
+  if (groups?.length) {
+    return groups.map((group) => (
+      <optgroup key={group.label} label={group.label}>
+        {group.options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </optgroup>
+    ));
+  }
+
+  return (options ?? []).map((option) => (
+    <option key={option.value} value={option.value}>
+      {option.label}
+    </option>
+  ));
+}
+
 export default function SelectInput({
   label,
   isPending,
   name,
   options,
+  groups,
   isEdit = false,
   ...props
 }: ComponentPropsWithoutRef<"select"> & {
   label?: string;
   isPending: boolean;
   name: string;
-  options: { label: string; value: string }[];
+  options?: SelectOption[];
+  groups?: SelectOptionGroup[];
   isEdit?: boolean;
 }) {
   return (
@@ -29,13 +67,9 @@ export default function SelectInput({
             {...props}
             name={name}
             disabled={isPending}
-            className="border-0 disabled:opacity-50 focus:outline-none transition-all px-2 py-1 w-full"
+            className="border-0 disabled:opacity-50 focus:outline-none transition-all py-1 w-full"
           >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            <OptionList options={options} groups={groups} />
           </select>
         </div>
       ) : (
@@ -45,11 +79,7 @@ export default function SelectInput({
           disabled={isPending}
           className="border rounded-md py-4.5 px-2 disabled:opacity-50 focus:outline-none transition-all "
         >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          <OptionList options={options} groups={groups} />
         </select>
       )}
     </div>

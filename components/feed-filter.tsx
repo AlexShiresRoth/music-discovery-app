@@ -1,5 +1,5 @@
 "use client";
-import { GENRES } from "@/constants";
+import { GENRE_GROUPS } from "@/constants";
 import clsx from "clsx";
 import { SlidersVertical, XIcon } from "lucide-react";
 import Link from "next/link";
@@ -71,22 +71,32 @@ function Filters({
                 onClick={() => setShowFilters(false)}
               />
             </div>
-            <div className="grid grid-cols-3">
-              {GENRES.map((g) => (
-                <Link
-                  href={buildQueryString(
-                    selectedFilters.includes(g.value)
-                      ? selectedFilters.filter((f) => f !== g.value)
-                      : [...selectedFilters, g.value],
-                  )}
-                  key={g.value}
-                  className={clsx(
-                    "hover:cursor-pointer hover:bg-amber-500/50 transition-colors border-b p-3 text-start",
-                    selectedFilters.includes(g.value) && "bg-amber-500/50",
-                  )}
-                >
-                  {g.label}
-                </Link>
+            <div className="flex flex-col max-h-80 overflow-y-auto">
+              {GENRE_GROUPS.map((group) => (
+                <div key={group.label} className="flex flex-col">
+                  <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-foreground/50 border-b bg-foreground/5">
+                    {group.label}
+                  </p>
+                  <div className="grid grid-cols-3">
+                    {group.options.map((g) => (
+                      <Link
+                        href={buildQueryString(
+                          selectedFilters.includes(g.value)
+                            ? selectedFilters.filter((f) => f !== g.value)
+                            : [...selectedFilters, g.value],
+                        )}
+                        key={g.value}
+                        className={clsx(
+                          "hover:cursor-pointer hover:bg-amber-500/50 transition-colors border-b p-3 text-start",
+                          selectedFilters.includes(g.value) &&
+                            "bg-amber-500/50",
+                        )}
+                      >
+                        {g.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             {selectedFilters.length > 0 && (

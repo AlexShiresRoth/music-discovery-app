@@ -25,6 +25,7 @@ export const songClipsSchema = pgTable("song_clips", {
   title: text("title"),
   db_url: text("db_url"),
   full_song_url: text("full_song_url"),
+  genre: text("genre"),
 });
 
 export const profilesSchema = pgTable("profiles", {
@@ -33,7 +34,7 @@ export const profilesSchema = pgTable("profiles", {
   contactEmail: text("contact_email"),
   profileName: text("profile_name"),
   bio: text("bio"),
-  genre: text("genre"),
+  genre: text("genre"), // @deprecated - use songClips.genre instead
   influences: jsonb("influences").$type<string[]>().notNull().default([]),
   joinedDate: timestamp("joined_date").defaultNow(),
   isVerified: boolean("is_verified").default(false),
