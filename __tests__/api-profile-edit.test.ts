@@ -91,7 +91,6 @@ const validUpdateData = {
   stateCode: "NY",
   lat: 40,
   lon: -74,
-  genre: "Rock",
   bio: "New bio",
   website: social("https://new.com"),
   facebook: social(),

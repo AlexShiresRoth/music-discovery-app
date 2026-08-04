@@ -26,7 +26,7 @@ export default async function ProfilePage({ params }: Props) {
         <div className="self-end">
           <BackButton />
         </div>
-        <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
+        <header className="flex md:items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center relative w-full md:w-sm h-75 border rounded">
               {profile.imageUrl ? (
@@ -47,7 +47,6 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            {profile.genre && <p>{profile.genre}</p>}
             <div className="flex gap-2">
               <ProfileLocationDisplay
                 city={profile.city}
@@ -59,10 +58,28 @@ export default async function ProfilePage({ params }: Props) {
               {profile.profileName}
             </h1>
             <ProfileLinksDisplay profile={profile} />
+            {profile.influences.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-bold">Influences</p>
+                <div className="flex flex-wrap gap-2">
+                  {profile.influences.map((influence) => (
+                    <div key={influence} className="text-sm">
+                      {influence}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {profile.bio ? (
-              <p className="max-w-2xl">{profile.bio}</p>
+              <div>
+                <p className="text-sm font-bold">Bio</p>
+                <p className="max-w-2xl">{profile.bio}</p>
+              </div>
             ) : (
-              <EmptyState message="No Bio Yet." className="items-start h-auto" />
+              <EmptyState
+                message="No Bio Yet."
+                className="items-start h-auto"
+              />
             )}
           </div>
         </header>

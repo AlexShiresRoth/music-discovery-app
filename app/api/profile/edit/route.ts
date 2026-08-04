@@ -18,6 +18,8 @@ const SOCIAL_KEYS = [
   "bandcamp",
 ] as const;
 
+const MAX_INFLUENCES = 5;
+
 export const POST = async (request: Request) => {
   const supabase = await createServerClient();
 
@@ -37,7 +39,8 @@ export const POST = async (request: Request) => {
   }
 
   try {
-    const data: Partial<ProfileFormSchemaWithoutId> = await request.json();
+    const data: Partial<ProfileFormSchemaWithoutId & { influences: string }> =
+      await request.json();
 
     const foundProfile = await db
       .select()
@@ -80,6 +83,13 @@ export const POST = async (request: Request) => {
     const lat = Number(data.lat ?? p.lat) || 0;
     const lon = Number(data.lon ?? p.lon) || 0;
 
+    const influences = data.influences
+      ? (data.influences as string)
+          .split(",")
+          .map((influence: string) => influence.trim())
+          .slice(0, MAX_INFLUENCES)
+      : p.influences;
+
     await db
       .update(profilesSchema)
       .set({
@@ -93,9 +103,10 @@ export const POST = async (request: Request) => {
         formattedLocation: data.formattedLocation || p.formattedLocation,
         lat,
         lon,
+        influences,
         profileName: data.profileName || p.profileName,
         location: `POINT(${lon} ${lat})`,
-        genre: data.genre || p.genre,
+        genre: p.genre,
         fullName: data.fullName || p.fullName,
         contactEmail: data.contactEmail || p.contactEmail,
         imageUrl: data.imageUrl === "" ? null : data.imageUrl || p.imageUrl, // if this is specifically an empty string, set it to null to remove image

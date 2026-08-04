@@ -136,11 +136,11 @@ describe("FeedProfile", () => {
     vi.clearAllMocks();
   });
 
-  it("renders profile name, genre, and location", () => {
+  it("renders profile name and location", () => {
     renderFeedProfile();
 
     expect(screen.getByText("Test Band")).toBeDefined();
-    expect(screen.getByText("Rock")).toBeDefined();
+    expect(screen.queryByText("Rock")).toBeNull();
     expect(screen.getByText("Austin, TX, US")).toBeDefined();
   });
 

@@ -53,7 +53,6 @@ export default async function Profile({ profile, clips }: Props) {
             </div>
           </div>
           <div className="flex flex-col gap-4 w-full">
-            <p>{profile.genre}</p>
             <div className="flex gap-2">
               <ProfileLocationDisplay
                 city={profile.city}
