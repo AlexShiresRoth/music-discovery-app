@@ -1,5 +1,8 @@
 import FeedList from "@/components/feed-list";
-import { getProfilesWithSongClips } from "@/lib/auth";
+import {
+  getProfilesWithSongClips,
+  getTotalProfilesWithSongClips,
+} from "@/lib/auth";
 
 type Props = {
   searchParams: Promise<{
@@ -15,6 +18,8 @@ export default async function Home({ searchParams }: Props) {
     15,
     Array.isArray(g) ? g : g ? [g as string] : [],
   );
-
-  return <FeedList profiles={profiles} />;
+  const totalProfiles = await getTotalProfilesWithSongClips(
+    Array.isArray(g) ? g : g ? [g as string] : [],
+  );
+  return <FeedList profiles={profiles} totalProfiles={totalProfiles} />;
 }

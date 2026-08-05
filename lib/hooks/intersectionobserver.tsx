@@ -1,15 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   selector: string;
   callback: (index: number) => void;
   scrollRef: React.RefObject<HTMLElement | null>;
 };
+
 export const useIntersectionObserver = ({
   selector,
   callback,
   scrollRef,
 }: Props) => {
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
   useEffect(() => {
     const root = scrollRef.current;
     if (!root) return;
@@ -27,19 +34,19 @@ export const useIntersectionObserver = ({
 
         const index = slides.indexOf(mostVisible.target as HTMLElement);
         if (index >= 0) {
-          callback(index);
+          callbackRef.current(index);
         }
       },
       {
         root,
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+        threshold: [0.5, 0.75, 1],
       },
     );
 
     slides.forEach((slide) => observer.observe(slide));
 
     return () => observer.disconnect();
-  }, [selector, callback, scrollRef]);
+  }, [selector, scrollRef]);
 
   return <></>;
 };

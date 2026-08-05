@@ -57,7 +57,6 @@ export default async function Profile({ profile, clips }: Props) {
               <ProfileLocationDisplay
                 city={profile.city}
                 stateCode={profile.stateCode}
-                countryCode={profile.countryCode}
               />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
@@ -67,7 +66,10 @@ export default async function Profile({ profile, clips }: Props) {
             {profile.bio ? (
               <p className="max-w-2xl">{profile.bio}</p>
             ) : (
-              <EmptyState message="No Bio Yet." className="items-start h-auto" />
+              <EmptyState
+                message="No Bio Yet."
+                className="items-start h-auto"
+              />
             )}
           </div>
         </header>
