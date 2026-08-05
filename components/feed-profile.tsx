@@ -56,7 +56,7 @@ function FeedProfile({
     <div
       data-profile-slide
       data-profile-index={currentIndex}
-      className="flex flex-col justify-center gap-12 md:gap-32 snap-start min-h-screen py-20 md:py-32 rounded w-screen max-w-full overflow-hidden"
+      className="flex flex-col justify-center gap-8 snap-start min-h-screen py-20 md:py-32 rounded w-screen max-w-full overflow-hidden"
     >
       <div className="flex md:flex-row flex-col md:items-center gap-8 w-full">
         <div className="relative w-20 h-20  md:w-40 md:h-40 overflow-hidden rounded border">

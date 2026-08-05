@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
+import { validateUrl } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -22,6 +23,11 @@ export async function POST(request: Request) {
     id: string;
     genre: string;
   } = await request.json();
+
+  const urlValidation = validateUrl(data.full_song_url, "Full Song URL");
+  if (!urlValidation.ok) {
+    return NextResponse.json({ error: urlValidation.error }, { status: 400 });
+  }
 
   const [profile] = await db
     .select()

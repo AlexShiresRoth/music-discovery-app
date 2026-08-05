@@ -224,6 +224,21 @@ describe("POST /api/profile/upload-song-clip", () => {
     expect(body.error).toMatch(/^Title is required for /);
   });
 
+  it("returns 400 when fullSongUrl is not a valid URL", async () => {
+    const response = await POST(
+      makeUploadRequest({
+        metadata: { ...defaultMetadata, fullSongUrl: "not-a-url" },
+      }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe(
+      'Full Song URL: "not-a-url" is not a valid URL',
+    );
+    expect(mockUpload).not.toHaveBeenCalled();
+  });
+
   it("returns 400 when no clip region is selected", async () => {
     const response = await POST(
       makeUploadRequest({

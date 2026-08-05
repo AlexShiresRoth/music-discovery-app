@@ -8,6 +8,7 @@ import SocialSoundcloudIcon from "@/icons/soundcloud";
 import SocialSpotifyIcon from "@/icons/spotify";
 import TikTokIcon from "@/icons/tiktok";
 import type { SocialField as SocialFieldType } from "@/lib/db/types";
+import { validateSocialFields } from "@/lib/validation/url";
 import clsx from "clsx";
 import { Globe, Pencil, X } from "lucide-react";
 import Link from "next/link";
@@ -117,6 +118,13 @@ export default function SocialSection({
           url: value as string,
           show: values[key as SocialKey]?.show ?? true,
         };
+      }
+
+      const socialValidation = validateSocialFields(socialData);
+      if (!socialValidation.ok) {
+        setToast({ message: socialValidation.error, type: "error" });
+        setIsFormPending(false);
+        return;
       }
 
       const response = await fetch("/api/profile/edit", {

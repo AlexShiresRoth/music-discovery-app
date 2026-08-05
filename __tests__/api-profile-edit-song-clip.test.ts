@@ -170,6 +170,8 @@ describe("POST /api/profile/edit-song-clip", () => {
     expect(mockSet).toHaveBeenCalledWith({
       title: "New Title",
       full_song_url: "https://example.com/track",
+      genre: undefined,
+      updatedAt: expect.any(Date),
     });
     expect(mockSet).toHaveBeenCalledWith({
       updatedAt: expect.any(Date),
@@ -191,7 +193,26 @@ describe("POST /api/profile/edit-song-clip", () => {
     expect(mockSet).toHaveBeenCalledWith({
       title: "New Title",
       full_song_url: null,
+      genre: undefined,
+      updatedAt: expect.any(Date),
     });
+  });
+
+  it("returns 400 for an invalid full_song_url", async () => {
+    const response = await POST(
+      makeRequest({
+        id: "10",
+        title: "New Title",
+        full_song_url: "not-a-url",
+      }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe(
+      'Full Song URL: "not-a-url" is not a valid URL',
+    );
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("bumps profile updatedAt when the cooldown has passed", async () => {
@@ -222,9 +243,14 @@ describe("POST /api/profile/edit-song-clip", () => {
     expect(mockSet).toHaveBeenCalledWith({
       title: "New Title",
       full_song_url: "https://example.com/track",
+      genre: undefined,
+      updatedAt: expect.any(Date),
     });
     const profileUpdate = mockSet.mock.calls.find(
-      (call) => call[0] && "updatedAt" in call[0],
+      (call) =>
+        call[0] &&
+        "updatedAt" in call[0] &&
+        !("title" in call[0]),
     )?.[0] as { updatedAt: Date };
     expect(profileUpdate.updatedAt.getTime()).toBeGreaterThan(
       staleUpdatedAt.getTime(),
@@ -259,6 +285,8 @@ describe("POST /api/profile/edit-song-clip", () => {
     expect(mockSet).toHaveBeenCalledWith({
       title: "New Title",
       full_song_url: "https://example.com/track",
+      genre: undefined,
+      updatedAt: expect.any(Date),
     });
     expect(mockSet).toHaveBeenCalledWith({
       updatedAt: recentUpdatedAt,
