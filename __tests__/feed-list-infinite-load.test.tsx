@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockUseSearchParams = vi.fn();
-const mockUseFetchMoreProfiles = vi.fn();
+const mockUseFetchMoreData = vi.fn();
 const mockOnFinish = vi.fn();
 const mockBack = vi.fn();
 
@@ -13,9 +13,8 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ back: mockBack, push: vi.fn() }),
 }));
 
-vi.mock("@/lib/hooks/useFetchMoreProfiles", () => ({
-  useFetchMoreProfiles: (...args: unknown[]) =>
-    mockUseFetchMoreProfiles(...args),
+vi.mock("@/lib/hooks/useFetchMoreData", () => ({
+  useFetchMoreData: (...args: unknown[]) => mockUseFetchMoreData(...args),
 }));
 
 vi.mock("@/lib/hooks/intersectionobserver", () => ({
@@ -75,8 +74,8 @@ describe("FeedList infinite load", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
-    mockUseFetchMoreProfiles.mockReturnValue({
-      fetchedProfiles: initialProfiles,
+    mockUseFetchMoreData.mockReturnValue({
+      fetchedData: initialProfiles,
       error: null,
       isLoading: false,
     });
@@ -89,20 +88,23 @@ describe("FeedList infinite load", () => {
 
     render(<FeedList profiles={initialProfiles} />);
 
-    expect(mockUseFetchMoreProfiles).toHaveBeenCalledWith(
+    expect(mockUseFetchMoreData).toHaveBeenCalledWith(
       expect.objectContaining({
-        profiles: initialProfiles,
-        limit: 15,
-        genres: ["Rock", "Jazz"],
-        latitude: 30.27,
-        longitude: -97.74,
+        data: initialProfiles,
+        limit: 2,
+        baseUrl: "/api/profiles/with-song-clips",
+        searchParams: {
+          g: ["Rock", "Jazz"],
+          lat: "30.27",
+          lon: "-97.74",
+        },
       }),
     );
   });
 
   it("renders fetched profiles from the hook", () => {
-    mockUseFetchMoreProfiles.mockReturnValue({
-      fetchedProfiles: [
+    mockUseFetchMoreData.mockReturnValue({
+      fetchedData: [
         ...initialProfiles,
         { id: 3, profileName: "Band Three", songClips: [] },
       ] as unknown as ProfileWithSongClips[],
@@ -118,8 +120,8 @@ describe("FeedList infinite load", () => {
   });
 
   it("shows a loading indicator while fetching more profiles", () => {
-    mockUseFetchMoreProfiles.mockReturnValue({
-      fetchedProfiles: initialProfiles,
+    mockUseFetchMoreData.mockReturnValue({
+      fetchedData: initialProfiles,
       error: null,
       isLoading: true,
     });
@@ -130,8 +132,8 @@ describe("FeedList infinite load", () => {
   });
 
   it("shows an error message when fetching more profiles fails", () => {
-    mockUseFetchMoreProfiles.mockReturnValue({
-      fetchedProfiles: initialProfiles,
+    mockUseFetchMoreData.mockReturnValue({
+      fetchedData: initialProfiles,
       error: new Error("Network error"),
       isLoading: false,
     });
@@ -147,7 +149,7 @@ describe("FeedList infinite load", () => {
 
       expect(screen.getByText(/No Artists Yet/)).toBeDefined();
       expect(screen.getByText("Austin")).toBeDefined();
-      expect(mockUseFetchMoreProfiles).not.toHaveBeenCalled();
+      expect(mockUseFetchMoreData).not.toHaveBeenCalled();
     });
 
     it("omits the for-clause when there is no search term or genre filter", () => {

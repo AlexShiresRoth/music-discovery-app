@@ -23,7 +23,6 @@ export async function POST(request: Request) {
       email,
       password,
     });
-    console.log(data);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

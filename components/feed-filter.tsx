@@ -123,9 +123,9 @@ export default function FeedFilter() {
   const lon = searchParams.get("lon");
   const genres = searchParams.getAll("g");
   const q = searchParams.get("q");
-  const notAllowedPaths = ["/login", "/signup", "/profile", "/profiles"];
+  const allowedPaths = ["/clips"];
 
-  if (notAllowedPaths.some((path) => pathname.startsWith(path))) {
+  if (allowedPaths.filter((path) => pathname.startsWith(path)).length === 0) {
     return null;
   }
 

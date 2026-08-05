@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth/session";
+import FeedFilter from "./feed-filter";
 import NavContent from "./nav-content";
 import NavWithMenu from "./nav-with-menu";
 import Search from "./search";
@@ -10,7 +11,7 @@ export default async function Navigation() {
     <nav className="flex items-start md:items-center justify-between w-full py-4 text-sm">
       <div className="flex md:flex-row flex-row-reverse justify-end md:justify-start md:items-center gap-4 w-full">
         <Search />
-        {/* <FeedFilter /> TODO - we can add this back when we have a clip feed */}
+        <FeedFilter />
       </div>
       <div className="md:block hidden">
         <NavContent user={user} />

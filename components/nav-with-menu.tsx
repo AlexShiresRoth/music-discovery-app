@@ -55,7 +55,8 @@ export default function NavWithMenu({ user }: Props) {
         </button>
 
         <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-          <Link href="/">Listen</Link>
+          <Link href="/">Artists</Link>
+          <Link href="/clips">Clips</Link>
           {user && <Link href="/profile">Profile</Link>}
           {!user ? (
             <Link href="/login">Login</Link>

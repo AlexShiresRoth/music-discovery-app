@@ -28,7 +28,7 @@ export default function ClipDisplay({
         isOnFeed
         onFinish={onFinish}
         genre={clip.genre || undefined}
-        genreFilterUrl={`/clips?genre=${clip.genre}`}
+        genreFilterUrl={`/clips?g=${clip.genre}`}
       />
     </div>
   );

@@ -26,6 +26,11 @@ export const songClipsSchema = pgTable("song_clips", {
   db_url: text("db_url"),
   full_song_url: text("full_song_url"),
   genre: text("genre"),
+  profileRefId: integer("profile_ref_id")
+    .notNull()
+    .references(() => profilesSchema.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const profilesSchema = pgTable("profiles", {
