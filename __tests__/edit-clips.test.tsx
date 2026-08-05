@@ -38,6 +38,7 @@ const existingClip = {
   title: "Existing Track",
   db_url: "https://example.com/clip.wav",
   full_song_url: "https://example.com/full-track",
+  genre: "Rock",
 } as SongClip;
 
 function renderEditClips(
@@ -103,6 +104,7 @@ describe("EditClips", () => {
             body: JSON.stringify({
               title: "Updated Track",
               full_song_url: "https://example.com/new-track",
+              genre: "Rock",
               id: 10,
             }),
           }),

@@ -10,8 +10,8 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => mockUseSearchParams(),
 }));
 
-function renderFilter(params = "") {
-  mockUsePathname.mockReturnValue("/");
+function renderFilter(pathname = "/clips", params = "") {
+  mockUsePathname.mockReturnValue(pathname);
   mockUseSearchParams.mockReturnValue(new URLSearchParams(params));
   return render(<FeedFilter />);
 }
@@ -25,7 +25,13 @@ describe("FeedFilter", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the filters toggle", () => {
+  it("does not render outside /clips", () => {
+    renderFilter("/");
+
+    expect(screen.queryByRole("button", { name: /Filters/i })).toBeNull();
+  });
+
+  it("renders the filters toggle on /clips", () => {
     renderFilter();
 
     expect(screen.getByRole("button", { name: /Filters/i })).toBeDefined();
@@ -41,14 +47,14 @@ describe("FeedFilter", () => {
   });
 
   it("shows a badge with the number of active genre filters", () => {
-    renderFilter("g=Rock&g=Jazz");
+    renderFilter("/clips", "g=Rock&g=Jazz");
     openFilterPanel();
 
     expect(screen.getByText("2")).toBeDefined();
   });
 
   it("highlights selected genres", () => {
-    renderFilter("g=Rock");
+    renderFilter("/clips", "g=Rock");
     openFilterPanel();
 
     expect(
@@ -69,46 +75,46 @@ describe("FeedFilter", () => {
 
     expect(screen.getByRole("link", { name: "Rock" })).toHaveProperty(
       "href",
-      "http://localhost:3000/?g=Rock",
+      "http://localhost:3000/clips?g=Rock",
     );
   });
 
   it("removes a genre from the query string when toggled off", () => {
-    renderFilter("g=Rock&g=Jazz");
+    renderFilter("/clips", "g=Rock&g=Jazz");
     openFilterPanel();
 
     expect(screen.getByRole("link", { name: "Rock" })).toHaveProperty(
       "href",
-      "http://localhost:3000/?g=Jazz",
+      "http://localhost:3000/clips?g=Jazz",
     );
   });
 
   it("preserves location and search params when toggling genres", () => {
-    renderFilter("lat=30.27&lon=-97.74&q=Austin");
+    renderFilter("/clips", "lat=30.27&lon=-97.74&q=Austin");
     openFilterPanel();
 
     expect(screen.getByRole("link", { name: "Rock" })).toHaveProperty(
       "href",
-      "http://localhost:3000/?lat=30.27&lon=-97.74&q=Austin&g=Rock",
+      "http://localhost:3000/clips?lat=30.27&lon=-97.74&q=Austin&g=Rock",
     );
   });
 
   it("shows a clear link that removes all genre filters", () => {
-    renderFilter("g=Rock&g=Jazz");
+    renderFilter("/clips", "g=Rock&g=Jazz");
     openFilterPanel();
 
     const clearLink = screen.getByRole("link", { name: "Clear" });
     expect(clearLink).toBeDefined();
-    expect(clearLink).toHaveProperty("href", "http://localhost:3000/?");
+    expect(clearLink).toHaveProperty("href", "http://localhost:3000/clips?");
   });
 
   it("preserves non-genre params in the clear link", () => {
-    renderFilter("lat=30.27&lon=-97.74&q=Austin&g=Rock");
+    renderFilter("/clips", "lat=30.27&lon=-97.74&q=Austin&g=Rock");
     openFilterPanel();
 
     expect(screen.getByRole("link", { name: "Clear" })).toHaveProperty(
       "href",
-      "http://localhost:3000/?lat=30.27&lon=-97.74&q=Austin",
+      "http://localhost:3000/clips?lat=30.27&lon=-97.74&q=Austin",
     );
   });
 

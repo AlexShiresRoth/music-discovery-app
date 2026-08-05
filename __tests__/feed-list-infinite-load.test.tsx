@@ -1,5 +1,8 @@
 import FeedList from "@/components/feed-list";
-import type { ProfileWithSongClips } from "@/lib/db/types";
+import type {
+  ProfileWithSongClips,
+  SongClipWithProfile,
+} from "@/lib/db/types";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -44,12 +47,30 @@ vi.mock("@/components/feed-profile", () => ({
   ),
 }));
 
+vi.mock("@/components/wave-surfer", () => ({
+  default: ({
+    clipName,
+    onFinish,
+  }: {
+    clipName: string;
+    onFinish?: () => void;
+  }) => (
+    <button type="button" aria-label={`Finish ${clipName}`} onClick={onFinish}>
+      Finish clip
+    </button>
+  ),
+}));
+
 vi.mock("@/components/audio-controls", () => ({
   default: () => null,
 }));
 
 vi.mock("@/components/feed-overlay", () => ({
   default: () => null,
+}));
+
+vi.mock("next/image", () => ({
+  default: ({ alt }: { alt: string }) => <img alt={alt} />,
 }));
 
 vi.mock("@/context/feed-audio", () => ({
@@ -70,6 +91,29 @@ const initialProfiles = [
   { id: 2, profileName: "Band Two", songClips: [{ id: "2", slot: 0 }] },
 ] as unknown as ProfileWithSongClips[];
 
+const initialClips = [
+  {
+    id: 1,
+    title: "Clip One",
+    profileId: 10,
+    profileName: "Artist One",
+    profileImage: null,
+    db_url: "https://example.com/1.wav",
+    full_song_url: "",
+    genre: "Rock",
+  },
+  {
+    id: 2,
+    title: "Clip Two",
+    profileId: 11,
+    profileName: "Artist Two",
+    profileImage: null,
+    db_url: "https://example.com/2.wav",
+    full_song_url: "",
+    genre: "Jazz",
+  },
+] as unknown as SongClipWithProfile[];
+
 describe("FeedList infinite load", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -81,7 +125,7 @@ describe("FeedList infinite load", () => {
     });
   });
 
-  it("passes url genres and coordinates into the fetch hook", () => {
+  it("passes url genres and coordinates into the profiles fetch hook", () => {
     mockUseSearchParams.mockReturnValue(
       new URLSearchParams("g=Rock&g=Jazz&lat=30.27&lon=-97.74"),
     );
@@ -91,7 +135,6 @@ describe("FeedList infinite load", () => {
     expect(mockUseFetchMoreData).toHaveBeenCalledWith(
       expect.objectContaining({
         data: initialProfiles,
-        limit: 2,
         baseUrl: "/api/profiles/with-song-clips",
         searchParams: {
           g: ["Rock", "Jazz"],
@@ -141,6 +184,94 @@ describe("FeedList infinite load", () => {
     render(<FeedList profiles={initialProfiles} />);
 
     expect(screen.getByText("Network error")).toBeDefined();
+  });
+
+  describe("clips feed", () => {
+    beforeEach(() => {
+      mockUseFetchMoreData.mockReturnValue({
+        fetchedData: initialClips,
+        error: null,
+        isLoading: false,
+      });
+    });
+
+    it("passes clips and genre filters into the clips fetch hook", () => {
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams("g=Rock&g=Jazz"),
+      );
+
+      render(<FeedList songClips={initialClips} />);
+
+      expect(mockUseFetchMoreData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: initialClips,
+          baseUrl: "/api/clips/with-profiles",
+          searchParams: { g: ["Rock", "Jazz"] },
+        }),
+      );
+    });
+
+    it("renders fetched clips from the hook", () => {
+      mockUseFetchMoreData.mockReturnValue({
+        fetchedData: [
+          ...initialClips,
+          {
+            id: 3,
+            title: "Clip Three",
+            profileId: 12,
+            profileName: "Artist Three",
+            profileImage: null,
+            db_url: "",
+            full_song_url: "",
+            genre: "Pop",
+          },
+        ] as unknown as SongClipWithProfile[],
+        error: null,
+        isLoading: false,
+      });
+
+      render(<FeedList songClips={initialClips} />);
+
+      expect(screen.getByText("Clip One")).toBeDefined();
+      expect(screen.getByText("Clip Two")).toBeDefined();
+      expect(screen.getByText("Clip Three")).toBeDefined();
+      expect(screen.getByText("by Artist One")).toBeDefined();
+    });
+
+    it("shows loading and error states for the clips feed", () => {
+      mockUseFetchMoreData.mockReturnValue({
+        fetchedData: initialClips,
+        error: null,
+        isLoading: true,
+      });
+
+      const { container, rerender } = render(
+        <FeedList songClips={initialClips} />,
+      );
+      expect(container.querySelector(".animate-spin")).toBeDefined();
+
+      mockUseFetchMoreData.mockReturnValue({
+        fetchedData: initialClips,
+        error: new Error("Clips failed"),
+        isLoading: false,
+      });
+      rerender(<FeedList songClips={initialClips} />);
+      expect(screen.getByText("Clips failed")).toBeDefined();
+    });
+
+    it("scrolls to the next clip when the active clip finishes", () => {
+      const scrollIntoView = vi.fn();
+      HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+      render(<FeedList songClips={initialClips} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "Finish Clip One" }));
+
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        behavior: "smooth",
+        inline: "start",
+      });
+    });
   });
 
   describe("empty state", () => {

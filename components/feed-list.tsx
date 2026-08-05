@@ -107,19 +107,30 @@ function Feed({
   );
 }
 
-function FeedSongClips({ songClips }: { songClips: SongClipWithProfile[] }) {
+function FeedSongClips({
+  songClips,
+  genres,
+}: {
+  songClips: SongClipWithProfile[];
+  genres: string[];
+}) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [activeClipIndex, setActiveClipIndex] = useState(0);
+  const genresKey = genres.join(",");
+  const fetchSearchParams = useMemo(() => {
+    return { g: genresKey.split(",") };
+  }, [genresKey]);
 
   const { fetchedData, error, isLoading } =
     useFetchMoreData<SongClipWithProfile>({
       data: songClips,
       currentIndex: activeClipIndex,
       baseUrl: "/api/clips/with-profiles",
+      searchParams: fetchSearchParams,
     });
 
   const handleAdvanceToNextClip = (index: number) => {
-    if (index < songClips.length) {
+    if (index < fetchedData.length) {
       setActiveClipIndex(index);
       const clipToScrollTo = scrollRef.current?.querySelector<HTMLElement>(
         `[data-clip-slide][data-clip-index="${index}"]`,
@@ -210,6 +221,7 @@ export default function FeedList({
   const router = useRouter();
   const searchParams = useSearchParams();
   const genres = searchParams.getAll("g") || [];
+  const genresKey = genres.join(",");
   const longitude = searchParams.get("lon") || "";
   const latitude = searchParams.get("lat") || "";
   const searchTermOrGenres = searchTerm || genres.join(", ");
@@ -241,7 +253,7 @@ export default function FeedList({
       <FeedAudioProvider>
         <FeedAudioControls />
         <IntroOverlay />
-        <FeedSongClips songClips={songClips} />
+        <FeedSongClips songClips={songClips} genres={genres} key={genresKey} />
       </FeedAudioProvider>
     );
   }

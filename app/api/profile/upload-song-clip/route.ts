@@ -22,6 +22,7 @@ const ALLOWED_AUDIO_TYPES = new Set([
 ]);
 
 type ClipMetadata = {
+  genre?: string;
   index: number;
   title: string;
   fullSongUrl: string;
@@ -134,6 +135,10 @@ export async function POST(request: Request) {
         db_url: urlData.publicUrl,
         title,
         full_song_url: meta.fullSongUrl?.trim() || null,
+        genre: meta.genre,
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        profileRefId: profile.id,
       })
       .returning();
 

@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       title: data.title,
       full_song_url: data.full_song_url?.trim() || null,
       genre: data.genre,
+      updatedAt: new Date(),
     })
     .where(eq(songClipsSchema.id, Number(data.id)));
 
