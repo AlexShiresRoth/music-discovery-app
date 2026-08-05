@@ -75,7 +75,7 @@ export const locationFormFields: Record<keyof ProfileLocation, FormField> = {
 };
 
 export const songClipFormFields: Record<
-  keyof Pick<SongClip, "title" | "full_song_url">,
+  keyof Pick<SongClip, "title" | "full_song_url" | "genre">,
   FormField
 > = {
   title: {
@@ -88,6 +88,12 @@ export const songClipFormFields: Record<
     name: "fullSongUrl",
     label: "Full Song URL",
     placeholder: "Link to the full track",
+    required: false,
+  },
+  genre: {
+    name: "genre",
+    label: "Genre",
+    placeholder: "Genre",
     required: false,
   },
 };

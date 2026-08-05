@@ -117,6 +117,7 @@ export default function EditClips({ clip, slot }: Props) {
         body: JSON.stringify({
           title: draft.title,
           full_song_url: draft.fullSongUrl,
+          genre: draft.genre,
           id: draft.id,
         }),
       });

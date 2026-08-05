@@ -27,6 +27,8 @@ export default function ClipDisplay({
         fullSongUrl={clip.full_song_url || ""}
         isOnFeed
         onFinish={onFinish}
+        genre={clip.genre || undefined}
+        genreFilterUrl={`/clips?g=${clip.genre}`}
       />
     </div>
   );

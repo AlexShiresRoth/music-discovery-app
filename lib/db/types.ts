@@ -16,3 +16,9 @@ export type Profile = typeof profilesSchema.$inferSelect;
 export type ProfileWithSongClips = Omit<Profile, "songClips"> & {
   songClips: SongClip[];
 };
+
+export type SongClipWithProfile = SongClip & {
+  profileName: string;
+  profileId: number;
+  profileImage: string;
+};

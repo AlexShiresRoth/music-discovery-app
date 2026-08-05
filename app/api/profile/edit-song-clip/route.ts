@@ -16,8 +16,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const data: { title: string; full_song_url: string; id: string } =
-    await request.json();
+  const data: {
+    title: string;
+    full_song_url: string;
+    id: string;
+    genre: string;
+  } = await request.json();
 
   const [profile] = await db
     .select()
@@ -43,6 +47,8 @@ export async function POST(request: Request) {
     .set({
       title: data.title,
       full_song_url: data.full_song_url?.trim() || null,
+      genre: data.genre,
+      updatedAt: new Date(),
     })
     .where(eq(songClipsSchema.id, Number(data.id)));
 

@@ -22,6 +22,7 @@ const ALLOWED_AUDIO_TYPES = new Set([
 ]);
 
 type ClipMetadata = {
+  genre?: string;
   index: number;
   title: string;
   fullSongUrl: string;
@@ -59,7 +60,6 @@ export async function POST(request: Request) {
       { status: 403 },
     );
   }
-  // TODO editing song clips is not set up yet, could probably just be a new route with a json payload instead of a form data
   const formData = await request.formData();
   const file = formData.get("file") as File;
   const metadataEntry = formData.get("metadata") as string;
@@ -135,6 +135,10 @@ export async function POST(request: Request) {
         db_url: urlData.publicUrl,
         title,
         full_song_url: meta.fullSongUrl?.trim() || null,
+        genre: meta.genre,
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        profileRefId: profile.id,
       })
       .returning();
 

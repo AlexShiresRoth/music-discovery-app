@@ -21,7 +21,19 @@ export default function NavContent({ user }: Props) {
           pathname === "/" && "underline",
         )}
       >
-        Listen
+        Artists
+      </Link>
+      <span>
+        <Dot className="h-4 w-4" />
+      </span>
+      <Link
+        href="/clips"
+        className={clsx(
+          "hover:underline underline-offset-4 decoration-black/30",
+          pathname === "/clips" && "underline",
+        )}
+      >
+        Clips
       </Link>
       <span>
         <Dot className="h-4 w-4" />

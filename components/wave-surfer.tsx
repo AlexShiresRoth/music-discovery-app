@@ -4,6 +4,7 @@ import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
 import { ExternalLink, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
@@ -16,6 +17,8 @@ type ClipSelection = {
 };
 
 type Props = {
+  genre?: string;
+  genreFilterUrl?: string;
   onSelectionChange?: (selection: ClipSelection | null) => void;
   file?: File | null;
   selectedRegion?: ClipSelection | null | undefined;
@@ -38,9 +41,13 @@ function WaveSurferBasic({
   isOnFeed,
   fullSongUrl,
   onFinish,
+  genre,
+  genreFilterUrl,
 }: {
   url: string;
   clipName: string;
+  genre?: string;
+  genreFilterUrl?: string;
   isActive?: boolean;
   isOnFeed?: boolean;
   fullSongUrl?: string;
@@ -239,9 +246,19 @@ function WaveSurferBasic({
             </button>
           </div>
         )}
-        <div className="flex gap-2 items-center">
-          <p className={clsx("text-sm truncate")}>{clipName}</p>
-          {fullSongUrl && <span>/</span>}
+        <div className="flex gap-2 items-center justify-between w-full">
+          <div className="flex items-center gap-1">
+            <p className={clsx("text-sm truncate")}>{clipName}</p>
+            {genre && <span>/</span>}
+            {genre && (
+              <Link
+                href={genreFilterUrl ?? ""}
+                className="text-sm hover:underline underline-offset-4"
+              >
+                #{genre}
+              </Link>
+            )}
+          </div>
           {fullSongUrl && (
             <a
               href={fullSongUrl}
@@ -420,6 +437,8 @@ export default function WaveSurferUI({
   isOnFeed,
   fullSongUrl,
   onFinish,
+  genre,
+  genreFilterUrl,
 }: Props) {
   if (url) {
     return (
@@ -430,6 +449,8 @@ export default function WaveSurferUI({
         isActive={isActive}
         fullSongUrl={fullSongUrl}
         onFinish={onFinish}
+        genre={genre}
+        genreFilterUrl={genreFilterUrl}
       />
     );
   }

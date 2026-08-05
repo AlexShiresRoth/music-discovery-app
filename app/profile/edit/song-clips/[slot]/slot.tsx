@@ -2,8 +2,10 @@
 
 import PreHeader from "@/app/profile/pre-header";
 import { songClipFormFields } from "@/app/profile/schemas";
+import SelectInput from "@/components/select-input";
 import TextInput from "@/components/text-input";
 import WaveSurferUI from "@/components/wave-surfer";
+import { GENRE_GROUPS } from "@/constants";
 import { ToastContext } from "@/context/toast";
 import { Loader2, Upload } from "lucide-react";
 import { useContext, useState } from "react";
@@ -79,6 +81,7 @@ export default function SongClipSlot({
         fileName: file.name,
         title: draft.title || titleFromFilename(file.name),
         dbUrl: null,
+        genre: draft.genre || "",
       });
     } catch {
       setToast({
@@ -146,7 +149,7 @@ export default function SongClipSlot({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 border-b pb-2">
         <PreHeader>{songClipFormFields.title.label}</PreHeader>
         <TextInput
           name={`title-${index}`}
@@ -159,8 +162,21 @@ export default function SongClipSlot({
           isEdit
         />
       </div>
+      <div className="flex flex-col gap-2 border-b pb-2">
+        <PreHeader>{songClipFormFields.genre.label}</PreHeader>
+        <SelectInput
+          groups={GENRE_GROUPS}
+          name={`genre-${index}`}
+          value={draft.genre}
+          onChange={(e) =>
+            handleDraftUpdate({ ...draft, genre: e.target.value })
+          }
+          isPending={isFormPending || isDeleting}
+          isEdit
+        />
+      </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 border-b pb-2">
         <PreHeader>{songClipFormFields.full_song_url.label}</PreHeader>
         <TextInput
           name={`fullSongUrl-${index}`}
