@@ -18,7 +18,7 @@ function ExistingClipContent({ clip }: { clip: SongClip }) {
         url={clip.db_url}
         clipName={clip.title || ""}
         genre={clip.genre || undefined}
-        genreFilterUrl={`/clips?genre=${clip.genre}`}
+        genreFilterUrl={`/clips?g=${clip.genre}`}
       />
     )
   );

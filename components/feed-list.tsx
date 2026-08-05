@@ -158,10 +158,10 @@ function FeedSongClips({
             key={clip.id}
             data-clip-slide
             data-clip-index={index}
-            className="flex flex-col min-h-full w-full justify-center gap-8 shrink-0 snap-start basis-full md:py-20 py-12"
+            className="flex flex-col min-h-full w-full justify-center gap-8 shrink-0 snap-start basis-full"
           >
             <div className="flex flex-col gap-4">
-              <h1 className="md:text-5xl text-3xl font-bold">{clip.title}</h1>
+              <h1 className="md:text-7xl text-3xl font-bold">{clip.title}</h1>
               <div className="flex items-center gap-2">
                 {clip.profileImage && (
                   <div className="relative flex h-10 w-10 border rounded">

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { SongClipWithSlot } from "@/lib/db/types";
 import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
+import { validateUrl } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { env } from "process";
@@ -96,6 +97,11 @@ export async function POST(request: Request) {
       { error: `Title is required for ${file.name}` },
       { status: 400 },
     );
+  }
+
+  const urlValidation = validateUrl(meta.fullSongUrl, "Full Song URL");
+  if (!urlValidation.ok) {
+    return NextResponse.json({ error: urlValidation.error }, { status: 400 });
   }
 
   if (!meta.selectedRegion) {

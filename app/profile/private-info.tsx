@@ -88,8 +88,8 @@ export default function PrivateInfo({
         )}
       </div>
       <div className="flex flex-col gap-4">
-        <div className="grid md:grid-cols-3 grid-cols-1 gap-4 pb-4">
-          <div>
+        <div className="flex flex-col gap-4 pb-4">
+          <div className="flex flex-col border-b pb-2">
             {isEdit ? (
               <>
                 <PreHeader>{fields.fullName.label}</PreHeader>
@@ -109,7 +109,7 @@ export default function PrivateInfo({
               </>
             )}
           </div>
-          <div>
+          <div className="flex flex-col border-b pb-2">
             {isEdit ? (
               <>
                 <PreHeader>{fields.contactEmail.label}</PreHeader>
@@ -128,7 +128,7 @@ export default function PrivateInfo({
               </>
             )}
           </div>
-          <div>
+          <div className="flex flex-col border-b pb-2">
             <PreHeader>Joined Date</PreHeader>
             <p className="text-lg">{date}</p>
           </div>

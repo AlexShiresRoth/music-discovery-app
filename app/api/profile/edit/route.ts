@@ -3,20 +3,10 @@ import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
 import type { SocialField } from "@/lib/db/types";
+import { SOCIAL_PLATFORMS, validateSocialFields } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import "server-only";
-
-const SOCIAL_KEYS = [
-  "website",
-  "facebook",
-  "instagram",
-  "tiktok",
-  "spotify",
-  "appleMusic",
-  "soundcloud",
-  "bandcamp",
-] as const;
 
 const MAX_INFLUENCES = 5;
 
@@ -54,27 +44,18 @@ export const POST = async (request: Request) => {
 
     const p = foundProfile[0];
 
-    const urlsToValidate = SOCIAL_KEYS.map((name) => ({
-      name,
-      field: data[name] ?? { url: "", show: true },
-    }));
-
-    for (const { name, field } of urlsToValidate) {
-      if (field.url && field.url !== "") {
-        const isValid = URL.canParse(field.url);
-        const containsName =
-          name === "website" ? true : field.url.includes(name);
-        if (!isValid || !containsName) {
-          return NextResponse.json(
-            { error: `${name}: "${field.url}" is not a valid ${name} URL` },
-            { status: 400 },
-          );
-        }
-      }
+    const socialValidation = validateSocialFields(
+      data as Record<string, unknown>,
+    );
+    if (!socialValidation.ok) {
+      return NextResponse.json(
+        { error: socialValidation.error },
+        { status: 400 },
+      );
     }
 
     const socialUpdates = Object.fromEntries(
-      SOCIAL_KEYS.filter((key) => data[key] !== undefined).map((key) => [
+      SOCIAL_PLATFORMS.filter((key) => data[key] !== undefined).map((key) => [
         key,
         data[key] as SocialField,
       ]),

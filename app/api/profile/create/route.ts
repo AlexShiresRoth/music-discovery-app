@@ -1,6 +1,7 @@
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
+import { validateSocialFields } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import "server-only";
@@ -37,6 +38,16 @@ export async function POST(request: Request) {
     if (existingProfile.length > 0) {
       return NextResponse.json(
         { error: "Profile already exists" },
+        { status: 400 },
+      );
+    }
+
+    const socialValidation = validateSocialFields(
+      data as Record<string, unknown>,
+    );
+    if (!socialValidation.ok) {
+      return NextResponse.json(
+        { error: socialValidation.error },
         { status: 400 },
       );
     }

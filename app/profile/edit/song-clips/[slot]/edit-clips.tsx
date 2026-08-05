@@ -4,6 +4,7 @@ import ActionButton from "@/components/action-button";
 import { ToastContext } from "@/context/toast";
 import { processAudioForUpload } from "@/lib/audio/trim-clip";
 import type { SongClip } from "@/lib/db/types";
+import { validateUrl } from "@/lib/validation/url";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "../../../schemas";
@@ -62,6 +63,11 @@ export default function EditClips({ clip, slot }: Props) {
     try {
       setIsFormPending(true);
 
+      const urlValidation = validateUrl(draft.fullSongUrl, "Full Song URL");
+      if (!urlValidation.ok) {
+        throw new Error(urlValidation.error);
+      }
+
       const { error: uploadError, data: formData } =
         await handleNewUpload(draft);
 
@@ -110,6 +116,11 @@ export default function EditClips({ clip, slot }: Props) {
 
     try {
       setIsFormPending(true);
+
+      const urlValidation = validateUrl(draft.fullSongUrl, "Full Song URL");
+      if (!urlValidation.ok) {
+        throw new Error(urlValidation.error);
+      }
 
       const response = await fetch("/api/profile/edit-song-clip", {
         method: "POST",

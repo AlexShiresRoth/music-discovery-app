@@ -5,6 +5,7 @@ import GeoCityInput from "@/components/geo-city-input";
 import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
+import { validateSocialFields } from "@/lib/validation/url";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { profileFormFields } from "../schemas";
@@ -53,6 +54,13 @@ export default function ProfileForm() {
       setIsFormPending(true);
       const formData = new FormData(e.target as HTMLFormElement);
       const profileData = Object.fromEntries(formData.entries());
+
+      const socialValidation = validateSocialFields(profileData);
+      if (!socialValidation.ok) {
+        setToast({ message: socialValidation.error, type: "error" });
+        setIsFormPending(false);
+        return;
+      }
 
       const response = await fetch("/api/profile/create", {
         method: "POST",

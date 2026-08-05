@@ -176,4 +176,24 @@ describe("POST /api/profile/create", () => {
     expect(response.status).toBe(500);
     expect(body.error).toBe("DB connection lost");
   });
+
+  it("returns 400 for an invalid social URL", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+    mockLimit.mockResolvedValue([]);
+
+    const response = await POST(
+      makeRequest({
+        ...validProfileData,
+        website: { url: "not-a-url", show: true },
+      }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe('website: "not-a-url" is not a valid website URL');
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
 });
