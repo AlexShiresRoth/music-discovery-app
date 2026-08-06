@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { and, asc, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -87,6 +87,28 @@ export async function getProfilesWithSongClips(
   } catch (error) {
     console.error("Error fetching profiles:", error);
     return [];
+  }
+}
+
+export async function getTotalProfilesWithSongClips(
+  genres: string[] = [],
+): Promise<number> {
+  try {
+    const totalProfiles = await db
+      .select({ count: count() })
+      .from(profilesSchema)
+      .where(
+        genres.length > 0
+          ? and(
+              inArray(profilesSchema.genre, genres),
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            )
+          : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+      );
+    return totalProfiles[0].count;
+  } catch (error) {
+    console.error("Error fetching total profiles:", error);
+    return 0;
   }
 }
 

@@ -20,9 +20,11 @@ function Feed({
   genres,
   longitude,
   latitude,
+  totalProfiles,
 }: {
   profiles: ProfileWithSongClips[];
   genres: string[];
+  totalProfiles: number;
   longitude?: number;
   latitude?: number;
 }) {
@@ -89,6 +91,7 @@ function Feed({
               currentIndex={index}
               advanceToNextProfile={handleAdvanceToNextProfile}
               clipsLength={profile.songClips.length}
+              totalProfiles={totalProfiles}
             />
           ))}
         </div>
@@ -213,10 +216,12 @@ export default function FeedList({
   profiles = [],
   songClips = [],
   searchTerm,
+  totalProfiles = 15,
 }: {
   profiles?: ProfileWithSongClips[];
   searchTerm?: string;
   songClips?: SongClipWithProfile[];
+  totalProfiles?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -263,6 +268,7 @@ export default function FeedList({
       <Feed
         profiles={profiles}
         genres={genres}
+        totalProfiles={totalProfiles}
         key={genres.join(",") + searchTerm + longitude + latitude}
         longitude={longitude ? parseFloat(longitude) : undefined}
         latitude={latitude ? parseFloat(latitude) : undefined}

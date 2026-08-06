@@ -8,13 +8,7 @@ vi.mock("@/lib/hooks/intersectionobserver", () => ({
 }));
 
 vi.mock("@/components/empty-state", () => ({
-  default: ({
-    message,
-    icon,
-  }: {
-    message: string;
-    icon?: React.ReactNode;
-  }) => (
+  default: ({ message, icon }: { message: string; icon?: React.ReactNode }) => (
     <div data-testid="empty-state">
       {icon}
       <p>{message}</p>
@@ -94,6 +88,7 @@ const baseProfile = {
   lat: 30,
   lon: -97,
   location: null,
+  updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
   website: { url: "", show: true },
   facebook: { url: "", show: true },
   instagram: { url: "https://instagram.com/test", show: true },
@@ -136,12 +131,31 @@ describe("FeedProfile", () => {
     vi.clearAllMocks();
   });
 
-  it("renders profile name and location", () => {
+  it("renders profile name, location, and relative published time", () => {
     renderFeedProfile();
 
     expect(screen.getByText("Test Band")).toBeDefined();
     expect(screen.queryByText("Rock")).toBeNull();
-    expect(screen.getByText("Austin, TX, US")).toBeDefined();
+    expect(
+      screen.getByText(
+        (_, node) =>
+          node?.tagName === "P" && node.textContent === "Austin, TX ",
+      ),
+    ).toBeDefined();
+    expect(screen.getByText("Published 3 days ago")).toBeDefined();
+    expect(screen.queryByText("New")).toBeNull();
+  });
+
+  it("shows a New label when the profile was published less than 5 hours ago", () => {
+    renderFeedProfile({
+      profile: {
+        ...baseProfile,
+        updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      } as ProfileWithSongClips,
+    });
+
+    expect(screen.getByText("New")).toBeDefined();
+    expect(screen.getByText("Published 2 hours ago")).toBeDefined();
   });
 
   it("shows a shared empty image state when there is no image", () => {
@@ -172,12 +186,8 @@ describe("FeedProfile", () => {
   it("renders a clip indicator button per song clip", () => {
     renderFeedProfile();
 
-    expect(
-      screen.getByRole("button", { name: "Go to clip 1" }),
-    ).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: "Go to clip 2" }),
-    ).toBeDefined();
+    expect(screen.getByRole("button", { name: "Go to clip 1" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Go to clip 2" })).toBeDefined();
   });
 
   describe("continuous play", () => {
@@ -204,8 +214,8 @@ describe("FeedProfile", () => {
     });
 
     it("advances to the next clip when the current clip finishes", () => {
-      const scrollIntoView = vi.fn();
-      HTMLElement.prototype.scrollIntoView = scrollIntoView;
+      const scrollTo = vi.fn();
+      Element.prototype.scrollTo = scrollTo;
 
       renderFeedProfile();
 
@@ -217,12 +227,15 @@ describe("FeedProfile", () => {
       expect(screen.getByTestId("clip-1").getAttribute("data-active")).toBe(
         "true",
       );
-      expect(scrollIntoView).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalled();
+      expect(scrollTo).toHaveBeenCalledWith(
+        expect.objectContaining({ behavior: "smooth" }),
+      );
     });
 
     it("advances to the next profile after the last clip finishes", () => {
       const advanceToNextProfile = vi.fn();
-      HTMLElement.prototype.scrollIntoView = vi.fn();
+      Element.prototype.scrollTo = vi.fn();
 
       renderFeedProfile({ advanceToNextProfile });
 

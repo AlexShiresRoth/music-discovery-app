@@ -3,8 +3,7 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import { ExternalLink, Pause, Play, Volume2, VolumeX } from "lucide-react";
-import Link from "next/link";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
@@ -36,13 +35,9 @@ const FADE_SECONDS = 1;
 
 function WaveSurferBasic({
   url,
-  clipName,
   isActive,
   isOnFeed,
-  fullSongUrl,
   onFinish,
-  genre,
-  genreFilterUrl,
 }: {
   url: string;
   clipName: string;
@@ -137,8 +132,10 @@ function WaveSurferBasic({
       progressColor: PROGRESS_COLOR,
       height: "auto",
       plugins: [hover],
-      barWidth: 3,
-      barHeight: 1.5,
+      barWidth: 4,
+      barRadius: 10,
+      barGap: 5,
+      barHeight: 1,
       url,
     });
 
@@ -206,27 +203,21 @@ function WaveSurferBasic({
   return (
     <div
       className={clsx(
-        "flex flex-col gap-2 border rounded-md p-4 w-full min-w-0",
+        "flex flex-col w-full min-w-0 h-full",
         isLoading && "animate-pulse",
       )}
     >
-      <div
-        className={clsx(
-          "relative w-full min-w-0 h-24 md:h-32",
-          isOnFeed && "md:h-50",
-        )}
-      >
+      <div className="relative w-full min-w-0 h-full">
         {/* Dedicated mount node — keep React overlays out of this div */}
         <div ref={containerRef} className="w-full min-w-0 h-full" />
         {isLoading && (
-          <div className="absolute top-0 left-0 flex items-center justify-center h-full w-full">
+          <div className="absolute top-0 left-0 h-full flex items-center justify-center w-full">
             <WaveformSkeleton />
           </div>
         )}
       </div>
-
-      <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
-        {!isOnFeed && (
+      {!isOnFeed && (
+        <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -245,32 +236,8 @@ function WaveSurferBasic({
               {localMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
           </div>
-        )}
-        <div className="flex gap-2 items-center justify-between w-full">
-          <div className="flex items-center gap-1">
-            <p className={clsx("text-sm truncate")}>{clipName}</p>
-            {genre && <span>/</span>}
-            {genre && (
-              <Link
-                href={genreFilterUrl ?? ""}
-                className="text-sm hover:underline underline-offset-4"
-              >
-                #{genre}
-              </Link>
-            )}
-          </div>
-          {fullSongUrl && (
-            <a
-              href={fullSongUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm hover:cursor-pointer hover:text-gray-500 transition-colors flex items-center gap-1"
-            >
-              <ExternalLink size={14} /> Listen to full song
-            </a>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
