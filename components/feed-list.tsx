@@ -152,7 +152,7 @@ function FeedSongClips({
     <main className="flex flex-col gap-4 items-center">
       <div
         ref={scrollRef}
-        className="flex flex-col w-full gap-2 snap-y snap-mandatory overflow-y-scroll h-screen z-0 scrollbar-none"
+        className="flex h-screen w-full snap-y snap-mandatory flex-col overflow-y-scroll z-0 scrollbar-none"
       >
         {fetchedData.map((clip, index) => (
           <ClipDisplay

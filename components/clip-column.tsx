@@ -23,10 +23,10 @@ export default function ClipColumn({
   handleAdvancePlayback,
 }: Props) {
   return (
-    <div className="flex flex-col gap-8 w-full justify-start">
+    <div className="flex min-h-0 w-full flex-1 flex-col justify-start gap-8">
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4"
+        className="flex min-h-0 flex-1 gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none"
       >
         {songClips.map((clip, index) => (
           <ClipDisplay

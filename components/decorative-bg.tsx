@@ -2,24 +2,28 @@ import clsx from "clsx";
 
 interface DecorativeBgProps {
   isPlaying: boolean;
+  large?: boolean;
 }
-export default function DecorativeBg({ isPlaying }: DecorativeBgProps) {
+
+export default function DecorativeBg({
+  isPlaying,
+  large = false,
+}: DecorativeBgProps) {
   return (
     <div
       className={clsx(
-        "absolute -z-10 md:w-300 md:h-300 w-120 h-120 bg-background rounded-full border-2 border-black/10 flex items-center justify-center",
+        "flex aspect-square w-auto shrink-0 items-center justify-center rounded-full border-2 border-black/5 bg-background",
+        large ? "h-[min(220%,140vw)]" : "h-[min(165%,100vw)]",
       )}
     >
       <div
         className={clsx(
-          "w-3/4 h-3/4 border-t-2 border-black/10 rounded-full flex items-center justify-center",
+          "flex h-3/4 w-3/4 items-center justify-center rounded-full border-t-2 border-black/10",
           isPlaying && "animate-spin [animation-duration:8s]",
         )}
       >
-        <div className="w-1/2 h-1/2 bg-black/5 rounded-full flex items-center justify-center">
-          <div className="w-11/12 h-11/12 flex items-center justify-center border-2 border-background rounded-full">
-            <div className="w-1/2 h-1/2 bg-background border-4 border-black/5 rounded-full" />
-          </div>
+        <div className="flex aspect-square h-[40%] w-auto max-w-full items-center justify-center rounded-full bg-black/10">
+          <div className="flex h-11/12 w-11/12 items-center justify-center rounded-full border-2 border-background" />
         </div>
       </div>
     </div>

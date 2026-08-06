@@ -53,7 +53,7 @@ export default function ArtistColumn({
         <div className="flex flex-col gap-2">
           <Link
             href={`/profiles/${profile.id}`}
-            className="text-3xl md:text-4xl w-70 font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
+            className="text-3xl md:text-4xl md:w-70 w-full font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
           >
             {profile.profileName}
           </Link>
