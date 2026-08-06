@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-const DIFF_FROM_END = 1;
+const DIFF_FROM_END = 3;
 
 function appendSearchParams(
   url: URL,

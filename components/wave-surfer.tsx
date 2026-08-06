@@ -35,13 +35,9 @@ const FADE_SECONDS = 1;
 
 function WaveSurferBasic({
   url,
-  clipName,
   isActive,
   isOnFeed,
-  fullSongUrl,
   onFinish,
-  genre,
-  genreFilterUrl,
 }: {
   url: string;
   clipName: string;
@@ -136,8 +132,10 @@ function WaveSurferBasic({
       progressColor: PROGRESS_COLOR,
       height: "auto",
       plugins: [hover],
-      barWidth: 3,
-      barHeight: 1.5,
+      barWidth: 4,
+      barRadius: 10,
+      barGap: 5,
+      barHeight: 1,
       url,
     });
 

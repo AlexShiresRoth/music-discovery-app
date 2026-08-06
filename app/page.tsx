@@ -21,5 +21,6 @@ export default async function Home({ searchParams }: Props) {
   const totalProfiles = await getTotalProfilesWithSongClips(
     Array.isArray(g) ? g : g ? [g as string] : [],
   );
+
   return <FeedList profiles={profiles} totalProfiles={totalProfiles} />;
 }

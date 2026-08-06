@@ -216,12 +216,12 @@ export default function FeedList({
   profiles = [],
   songClips = [],
   searchTerm,
-  totalProfiles,
+  totalProfiles = 15,
 }: {
   profiles?: ProfileWithSongClips[];
   searchTerm?: string;
   songClips?: SongClipWithProfile[];
-  totalProfiles: number;
+  totalProfiles?: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();

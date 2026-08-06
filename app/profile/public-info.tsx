@@ -214,7 +214,6 @@ export default function PublicInfo({
                 <ProfileLocationDisplay
                   city={city}
                   stateCode={stateCode}
-                  countryCode={countryCode}
                   className="text-lg"
                 />
               </ViewOrEditData>

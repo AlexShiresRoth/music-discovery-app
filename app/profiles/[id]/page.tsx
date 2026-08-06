@@ -51,7 +51,6 @@ export default async function ProfilePage({ params }: Props) {
               <ProfileLocationDisplay
                 city={profile.city}
                 stateCode={profile.stateCode}
-                countryCode={profile.countryCode}
               />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
