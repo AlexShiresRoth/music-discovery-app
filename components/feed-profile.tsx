@@ -80,7 +80,7 @@ function FeedProfile({
     <div
       data-profile-slide
       data-profile-index={currentIndex}
-      className="flex md:flex-row flex-col snap-start min-h-screen gap-8 rounded w-screen max-w-full overflow-hidden py-20"
+      className="flex md:flex-row flex-col snap-start min-h-screen gap-8 rounded w-screen max-w-full overflow-hidden py-10"
     >
       <ArtistColumn
         profile={profile}
