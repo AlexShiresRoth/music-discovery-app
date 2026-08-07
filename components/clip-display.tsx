@@ -4,7 +4,7 @@ import { useFeedAudio } from "@/context/feed-audio";
 import { SongClip, SongClipWithProfile } from "@/lib/db/types";
 import { formatPublishedAt } from "@/lib/format-relative-time";
 import clsx from "clsx";
-import { Disc3, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import DecorativeBg from "./decorative-bg";
@@ -37,73 +37,69 @@ export default function ClipDisplay({
       data-clip-slide
       data-clip-index={index}
     >
-      {/* Top metadata */}
+      {/* Top metadata: wide = two rows (title|link, profile|published); mobile = stacked */}
       <div
         className={clsx(
-          "relative z-20 flex w-full shrink-0 flex-col gap-2",
+          "relative z-20 grid w-full shrink-0 grid-cols-1 items-start gap-2 md:grid-cols-2",
           isClipFeed ? "py-10" : "pb-8",
         )}
       >
-        <div className="flex w-full md:flex-row flex-col items-start justify-between gap-2">
-          <div className="flex gap-2 text-3xl">
-            <h2 className="flex items-center gap-2 font-semibold text-amber-700">
-              <Disc3
-                className={clsx(
-                  "h-5 w-5 animate-spin [animation-duration:8s]",
-                  !(isActive && isPlaying) && "[animation-play-state:paused]",
-                )}
-              />
-              {clip.title}
-            </h2>
-            {clip.genre && (
-              <>
-                <span>/</span>
-                <Link
-                  href={`/clips?g=${clip.genre}`}
-                  className="text-gray-500 underline-offset-4 hover:underline"
-                >
-                  #{clip.genre}
-                </Link>
-              </>
-            )}
-          </div>
-          {clip.full_song_url && (
-            <a
-              href={clip.full_song_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-gray-500 underline-offset-4 hover:underline"
-            >
-              Listen to full song
-              <ExternalLink className="h-3 w-3" />
-            </a>
+        <div className="order-1 flex gap-2 text-xl md:text-3xl">
+          <h2 className="flex items-center gap-2 font-bold text-amber-700 md:text-4xl text-2xl">
+            {clip.title}
+          </h2>
+          {clip.genre && (
+            <div className="flex items-end gap-2 text-gray-400">
+              <span>/</span>
+              <Link
+                href={`/clips?g=${clip.genre}`}
+                className="underline-offset-4 hover:underline"
+              >
+                #{clip.genre}
+              </Link>
+            </div>
           )}
         </div>
 
+        {clip.full_song_url ? (
+          <a
+            href={clip.full_song_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="order-3 flex items-center gap-2 text-sm text-gray-500 underline-offset-4 hover:underline md:order-2 md:justify-self-end"
+          >
+            Listen to full song
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        ) : (
+          <div className="order-3 hidden md:order-2 md:block" />
+        )}
+
         {isClipFeed && (
-          <div className="flex w-full md:flex-row flex-col md:items-start justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {clipWithProfile.profileImage && (
-                <div className="relative flex h-10 w-10 rounded border">
-                  <Image
-                    src={clipWithProfile.profileImage}
-                    alt={clipWithProfile.profileName}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <Link
-                href={`/profiles/${clipWithProfile.profileId}`}
-                className="text-gray-500"
-              >
-                by {clipWithProfile.profileName}
-              </Link>
-            </div>
-            {published && (
-              <div className="text-xs text-gray-500/80">{published.label}</div>
+          <div className="order-2 flex items-center gap-2 md:order-3">
+            {clipWithProfile.profileImage && (
+              <div className="relative flex h-10 w-10 rounded border">
+                <Image
+                  src={clipWithProfile.profileImage}
+                  alt={clipWithProfile.profileName}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
             )}
+            <Link
+              href={`/profiles/${clipWithProfile.profileId}`}
+              className="text-gray-500"
+            >
+              by {clipWithProfile.profileName}
+            </Link>
+          </div>
+        )}
+
+        {isClipFeed && published && (
+          <div className="order-4 text-xs text-gray-500/80 md:justify-self-end">
+            {published.label}
           </div>
         )}
       </div>
