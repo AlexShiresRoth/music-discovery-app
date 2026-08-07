@@ -5,15 +5,13 @@ import { ProfileWithSongClips, SongClipWithProfile } from "@/lib/db/types";
 import { useIntersectionObserver } from "@/lib/hooks/intersectionobserver";
 import { useFetchMoreData } from "@/lib/hooks/useFetchMoreData";
 import { Loader2 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import ActionButton from "./action-button";
 import FeedAudioControls from "./audio-controls";
+import ClipDisplay from "./clip-display";
 import IntroOverlay from "./feed-overlay";
 import FeedProfile from "./feed-profile";
-import WaveSurferUI from "./wave-surfer";
 
 function Feed({
   profiles,
@@ -154,48 +152,17 @@ function FeedSongClips({
     <main className="flex flex-col gap-4 items-center">
       <div
         ref={scrollRef}
-        className="flex flex-col w-full gap-2 snap-y snap-mandatory overflow-y-scroll h-screen z-0 scrollbar-none"
+        className="flex h-screen w-full snap-y snap-mandatory flex-col overflow-y-scroll z-0 scrollbar-none"
       >
         {fetchedData.map((clip, index) => (
-          <div
+          <ClipDisplay
+            isClipFeed
             key={clip.id}
-            data-clip-slide
-            data-clip-index={index}
-            className="flex flex-col min-h-full w-full justify-center gap-8 shrink-0 snap-start basis-full"
-          >
-            <div className="flex flex-col gap-4">
-              <h1 className="md:text-7xl text-3xl font-bold">{clip.title}</h1>
-              <div className="flex items-center gap-2">
-                {clip.profileImage && (
-                  <div className="relative flex h-10 w-10 border rounded">
-                    <Image
-                      src={clip.profileImage}
-                      alt={clip.profileName}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <Link
-                  href={`/profiles/${clip.profileId}`}
-                  className="text-sm text-gray-500"
-                >
-                  by {clip.profileName}
-                </Link>
-              </div>
-            </div>
-            <WaveSurferUI
-              url={clip.db_url || ""}
-              clipName={clip.title || ""}
-              isActive={activeClipIndex === index}
-              fullSongUrl={clip.full_song_url || ""}
-              isOnFeed
-              onFinish={() => handleAdvanceToNextClip(index + 1)}
-              genre={clip.genre || undefined}
-              genreFilterUrl={`/clips?g=${clip.genre}`}
-            />
-          </div>
+            clip={clip}
+            index={index}
+            isActive={activeClipIndex === index}
+            onFinish={() => handleAdvanceToNextClip(index + 1)}
+          />
         ))}
       </div>
       {isLoading && (

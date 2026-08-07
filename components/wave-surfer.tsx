@@ -60,6 +60,7 @@ function WaveSurferBasic({
   const isMuted = isOnFeed ? feedMuted : localMuted;
   const isPlaying = isOnFeed ? feedPlaying : localPlaying;
   const isActiveRef = useRef(isActive ?? false);
+  const wasActiveRef = useRef(isActive ?? false);
   const isMutedRef = useRef(isMuted);
   const isPlayingRef = useRef(isPlaying);
   const setCanPlayRef = useRef(setCanPlay);
@@ -89,15 +90,26 @@ function WaveSurferBasic({
     const ws = wsRef.current;
     if (!ws) return;
 
+    const active = isActiveRef.current;
+    const becameActive = Boolean(isOnFeed && active && !wasActiveRef.current);
+    wasActiveRef.current = active;
+
     if (!shouldPlay()) {
       ws.pause();
+      // Reset so the next time this clip is selected it starts clean.
+      if (isOnFeed && !active) {
+        ws.setTime(0);
+      }
       return;
     }
 
     if (ws.getDuration() > 0) {
+      if (becameActive) {
+        ws.setTime(0);
+      }
       void ws.play();
     }
-  }, [shouldPlay]);
+  }, [shouldPlay, isOnFeed]);
 
   const playAndPause = () => {
     const ws = wsRef.current;
@@ -125,20 +137,18 @@ function WaveSurferBasic({
     setIsLoading(true);
 
     const hover = HoverPlugin.create();
-
     const ws = WaveSurfer.create({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
       progressColor: PROGRESS_COLOR,
       height: "auto",
+      normalize: true,
       plugins: [hover],
-      barWidth: 4,
+      barWidth: 3,
       barRadius: 10,
-      barGap: 5,
-      barHeight: 1,
+      barGap: 4,
       url,
     });
-
     ws.setMuted(isMutedRef.current);
     wsRef.current = ws;
 
