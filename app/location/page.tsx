@@ -1,17 +1,24 @@
 import BackButton from "@/components/breadcrumbs";
 import FeedList from "@/components/feed-list";
-import { getProfilesWithSongClipsByLocation } from "@/lib/auth";
+import {
+  getProfilesWithSongClipsByLocation,
+  getTotalProfilesWithSongClipsByLocation,
+} from "@/lib/auth";
 
 type Props = {
-  searchParams: Promise<{ q: string; lat: string; lon: string; g: string }>;
+  searchParams: Promise<{ q: string; lat: string; lon: string }>;
 };
 
 export default async function LocationPage({ searchParams }: Props) {
-  const { q, lat, lon, g } = await searchParams;
+  const { q, lat, lon } = await searchParams;
   const results = await getProfilesWithSongClipsByLocation(
     parseFloat(lon),
     parseFloat(lat),
-    Array.isArray(g) ? g : g ? [g as string] : [],
+  );
+
+  const totalProfiles = await getTotalProfilesWithSongClipsByLocation(
+    parseFloat(lon),
+    parseFloat(lat),
   );
 
   return (
@@ -20,7 +27,11 @@ export default async function LocationPage({ searchParams }: Props) {
         <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
         <BackButton />
       </div>
-      <FeedList profiles={results} searchTerm={q} />
+      <FeedList
+        profiles={results}
+        searchTerm={q}
+        totalProfiles={totalProfiles}
+      />
     </div>
   );
 }

@@ -94,6 +94,114 @@ input:-webkit-autofill:focus {
     opacity: 1;
   }
 }
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes waveform-out {
+  from {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  to {
+    opacity: 0;
+    transform: scaleX(0.97);
+  }
+}
+
+@keyframes translate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes translate-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes light-fade-in {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes light-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+.animate-light-fade-in {
+  animation: light-fade-in 0.28s ease-in-out forwards;
+}
+
+.animate-light-fade-out {
+  animation: light-fade-out 0.28s ease-in-out forwards;
+}
+
+/* Clip display stagger: set --stagger (0, 1, 2…) per element; md: overrides for LTR vs mobile TTB */
+.clip-anim-fade {
+  opacity: 0;
+  animation: fade-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s) forwards;
+}
+
+.clip-anim-translate {
+  opacity: 0;
+  animation: translate-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s)
+    forwards;
+}
+
+.clip-anim-wave {
+  transform-origin: center;
+  opacity: 0;
+  animation: reveal 0.28s linear calc(var(--stagger, 0) * 0.12s) forwards;
+}
+
+.animate-translate-out {
+  animation: translate-out 0.28s ease-in-out forwards;
+}
+
+.animate-waveform-in {
+  transform-origin: center;
+  animation: reveal 0.28s linear forwards;
+}
+
+.animate-waveform-out {
+  opacity: 0;
+  animation: waveform-out 0.28s linear forwards;
+}
+
+.animate-text-fade-in {
+  opacity: 0;
+  animation: fade-in 0.28s ease-in-out 0.2s forwards;
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-in-out;
 }

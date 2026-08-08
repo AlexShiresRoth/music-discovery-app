@@ -8,6 +8,7 @@ const handlers: Record<string, Array<() => void>> = {};
 const mockWs = {
   setMuted: vi.fn(),
   setVolume: vi.fn(),
+  setTime: vi.fn(),
   getMuted: vi.fn(() => false),
   getDuration: vi.fn(() => 10),
   getCurrentTime: vi.fn(() => 0),

@@ -105,7 +105,12 @@ describe("PublicInfo", () => {
       expect(screen.queryByText("Rock")).toBeNull();
       expect(screen.getByText("A test bio")).toBeDefined();
       expect(screen.getByText("Radiohead, Bjork")).toBeDefined();
-      expect(screen.getByText("New York, NY, US")).toBeDefined();
+      expect(
+        screen.getByText(
+          (_, node) =>
+            node?.tagName === "P" && node.textContent === "New York, NY ",
+        ),
+      ).toBeDefined();
     });
 
     it("shows an Edit link pointing to /profile/edit/public", () => {

@@ -107,6 +107,7 @@ function renderFeedProfile(
     currentIndex?: number;
     advanceToNextProfile?: (index: number) => void;
     clipsLength?: number;
+    totalProfiles?: number;
   } = {},
 ) {
   const advanceToNextProfile = overrides.advanceToNextProfile ?? vi.fn();
@@ -120,6 +121,7 @@ function renderFeedProfile(
       currentIndex={overrides.currentIndex ?? 0}
       advanceToNextProfile={advanceToNextProfile}
       clipsLength={clipsLength}
+      totalProfiles={overrides.totalProfiles ?? 15}
     />,
   );
 
@@ -146,7 +148,7 @@ describe("FeedProfile", () => {
     expect(screen.queryByText("New")).toBeNull();
   });
 
-  it("shows a New label when the profile was published less than 5 hours ago", () => {
+  it("shows a recent published time when the profile was updated less than 5 hours ago", () => {
     renderFeedProfile({
       profile: {
         ...baseProfile,
@@ -154,7 +156,6 @@ describe("FeedProfile", () => {
       } as ProfileWithSongClips,
     });
 
-    expect(screen.getByText("New")).toBeDefined();
     expect(screen.getByText("Published 2 hours ago")).toBeDefined();
   });
 
@@ -214,8 +215,8 @@ describe("FeedProfile", () => {
     });
 
     it("advances to the next clip when the current clip finishes", () => {
-      const scrollTo = vi.fn();
-      Element.prototype.scrollTo = scrollTo;
+      const scrollIntoView = vi.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
 
       renderFeedProfile();
 
@@ -227,15 +228,15 @@ describe("FeedProfile", () => {
       expect(screen.getByTestId("clip-1").getAttribute("data-active")).toBe(
         "true",
       );
-      expect(scrollTo).toHaveBeenCalled();
-      expect(scrollTo).toHaveBeenCalledWith(
+      expect(scrollIntoView).toHaveBeenCalled();
+      expect(scrollIntoView).toHaveBeenCalledWith(
         expect.objectContaining({ behavior: "smooth" }),
       );
     });
 
     it("advances to the next profile after the last clip finishes", () => {
       const advanceToNextProfile = vi.fn();
-      Element.prototype.scrollTo = vi.fn();
+      Element.prototype.scrollIntoView = vi.fn();
 
       renderFeedProfile({ advanceToNextProfile });
 

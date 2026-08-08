@@ -33,6 +33,11 @@ const WAVE_COLOR = "#FACE85";
 const PROGRESS_COLOR = "black";
 const FADE_SECONDS = 1;
 
+function formatClipTime(seconds: number) {
+  const s = Math.max(0, Math.floor(seconds));
+  return `:${String(s).padStart(2, "0")}s`;
+}
+
 function WaveSurferBasic({
   url,
   isActive,
@@ -50,6 +55,7 @@ function WaveSurferBasic({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
+  const timeCurrentRef = useRef<HTMLParagraphElement>(null);
   const {
     isMuted: feedMuted,
     isPlaying: feedPlaying,
@@ -57,6 +63,7 @@ function WaveSurferBasic({
   } = useFeedAudio();
   const [localPlaying, setLocalPlaying] = useState(false);
   const [localMuted, setLocalMuted] = useState(false);
+  const [duration, setDuration] = useState(0);
   const isMuted = isOnFeed ? feedMuted : localMuted;
   const isPlaying = isOnFeed ? feedPlaying : localPlaying;
   const isActiveRef = useRef(isActive ?? false);
@@ -155,6 +162,7 @@ function WaveSurferBasic({
     const unsubReady = ws.on("ready", () => {
       setIsLoading(false);
       setCanPlayRef.current(true);
+      setDuration(ws.getDuration());
       if (shouldPlay()) {
         void ws.play();
       }
@@ -186,6 +194,9 @@ function WaveSurferBasic({
       }
       if (currentTime > remainingDuration && currentTime < clipDuration) {
         ws.setVolume(1 - (currentTime - remainingDuration) / FADE_SECONDS);
+      }
+      if (timeCurrentRef.current) {
+        timeCurrentRef.current.textContent = formatClipTime(currentTime);
       }
     });
 
@@ -226,6 +237,18 @@ function WaveSurferBasic({
           </div>
         )}
       </div>
+      {isOnFeed && isActive && (
+        <div className="flex items-center gap-2 w-full justify-between">
+          <p className="text-sm text-gray-400/80" ref={timeCurrentRef}>
+            {formatClipTime(0)}
+          </p>
+          {duration > 0 && (
+            <p className="text-sm text-gray-400/80">
+              {formatClipTime(duration)}
+            </p>
+          )}
+        </div>
+      )}
       {!isOnFeed && (
         <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
           <div className="flex items-center gap-2">
