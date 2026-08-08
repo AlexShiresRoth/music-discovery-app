@@ -83,6 +83,7 @@ function FeedProfile({
       className="flex md:flex-row flex-col snap-start min-h-screen gap-8 rounded w-screen max-w-full overflow-hidden py-10"
     >
       <ArtistColumn
+        isActive={currentIndex === activeProfileIndex}
         profile={profile}
         songClips={songClips}
         clipIndex={clipIndex}

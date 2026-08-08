@@ -235,3 +235,41 @@ export async function getProfilesWithSongClipsByLocation(
     return [];
   }
 }
+
+export async function getTotalProfilesWithSongClipsByLocation(
+  longitude: number,
+  latitude: number,
+  genres: string[] = [],
+): Promise<number> {
+  try {
+    const searchPoint = sql`
+    ST_SetSRID(
+      ST_MakePoint(${longitude}, ${latitude}),
+      4326
+    )::geography
+  `;
+
+    const RADIUS = 40_000;
+
+    const totalProfiles = await db
+      .select({ count: count() })
+      .from(profilesSchema)
+      .where(
+        genres.length > 0
+          ? and(
+              inArray(profilesSchema.genre, genres),
+              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            )
+          : and(
+              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            ),
+      );
+
+    return totalProfiles[0].count;
+  } catch (error) {
+    console.error("Error fetching total profiles:", error);
+    return 0;
+  }
+}

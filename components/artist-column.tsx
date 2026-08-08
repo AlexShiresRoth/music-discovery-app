@@ -16,6 +16,7 @@ type Props = {
   advanceToNextProfile: (index: number) => void;
   currentIndex: number;
   totalProfiles: number;
+  isActive: boolean;
 };
 
 export default function ArtistColumn({
@@ -27,10 +28,16 @@ export default function ArtistColumn({
   advanceToNextProfile,
   currentIndex,
   totalProfiles,
+  isActive,
 }: Props) {
   const published = formatPublishedAt(profile.updatedAt);
   return (
-    <aside className="flex flex-col border-r border-r-black/10 pr-8 gap-20">
+    <aside
+      className={clsx(
+        "flex flex-col border-r border-r-black/10 pr-8 gap-20 opacity-60",
+        isActive ? "animate-light-fade-in" : "animate-light-fade-out",
+      )}
+    >
       <div className="flex flex-col gap-2">
         <div className="relative w-20 h-20 md:w-70 md:h-60 overflow-hidden rounded border">
           {profile.imageUrl && (

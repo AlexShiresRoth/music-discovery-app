@@ -44,7 +44,13 @@ export default function ClipDisplay({
           isClipFeed ? "py-10" : "pb-8",
         )}
       >
-        <div className="order-1 flex gap-2 text-xl md:text-3xl">
+        {/* Stagger: mobile TTB title→profile→link→published→wave; desktop LTR title→link→profile→published→wave */}
+        <div
+          className={clsx(
+            "order-1 flex gap-2 text-xl md:text-3xl [--stagger:0]",
+            isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+          )}
+        >
           <h2 className="flex items-center gap-2 font-bold text-amber-700 md:text-4xl text-2xl">
             {clip.title}
           </h2>
@@ -66,7 +72,13 @@ export default function ClipDisplay({
             href={clip.full_song_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="order-3 flex items-center gap-2 text-sm text-gray-500 underline-offset-4 hover:underline md:order-2 md:justify-self-end"
+            className={clsx(
+              "order-3 flex items-center gap-2 text-sm text-gray-500 underline-offset-4 hover:underline md:order-2 md:justify-self-end",
+              isClipFeed
+                ? "[--stagger:3] md:[--stagger:1]"
+                : "[--stagger:1]",
+              isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+            )}
           >
             Listen to full song
             <ExternalLink className="h-3 w-3" />
@@ -78,7 +90,12 @@ export default function ClipDisplay({
         {isClipFeed && (
           <div className="order-2 flex items-center gap-2 md:order-3">
             {clipWithProfile.profileImage && (
-              <div className="relative flex h-10 w-10 rounded border">
+              <div
+                className={clsx(
+                  "relative flex h-10 w-10 rounded border [--stagger:1] md:[--stagger:2]",
+                  isActive ? "clip-anim-translate" : "animate-translate-out",
+                )}
+              >
                 <Image
                   src={clipWithProfile.profileImage}
                   alt={clipWithProfile.profileName}
@@ -90,7 +107,10 @@ export default function ClipDisplay({
             )}
             <Link
               href={`/profiles/${clipWithProfile.profileId}`}
-              className="text-gray-500"
+              className={clsx(
+                "text-gray-500 [--stagger:2] md:[--stagger:3]",
+                isActive ? "clip-anim-translate" : "animate-translate-out",
+              )}
             >
               by {clipWithProfile.profileName}
             </Link>
@@ -98,7 +118,12 @@ export default function ClipDisplay({
         )}
 
         {isClipFeed && published && (
-          <div className="order-4 text-xs text-gray-500/80 md:justify-self-end">
+          <div
+            className={clsx(
+              "order-4 text-xs text-gray-500/80 md:justify-self-end [--stagger:4]",
+              isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+            )}
+          >
             {published.label}
           </div>
         )}
@@ -119,7 +144,13 @@ export default function ClipDisplay({
           <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
             <SpindleOverlay />
           </div>
-          <div className="relative z-10 h-full w-full">
+          <div
+            className={clsx(
+              "relative z-10 h-full w-full",
+              isClipFeed ? "[--stagger:5]" : "[--stagger:2]",
+              isActive ? "clip-anim-wave" : "animate-waveform-out",
+            )}
+          >
             <WaveSurferUI
               url={clip.db_url || ""}
               clipName={clip.title || ""}
