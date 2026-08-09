@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import {
   createContext,
   useCallback,
@@ -43,11 +44,17 @@ export default function FeedAudioProvider({
 
   const toggleMute = useCallback(() => {
     setIsMuted((muted) => !muted);
-  }, []);
+    track("toggle_mute", {
+      muted: isMuted,
+    });
+  }, [isMuted]);
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((playing) => !playing);
-  }, []);
+    track("toggle_play_pause", {
+      playing: isPlaying,
+    });
+  }, [isPlaying]);
 
   const setCanPlay = useCallback((next: boolean) => {
     setCanPlayState(next);
@@ -55,6 +62,7 @@ export default function FeedAudioProvider({
 
   const onFinish = useCallback(() => {
     setIsPlaying(false);
+    track("listen_to_full_clip");
   }, []);
 
   const value = useMemo(

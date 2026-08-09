@@ -13,7 +13,6 @@ type Props = {
 export default async function ArtistsPage({ searchParams }: Props) {
   const { q } = await searchParams;
   const profiles = await getProfilesWithSongClipsByQuery(q);
-  // TODO - get total profiles by query
   const totalProfiles = await getTotalProfilesWithSongClips();
   return (
     <div>

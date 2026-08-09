@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import PrivateInfo from "./private-info";
 import PublicInfo from "./public-info";
+import ShareProfileButton from "./share-profile-button";
 import SocialSection from "./social";
 import SongClipsSection from "./song-clips";
 import UploadImage from "./upload-image";
@@ -71,6 +72,18 @@ export default async function Profile({ profile, clips }: Props) {
                 className="items-start h-auto"
               />
             )}
+            <div>
+              <ShareProfileButton
+                profile={{
+                  id: profile.id.toString(),
+                  profileName: profile.profileName ?? "",
+                  city: profile.city,
+                  stateCode: profile.stateCode,
+                  imageUrl: profile.imageUrl ?? "",
+                  bio: profile.bio ?? "",
+                }}
+              />
+            </div>
           </div>
         </header>
         <div className="flex flex-col gap-10 w-full">

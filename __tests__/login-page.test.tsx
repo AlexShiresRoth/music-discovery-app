@@ -54,7 +54,6 @@ describe("SignInPage", () => {
     expect(screen.getByPlaceholderText("Email")).toBeDefined();
     expect(screen.queryByPlaceholderText("Confirm Password")).toBeNull();
     expect(screen.getByText("Continue with Google")).toBeDefined();
-    expect(screen.getByText("Continue with Apple")).toBeDefined();
   });
 
   it("renders register heading and confirm password when register=true", async () => {

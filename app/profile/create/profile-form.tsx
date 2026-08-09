@@ -6,6 +6,7 @@ import TextArea from "@/components/text-area";
 import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
 import { validateSocialFields } from "@/lib/validation/url";
+import { track } from "@vercel/analytics";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { profileFormFields } from "../schemas";
@@ -83,6 +84,7 @@ export default function ProfileForm() {
 
       if (success) {
         setToast({ message: "Profile created successfully", type: "success" });
+        track("created_profile");
         router.push("/profile");
       }
 
@@ -90,6 +92,7 @@ export default function ProfileForm() {
     } catch (error) {
       setIsFormPending(false);
       setToast({ message: JSON.stringify(error), type: "error" });
+      track("error_creating_profile", { error: JSON.stringify(error) });
       console.error(error);
     }
   };

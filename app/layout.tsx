@@ -3,6 +3,7 @@ import Navigation from "@/components/navigation";
 import ToastWrapper from "@/components/toast-wrapper";
 import ToastProvider from "@/context/toast";
 import { HAS_VISITED_COOKIE, hasVisitedFromCookie } from "@/lib/has-visited";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
@@ -48,6 +49,7 @@ export default async function RootLayout({
             <ToastWrapper>{children}</ToastWrapper>
           </ToastProvider>
         </main>
+        <Analytics />
       </body>
     </html>
   );
