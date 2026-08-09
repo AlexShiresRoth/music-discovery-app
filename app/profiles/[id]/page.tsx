@@ -5,12 +5,73 @@ import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
 import { getProfileById } from "@/lib/auth";
 import { ImageIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+function profileDescription(profile: {
+  bio: string | null;
+  city: string;
+  stateCode: string;
+  profileName: string | null;
+}) {
+  const location = [profile.city, profile.stateCode].filter(Boolean).join(", ");
+  const bio = profile.bio?.trim();
+  if (bio) {
+    return bio.length > 160 ? `${bio.slice(0, 157)}...` : bio;
+  }
+  if (location) {
+    return `${profile.profileName ?? "Artist"} · ${location}`;
+  }
+  return "Discover independent artists and local scenes.";
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const profile = await getProfileById(id);
+
+  if (!profile) {
+    return {
+      title: "Profile not found",
+    };
+  }
+
+  const name = profile.profileName?.trim() || "Artist";
+  const description = profileDescription(profile);
+  const images = profile.imageUrl
+    ? [
+        {
+          url: profile.imageUrl,
+          alt: name,
+        },
+      ]
+    : undefined;
+
+  return {
+    title: name,
+    description,
+    alternates: {
+      canonical: `/profiles/${id}`,
+    },
+    openGraph: {
+      title: name,
+      description,
+      url: `/profiles/${id}`,
+      type: "profile",
+      images,
+    },
+    twitter: {
+      card: images ? "summary_large_image" : "summary",
+      title: name,
+      description,
+      images: images?.map((image) => image.url),
+    },
+  };
+}
 
 export default async function ProfilePage({ params }: Props) {
   const { id } = await params;

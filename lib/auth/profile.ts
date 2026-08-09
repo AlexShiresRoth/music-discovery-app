@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
 import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import { cache } from "react";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
@@ -27,7 +28,7 @@ export async function getProfile() {
   }
 }
 
-export async function getProfileById(id: string) {
+export const getProfileById = cache(async (id: string) => {
   try {
     const [profile] = await db
       .select()
@@ -42,12 +43,27 @@ export async function getProfileById(id: string) {
       profile.songClips.map((clip) => clip.id),
     );
 
-    const profileWithSongClips = { ...profile, songClips };
-
-    return profileWithSongClips;
+    return { ...profile, songClips };
   } catch (error) {
     console.error("Error fetching profile:", error);
     return null;
+  }
+});
+
+/** Lightweight rows for sitemap generation (public profile URLs). */
+export async function getPublicProfilesForSitemap() {
+  try {
+    return await db
+      .select({
+        id: profilesSchema.id,
+        updatedAt: profilesSchema.updatedAt,
+        imageUrl: profilesSchema.imageUrl,
+      })
+      .from(profilesSchema)
+      .orderBy(desc(profilesSchema.updatedAt));
+  } catch (error) {
+    console.error("Error fetching profiles for sitemap:", error);
+    return [];
   }
 }
 

@@ -2,12 +2,21 @@ import AppleIcon from "@/icons/apple";
 import GithubIcon from "@/icons/github";
 import GoogleIcon from "@/icons/google";
 import { getSession } from "@/lib/auth";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { env } from "process";
 import SignInButton from "./auth-button";
 import LoginForm from "./login-form";
 
 const NODE_ENV = env.NODE_ENV;
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 type Props = {
   searchParams: Promise<{

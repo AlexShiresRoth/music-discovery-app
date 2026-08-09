@@ -7,38 +7,35 @@ type Props = {
   profile: {
     id: string;
     profileName: string;
-    city: string;
-    stateCode: string;
-    imageUrl: string;
     bio: string;
   };
 };
+
 export default function ShareProfileButton({ profile }: Props) {
   const handleShare = async () => {
+    const url = `${window.location.origin}/profiles/${profile.id}`;
     const shareData = {
       title: profile.profileName,
-      text: profile.bio,
-      url: `${window.location.origin}/profiles/${profile.id}`,
+      text: profile.bio || profile.profileName,
+      url,
     };
     const canNativeShare =
-      typeof navigator !== "undefined" &&
-      "navigator" in window &&
-      typeof navigator.share === "function";
+      typeof navigator !== "undefined" && typeof navigator.share === "function";
 
     try {
       if (canNativeShare) {
-        track("share_profile_desktop", {
+        track("share_profile", {
           profile_id: profile.id,
           name: profile.profileName,
         });
         await navigator.share(shareData);
       } else {
-        track("share_profile_mobile", {
+        track("share_profile_clipboard", {
           profile_id: profile.id,
           name: profile.profileName,
         });
-        await navigator.clipboard.writeText(shareData.text);
-        alert("copied to clipboard!");
+        await navigator.clipboard.writeText(url);
+        alert("Link copied to clipboard!");
       }
     } catch {
       console.info("Player aborted share");
@@ -47,6 +44,7 @@ export default function ShareProfileButton({ profile }: Props) {
 
   return (
     <button
+      type="button"
       onClick={handleShare}
       className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700 flex items-center gap-2"
     >
