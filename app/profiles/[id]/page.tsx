@@ -1,3 +1,4 @@
+import ShareProfileButton from "@/app/profile/share-profile-button";
 import BackButton from "@/components/breadcrumbs";
 import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
@@ -141,6 +142,15 @@ export default async function ProfilePage({ params }: Props) {
                 className="items-start h-auto"
               />
             )}
+            <div>
+              <ShareProfileButton
+                profile={{
+                  id: profile.id.toString(),
+                  profileName: profile.profileName ?? "",
+                  bio: profile.bio ?? "",
+                }}
+              />
+            </div>
           </div>
         </header>
 
