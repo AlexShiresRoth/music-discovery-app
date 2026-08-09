@@ -1,9 +1,11 @@
 "use client";
+import { useHasVisited } from "@/stores/use-has-visited";
 import { User } from "@supabase/supabase-js";
 import clsx from "clsx";
 import { Dot } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import NearbyButton from "./nearby-button";
 
 type Props = {
   user: User | null;
@@ -11,9 +13,15 @@ type Props = {
 
 export default function NavContent({ user }: Props) {
   const pathname = usePathname();
-
+  const hasVisited = useHasVisited();
   return (
     <div className="flex items-center gap-2 py-4 text-sm">
+      <NearbyButton />
+      {hasVisited && (
+        <span>
+          <Dot className="h-4 w-4" />
+        </span>
+      )}
       <Link
         href="/"
         className={clsx(
