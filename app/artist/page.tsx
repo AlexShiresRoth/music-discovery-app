@@ -4,12 +4,22 @@ import {
   getProfilesWithSongClipsByQuery,
   getTotalProfilesWithSongClips,
 } from "@/lib/auth";
+import type { Metadata } from "next";
 
 type Props = {
   searchParams: Promise<{
     q: string;
   }>;
 };
+
+export const metadata: Metadata = {
+  title: "Search artists",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
 export default async function ArtistsPage({ searchParams }: Props) {
   const { q } = await searchParams;
   const profiles = await getProfilesWithSongClipsByQuery(q);

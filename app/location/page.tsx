@@ -4,9 +4,18 @@ import {
   getProfilesWithSongClipsByLocation,
   getTotalProfilesWithSongClipsByLocation,
 } from "@/lib/auth";
+import type { Metadata } from "next";
 
 type Props = {
   searchParams: Promise<{ q: string; lat: string; lon: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Artists nearby",
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default async function LocationPage({ searchParams }: Props) {

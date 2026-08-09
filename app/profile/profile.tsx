@@ -77,9 +77,6 @@ export default async function Profile({ profile, clips }: Props) {
                 profile={{
                   id: profile.id.toString(),
                   profileName: profile.profileName ?? "",
-                  city: profile.city,
-                  stateCode: profile.stateCode,
-                  imageUrl: profile.imageUrl ?? "",
                   bio: profile.bio ?? "",
                 }}
               />

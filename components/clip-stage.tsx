@@ -36,7 +36,7 @@ export default function ClipStage({
         className,
       )}
     >
-      <div className="relative w-full md:w-11/12">
+      <div className="relative w-full">
         {children}
 
         {/*

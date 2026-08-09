@@ -34,7 +34,7 @@ export default function ArtistColumn({
   return (
     <aside
       className={clsx(
-        "flex flex-col border-r border-r-black/10 pr-8 gap-20 opacity-60",
+        "flex flex-col md:border-r border-r-black/10 pr-8 gap-20 opacity-60",
         isActive ? "animate-light-fade-in" : "animate-light-fade-out",
       )}
     >
