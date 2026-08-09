@@ -24,7 +24,9 @@ export default async function LocationPage({ searchParams }: Props) {
   return (
     <div>
       <div className="w-full flex justify-between items-center">
-        <h1 className="md:text-2xl text-lg font-semibold">{q} & nearby</h1>
+        <h1 className="md:text-4xl text-lg font-semibold">
+          {q ? `Listening in ${q} & nearby` : "Listening to artists nearby"}
+        </h1>
         <BackButton />
       </div>
       <FeedList

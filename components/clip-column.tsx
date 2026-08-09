@@ -26,7 +26,7 @@ export default function ClipColumn({
     <div className="flex min-h-0 w-full flex-1 flex-col justify-start gap-8">
       <div
         ref={scrollRef}
-        className="flex min-h-0 flex-1 gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none"
+        className="flex min-h-0 flex-1 gap-4 overflow-x-auto overflow-y-visible snap-x snap-mandatory scrollbar-none"
       >
         {songClips.map((clip, index) => (
           <ClipDisplay
