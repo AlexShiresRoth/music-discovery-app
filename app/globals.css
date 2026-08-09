@@ -71,7 +71,6 @@ input:-webkit-autofill:focus {
   }
   to {
     opacity: 0;
-    display: none;
   }
 }
 
@@ -181,21 +180,21 @@ input:-webkit-autofill:focus {
 }
 
 /* Clip display stagger: set --stagger (0, 1, 2…) per element; md: overrides for LTR vs mobile TTB */
+/* `both` holds the from-keyframe during stagger delay so opacity doesn't flash. */
 .clip-anim-fade {
-  opacity: 50%;
-  animation: fade-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s) forwards;
+  opacity: 0;
+  animation: fade-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s) both;
 }
 
 .clip-anim-translate {
   opacity: 0;
-  animation: translate-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s)
-    forwards;
+  animation: translate-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s) both;
 }
 
 .clip-anim-wave {
   transform-origin: center;
   opacity: 0;
-  animation: reveal 0.28s linear calc(var(--stagger, 0) * 0.12s) forwards;
+  animation: reveal 0.28s linear calc(var(--stagger, 0) * 0.12s) both;
 }
 
 .animate-translate-out {
@@ -204,25 +203,24 @@ input:-webkit-autofill:focus {
 
 .animate-waveform-in {
   transform-origin: center;
-  animation: reveal 0.28s linear forwards;
+  animation: reveal 0.28s linear both;
 }
 
 .animate-waveform-out {
-  opacity: 0;
   animation: waveform-out 0.28s linear forwards;
 }
 
 .animate-text-fade-in {
   opacity: 0;
-  animation: fade-in 0.28s ease-in-out 0.2s forwards;
+  animation: fade-in 0.28s ease-in-out 0.2s both;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.3s ease-in-out;
+  animation: fade-in 0.3s ease-in-out both;
 }
 
 .animate-fade-out {
-  animation: fade-out 0.3s ease-in-out;
+  animation: fade-out 0.3s ease-in-out forwards;
 }
 
 .animate-grow-width {
