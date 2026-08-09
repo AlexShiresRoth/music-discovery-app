@@ -224,11 +224,11 @@ function WaveSurferBasic({
   return (
     <div
       className={clsx(
-        "flex flex-col w-full min-w-0 h-full",
+        "relative flex flex-col w-full min-w-0 h-full",
         isLoading && "animate-pulse",
       )}
     >
-      <div className="relative w-full min-w-0 h-full">
+      <div className="relative w-full min-w-0 h-full min-h-0">
         {/* Dedicated mount node — keep React overlays out of this div */}
         <div ref={containerRef} className="w-full min-w-0 h-full" />
         {isLoading && (
@@ -236,19 +236,20 @@ function WaveSurferBasic({
             <WaveformSkeleton />
           </div>
         )}
-      </div>
-      {isOnFeed && isActive && (
-        <div className="flex items-center gap-2 w-full justify-between">
-          <p className="text-sm text-gray-400/80" ref={timeCurrentRef}>
-            {formatClipTime(0)}
-          </p>
-          {duration > 0 && (
-            <p className="text-sm text-gray-400/80">
-              {formatClipTime(duration)}
+        {/* Hang below the wave box so time labels don't shift spindle/wave centering */}
+        {isOnFeed && isActive && (
+          <div className="pointer-events-none absolute top-full left-0 right-0 z-10 flex items-center justify-between pt-1">
+            <p className="text-sm text-gray-400/80" ref={timeCurrentRef}>
+              {formatClipTime(0)}
             </p>
-          )}
-        </div>
-      )}
+            {duration > 0 && (
+              <p className="text-sm text-gray-400/80">
+                {formatClipTime(duration)}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
       {!isOnFeed && (
         <div className="flex justify-between items-center gap-2 border-t pt-2 text-sm">
           <div className="flex items-center gap-2">

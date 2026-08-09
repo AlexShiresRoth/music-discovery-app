@@ -9,8 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import ActionButton from "./action-button";
 import FeedAudioControls from "./audio-controls";
-import ClipDisplay from "./clip-display";
-import IntroOverlay from "./feed-overlay";
+import ClipFeedDisplay from "./clip-feed-display";
 import FeedProfile from "./feed-profile";
 
 function Feed({
@@ -155,8 +154,7 @@ function FeedSongClips({
         className="flex h-screen w-full snap-y snap-mandatory flex-col overflow-y-scroll z-0 scrollbar-none"
       >
         {fetchedData.map((clip, index) => (
-          <ClipDisplay
-            isClipFeed
+          <ClipFeedDisplay
             key={clip.id}
             clip={clip}
             index={index}
@@ -224,7 +222,6 @@ export default function FeedList({
     return (
       <FeedAudioProvider>
         <FeedAudioControls />
-        <IntroOverlay />
         <FeedSongClips songClips={songClips} genres={genres} key={genresKey} />
       </FeedAudioProvider>
     );
@@ -240,7 +237,6 @@ export default function FeedList({
         longitude={longitude ? parseFloat(longitude) : undefined}
         latitude={latitude ? parseFloat(latitude) : undefined}
       />
-      <IntroOverlay />
       <FeedAudioControls />
     </FeedAudioProvider>
   );
