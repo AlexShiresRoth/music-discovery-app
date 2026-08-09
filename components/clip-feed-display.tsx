@@ -38,8 +38,8 @@ export default function ClipFeedDisplay({
         <div className="relative z-20 mb-4 grid w-full grid-cols-1 items-start gap-2 md:absolute md:bottom-full md:left-0 md:right-0 md:mb-6 md:grid-cols-2">
           <div
             className={clsx(
-              "order-1 flex flex-row items-center gap-3 text-xl md:text-3xl [--stagger:0]",
-              isActive ? "clip-anim-fade" : "animate-fade-out opacity-50",
+              "order-1 flex flex-row items-center gap-3 text-xl md:text-3xl",
+              isActive ? "animate-grow-vertical" : "animate-fade-out",
             )}
           >
             {clip.profileImage && (
@@ -66,7 +66,7 @@ export default function ClipFeedDisplay({
             <div
               className={clsx(
                 "order-3 flex flex-col gap-0.5 md:order-2 md:row-span-2 md:items-end md:justify-self-end [--stagger:3] md:[--stagger:1]",
-                isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+                isActive ? "clip-anim-fade" : "animate-fade-out",
               )}
             >
               {clip.full_song_url && (
@@ -99,7 +99,12 @@ export default function ClipFeedDisplay({
               by {clip.profileName}
             </Link>
             {clip.genre && (
-              <div className="flex gap-2 text-sm text-gray-400">
+              <div
+                className={clsx(
+                  "flex gap-2 text-sm text-gray-400",
+                  isActive ? "animate-text-fade-in" : "animate-text-fade-out",
+                )}
+              >
                 <Link
                   href={`/clips?g=${clip.genre}`}
                   className="underline-offset-4 hover:underline"

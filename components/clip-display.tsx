@@ -27,8 +27,8 @@ export default function ClipDisplay({
       <div className="relative z-20 grid w-full shrink-0 grid-cols-1 items-start gap-2 pb-3 md:grid-cols-2 md:pb-8">
         <div
           className={clsx(
-            "order-1 flex flex-col gap-2 text-xl md:text-3xl [--stagger:0]",
-            isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+            "order-1 flex flex-col gap-2 text-xl md:text-3xl",
+            isActive ? "animate-text-fade-in" : "animate-fade-out",
           )}
         >
           <span className="text-xs text-gray-400 -mb-2">Now Playing</span>
@@ -52,7 +52,7 @@ export default function ClipDisplay({
             rel="noopener noreferrer"
             className={clsx(
               "order-2 flex items-center gap-2 justify-self-start text-sm text-gray-500 underline-offset-4 hover:underline md:justify-self-end [--stagger:1]",
-              isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+              isActive ? "clip-anim-fade" : "animate-fade-out",
             )}
           >
             Listen to full song
