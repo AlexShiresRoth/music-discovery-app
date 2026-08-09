@@ -12,7 +12,6 @@ type Props = {
   clip: SongClip;
   isActive: boolean;
   onFinish: () => void;
-  largeBg?: boolean;
   waveStagger?: number;
   /** Above the wave — in-flow on mobile; use `md:absolute md:bottom-full` for desktop float. */
   children?: ReactNode;
@@ -23,7 +22,6 @@ export default function ClipStage({
   clip,
   isActive,
   onFinish,
-  largeBg = false,
   waveStagger = 2,
   children,
   className,
@@ -34,7 +32,6 @@ export default function ClipStage({
     <div
       className={clsx(
         "relative flex min-h-0 flex-1 flex-col overflow-visible",
-        // Desktop: center the wave cluster in the stage. Mobile: stack from the top.
         "md:items-center md:justify-center",
         className,
       )}
@@ -43,12 +40,13 @@ export default function ClipStage({
         {children}
 
         {/*
-          One box, one center: disc + spindle + waveform all align to this frame.
-          No top/left % + translate — overlays use inset-0 flex centering.
+          Shared frame: disc + spindle + wave share this center.
+          Disc is sized via clip @container units so it still fills the slide;
+          slide overflow-hidden clips bleed into neighbors.
         */}
         <div className="relative h-45 w-full md:h-60">
-          <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-visible">
-            <DecorativeBg isPlaying={isActive && isPlaying} large={largeBg} />
+          <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+            <DecorativeBg isPlaying={isActive && isPlaying} />
           </div>
 
           <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">

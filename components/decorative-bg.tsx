@@ -2,19 +2,17 @@ import clsx from "clsx";
 
 interface DecorativeBgProps {
   isPlaying: boolean;
-  large?: boolean;
 }
 
-export default function DecorativeBg({
-  isPlaying,
-  large = false,
-}: DecorativeBgProps) {
+/**
+ * Keep aspect-square. Size against the clip `@container` (cqw/cqh),
+ * but center it in whatever parent frames it (same box as the spindle).
+ */
+export default function DecorativeBg({ isPlaying }: DecorativeBgProps) {
   return (
     <div
-      className={clsx(
-        "flex aspect-square w-auto shrink-0 items-center justify-center rounded-full border-2 border-gray-400/10 bg-background",
-        large ? "h-[min(220%,140vw)]" : "h-[min(165%,100vw)]",
-      )}
+      data-decorative-bg
+      className="flex aspect-square md:w-[max(130cqw,130cqh)] w-[max(120cqw,120cqh)] shrink-0 items-center justify-center rounded-full border-2 border-gray-400/10 bg-background"
     >
       <div
         className={clsx(
@@ -24,7 +22,7 @@ export default function DecorativeBg({
             : "[animation-play-state:paused]",
         )}
       >
-        <div className="flex aspect-square md:h-[30%] h-[65%] w-auto max-w-full items-center justify-center rounded-full bg-gray-400/10">
+        <div className="flex aspect-square h-[45%] w-auto max-w-full items-center justify-center rounded-full bg-gray-400/10 md:h-[25%]">
           <div className="flex h-11/12 w-11/12 items-center justify-center rounded-full border-2 border-background" />
         </div>
       </div>

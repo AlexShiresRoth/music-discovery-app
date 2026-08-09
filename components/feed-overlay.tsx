@@ -1,22 +1,22 @@
 "use client";
-import { useLocalStorage } from "@/stores/use-local-storage";
 
-import clsx from "clsx";
+import { setHasVisited } from "@/lib/has-visited";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+/** In-flow intro header. Layout only mounts this when the visit cookie is unset. */
 export default function IntroOverlay() {
   const router = useRouter();
-  const hasVisited = useLocalStorage();
 
-  const getLocation = async () => {
+  const getLocation = () => {
     try {
-      const geo = navigator.geolocation;
-      return geo.getCurrentPosition((event) => {
+      navigator.geolocation.getCurrentPosition((event) => {
         if (event.coords) {
+          setHasVisited();
           router.push(
             `/location?lat=${event.coords.latitude}&lon=${event.coords.longitude}`,
           );
+          router.refresh();
         }
       });
     } catch (error) {
@@ -25,43 +25,42 @@ export default function IntroOverlay() {
   };
 
   return (
-    <div
-      className={clsx(
-        "w-full flex flex-col items-center justify-center border-b border-gray-500/10 transition-all duration-1000 ease-in-out",
-        hasVisited && "animate-fade-out max-h-0 opacity-0",
-        !hasVisited &&
-          "animate-fade-in bg-background/50 backdrop-blur-md max-h-screen",
-      )}
-    >
-      <div className="flex items-center justify-center pt-8 pb-2 md:py-16 w-full gap-8">
-        <div className="flex flex-col max-w-2xl gap-4 relative text-center items-center">
-          <h1 className="text-3xl md:text-6xl font-bold font-serif animate-fade-in">
+    <header className="@container relative flex w-full shrink-0 flex-col items-center justify-center overflow-hidden border-b border-gray-500/10">
+      <div className="relative z-0 flex flex-col w-full items-center justify-center gap-8 py-8 md:py-16">
+        <div className="relative flex max-w-2xl flex-col items-center gap-4 text-center">
+          <h1 className="animate-grow-vertical font-serif text-4xl font-bold md:text-6xl">
             Discover music the algorithms missed.
           </h1>
-          <p className="text-lg md:text-xl text-gray-700 flex flex-wrap gap-1 justify-center animate-fade-in">
+          <p className="animate-text-fade-in flex flex-wrap justify-center gap-1 text-lg text-gray-700 md:text-xl">
             <span>Independent artists.</span> <span>Local scenes.</span>{" "}
             <span>No algorithms.</span>
           </p>
-          <p className="text-base md:text-lg text-gray-700 text-center">
-            A home for independent musicians and the people who want to discover
-            them.
-          </p>
-          <div className="flex gap-2">
+
+          <div className="animate-grow-vertical flex gap-2">
             <button
+              type="button"
               onClick={getLocation}
-              className="p-2 rounded bg-amber-500 border-2 border-b-4 font-bold text-sm hover:bg-amber-400 hover:cursor-pointer transition-all"
+              className="rounded border-2 border-b-4 bg-amber-500 p-2 text-sm font-bold transition-all hover:cursor-pointer hover:bg-amber-400"
             >
-              Start Listening
+              Explore Nearby
             </button>
             <Link
               href="/profile/create"
-              className="p-2 rounded border-2 text-sm flex items-center font-bold border-b-4 hover:bg-black border-black hover:text-background hover:cursor-pointer transition-all"
+              onClick={() => setHasVisited()}
+              className="flex items-center rounded border-2 border-b-4 border-black p-2 text-sm font-bold transition-all hover:cursor-pointer hover:bg-black hover:text-background"
             >
               Share Your Music
             </Link>
           </div>
         </div>
       </div>
-    </div>
+
+      <div className="relative w-full flex items-center justify-center">
+        <div className="absolute bottom-0 -z-10 aspect-square w-[max(100cqw,100cqh)] md:w-[max(70cqw,70cqh)] translate-y-2/3 rounded-full border-t-2 border-gray-500/10" />
+        <div className="flex aspect-square w-[max(30cqw,30cqh)] translate-y-2/3 items-center justify-center rounded-full bg-gray-400/5 absolute bottom-0 -z-10">
+          <div className="flex h-11/12 w-11/12 items-center justify-center rounded-full border-2 border-background" />
+        </div>
+      </div>
+    </header>
   );
 }

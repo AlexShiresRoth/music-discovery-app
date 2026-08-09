@@ -10,7 +10,6 @@ import { useMemo, useRef, useState } from "react";
 import ActionButton from "./action-button";
 import FeedAudioControls from "./audio-controls";
 import ClipFeedDisplay from "./clip-feed-display";
-import IntroOverlay from "./feed-overlay";
 import FeedProfile from "./feed-profile";
 
 function Feed({
@@ -223,7 +222,6 @@ export default function FeedList({
     return (
       <FeedAudioProvider>
         <FeedAudioControls />
-        <IntroOverlay />
         <FeedSongClips songClips={songClips} genres={genres} key={genresKey} />
       </FeedAudioProvider>
     );
@@ -231,7 +229,6 @@ export default function FeedList({
 
   return (
     <FeedAudioProvider>
-      <IntroOverlay />
       <Feed
         profiles={profiles}
         genres={genres}

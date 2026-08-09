@@ -157,6 +157,21 @@ input:-webkit-autofill:focus {
   }
 }
 
+@keyframes grow-vertical {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+.animate-grow-vertical {
+  transform-origin: top;
+  animation: grow-vertical 0.5s ease-in-out forwards;
+}
+
 .animate-light-fade-in {
   animation: light-fade-in 0.28s ease-in-out forwards;
 }
@@ -167,7 +182,7 @@ input:-webkit-autofill:focus {
 
 /* Clip display stagger: set --stagger (0, 1, 2…) per element; md: overrides for LTR vs mobile TTB */
 .clip-anim-fade {
-  opacity: 0;
+  opacity: 50%;
   animation: fade-in 0.28s ease-in-out calc(var(--stagger, 0) * 0.12s) forwards;
 }
 

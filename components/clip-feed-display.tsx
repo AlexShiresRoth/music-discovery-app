@@ -24,7 +24,7 @@ export default function ClipFeedDisplay({
 
   return (
     <div
-      className="relative flex h-screen w-full shrink-0 snap-start basis-full min-w-0 flex-col py-10"
+      className="@container relative flex h-screen w-full shrink-0 snap-start basis-full min-w-0 flex-col overflow-hidden py-10"
       data-clip-slide
       data-clip-index={index}
     >
@@ -32,15 +32,14 @@ export default function ClipFeedDisplay({
         clip={clip}
         isActive={isActive}
         onFinish={onFinish}
-        largeBg
         waveStagger={5}
-        className="md:translate-y-10 justify-center"
+        className="justify-center md:translate-y-10"
       >
         <div className="relative z-20 mb-4 grid w-full grid-cols-1 items-start gap-2 md:absolute md:bottom-full md:left-0 md:right-0 md:mb-6 md:grid-cols-2">
           <div
             className={clsx(
               "order-1 flex flex-row items-center gap-3 text-xl md:text-3xl [--stagger:0]",
-              isActive ? "clip-anim-fade" : "animate-fade-out opacity-0",
+              isActive ? "clip-anim-fade" : "animate-fade-out opacity-50",
             )}
           >
             {clip.profileImage && (
@@ -51,6 +50,7 @@ export default function ClipFeedDisplay({
                   fill
                   sizes="80px"
                   className="object-cover"
+                  loading="eager"
                 />
               </div>
             )}
