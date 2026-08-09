@@ -1,6 +1,7 @@
 "use client";
 
 import { SongClip } from "@/lib/db/types";
+import { track } from "@vercel/analytics";
 import clsx from "clsx";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -54,6 +55,12 @@ export default function ClipDisplay({
               "order-2 flex items-center gap-2 justify-self-start text-sm text-gray-500 underline-offset-4 hover:underline md:justify-self-end [--stagger:1]",
               isActive ? "clip-anim-fade" : "animate-fade-out",
             )}
+            onClick={() =>
+              track("listen_to_full_song", {
+                clip_id: clip.id,
+                artist_id: clip.profileRefId,
+              })
+            }
           >
             Listen to full song
             <ExternalLink className="h-3 w-3" />

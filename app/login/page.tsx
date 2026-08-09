@@ -48,12 +48,14 @@ export default async function SignInPage({ searchParams }: Props) {
               Continue with Google
             </span>
           </SignInButton>
-          <SignInButton provider="apple">
-            <span className="inline-flex items-center justify-center gap-2">
-              <AppleIcon size={18} />
-              Continue with Apple
-            </span>
-          </SignInButton>
+          {NODE_ENV === "development" && (
+            <SignInButton provider="apple">
+              <span className="inline-flex items-center justify-center gap-2">
+                <AppleIcon size={18} />
+                Continue with Apple
+              </span>
+            </SignInButton>
+          )}
         </div>
       </div>
     </main>

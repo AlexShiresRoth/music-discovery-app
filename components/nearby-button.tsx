@@ -1,6 +1,7 @@
 "use client";
 
 import { useHasVisited } from "@/stores/use-has-visited";
+import { track } from "@vercel/analytics";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -12,13 +13,14 @@ export default function NearbyButton() {
     navigator.geolocation.getCurrentPosition((event) => {
       try {
         setPending(true);
-
         if (event.coords) {
+          track("allow_location_access");
           router.push(
             `/location?lat=${event.coords.latitude}&lon=${event.coords.longitude}`,
           );
+        } else {
+          track("deny_location_access");
         }
-      } catch {
       } finally {
         setPending(false);
       }

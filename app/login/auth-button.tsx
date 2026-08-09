@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { Provider } from "@supabase/supabase-js";
+import { track } from "@vercel/analytics";
 
 const supabase = createClient();
 
@@ -27,7 +28,10 @@ export default function SignInButton({
   async function handleSignIn() {
     const { error } = await signInWithProvider(provider);
     if (error) {
+      track("error_signing_in", { provider, error: JSON.stringify(error) });
       console.error(error);
+    } else {
+      track("signed_in", { provider });
     }
   }
 
