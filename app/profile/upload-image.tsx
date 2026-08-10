@@ -164,7 +164,11 @@ export default function UploadImage({ imageUrl }: Props) {
       )}
     >
       <div className="text-sm my-4">
-        <p>{imageUrl ? imageUrl : file?.name}</p>
+        <p className="truncate">
+          {imageUrl
+            ? imageUrl.substring(0, 20) + "..."
+            : file?.name?.substring(0, 20) + "..."}
+        </p>
         {!imageUrl && <p>Upload an image</p>}
       </div>
       <div className="flex gap-4">

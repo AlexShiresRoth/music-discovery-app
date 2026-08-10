@@ -90,16 +90,19 @@ export default async function ProfilePage({ params }: Props) {
         </div>
         <header className="flex md:items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
-            <div className="flex flex-col gap-8 items-center relative w-full md:w-sm h-75 border rounded">
+            <div className="flex flex-col gap-8 items-center relative w-full md:w-sm h-90 border rounded">
               {profile.imageUrl ? (
-                <Image
-                  src={profile.imageUrl}
-                  alt={profile.profileName ?? "Image"}
-                  fill
-                  loading="eager"
-                  className="object-cover rounded block"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+                <>
+                  <Image
+                    src={profile.imageUrl}
+                    alt={profile.profileName ?? "Image"}
+                    fill
+                    loading="eager"
+                    className="object-cover rounded block"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="w-full h-full absolute inset-0 bg-black/50 rounded animate-pulse -z-10" />
+                </>
               ) : (
                 <EmptyState
                   message="No Image Yet."

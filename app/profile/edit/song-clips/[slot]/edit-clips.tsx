@@ -1,6 +1,7 @@
 "use client";
 
 import ActionButton from "@/components/action-button";
+import BackButton from "@/components/breadcrumbs";
 import { ToastContext } from "@/context/toast";
 import { processAudioForUpload } from "@/lib/audio/trim-clip";
 import type { SongClip } from "@/lib/db/types";
@@ -161,26 +162,19 @@ export default function EditClips({ clip, slot }: Props) {
   return (
     <form
       onSubmit={draft.dbUrl ? handleEditSubmit : handleSubmit}
-      className="flex flex-col w-full md:p-8 gap-4"
+      className="flex flex-col w-full md:p-8 gap-2"
     >
-      <div className="flex md:flex-row flex-col-reverse md:items-center justify-between w-full">
+      <div className="flex md:flex-row flex-col-reverse md:items-end justify-between w-full">
         <h2 className="font-bold uppercase">Upload Song Clip</h2>
-        <div>
-          <button
-            type="button"
-            onClick={() => router.push("/profile")}
-            className="text-sm text-gray-400/80 hover:cursor-pointer hover:text-gray-500 transition-colors"
-          >
-            Back
-          </button>
-        </div>
+
+        <BackButton />
       </div>
 
-      <div className="relative flex flex-col gap-4">
+      <div className="relative flex flex-col gap-4 border rounded p-8">
         <p className="text-sm text-gray-400/80">
           Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or shorter.
         </p>
-        <div className="flex flex-col gap-6 pb-10">
+        <div className="flex flex-col gap-6 pb-4">
           <SongClipSlot
             draft={draft}
             isFormPending={isFormPending}
@@ -188,11 +182,10 @@ export default function EditClips({ clip, slot }: Props) {
             index={slot}
           />
         </div>
+        <ActionButton type="submit" disabled={isFormPending}>
+          {isFormPending ? "Saving..." : `Save`}
+        </ActionButton>
       </div>
-
-      <ActionButton type="submit" disabled={isFormPending}>
-        {isFormPending ? "Uploading" : `Save`}
-      </ActionButton>
     </form>
   );
 }

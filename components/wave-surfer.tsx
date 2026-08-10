@@ -33,9 +33,25 @@ const WAVE_COLOR = "#FACE85";
 const PROGRESS_COLOR = "black";
 const FADE_SECONDS = 1;
 
+/** Ensures only one WaveSurfer instance plays at a time on the page. */
+let activePlayer: WaveSurfer | null = null;
+
+function claimSoloPlayback(ws: WaveSurfer) {
+  if (activePlayer && activePlayer !== ws) {
+    activePlayer.pause();
+  }
+  activePlayer = ws;
+}
+
+function releaseSoloPlayback(ws: WaveSurfer) {
+  if (activePlayer === ws) {
+    activePlayer = null;
+  }
+}
+
 function formatClipTime(seconds: number) {
   const s = Math.max(0, Math.floor(seconds));
-  return `:${String(s).padStart(2, "0")}s`;
+  return `${String(s).padStart(2, "0")}s`;
 }
 
 function WaveSurferBasic({
@@ -43,6 +59,7 @@ function WaveSurferBasic({
   isActive,
   isOnFeed,
   onFinish,
+  clipName,
 }: {
   url: string;
   clipName: string;
@@ -167,13 +184,16 @@ function WaveSurferBasic({
         void ws.play();
       }
     });
-    const unsubPlay = isOnFeed
-      ? () => {}
-      : ws.on("play", () => setLocalPlaying(true));
-    const unsubPause = isOnFeed
-      ? () => {}
-      : ws.on("pause", () => setLocalPlaying(false));
+    const unsubPlay = ws.on("play", () => {
+      claimSoloPlayback(ws);
+      if (!isOnFeed) setLocalPlaying(true);
+    });
+    const unsubPause = ws.on("pause", () => {
+      releaseSoloPlayback(ws);
+      if (!isOnFeed) setLocalPlaying(false);
+    });
     const unsubFinish = ws.on("finish", () => {
+      releaseSoloPlayback(ws);
       if (isOnFeed) {
         // Only the active clip should advance the playlist.
         if (isActiveRef.current && isPlayingRef.current) {
@@ -206,6 +226,7 @@ function WaveSurferBasic({
       unsubPause();
       unsubFinish();
       unsubTimeupdate();
+      releaseSoloPlayback(ws);
       ws.destroy();
       wsRef.current = null;
     };
@@ -269,6 +290,14 @@ function WaveSurferBasic({
             >
               {localMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <p>
+              {clipName.length > 30
+                ? clipName.substring(0, 30) + "..."
+                : clipName}
+            </p>
+            <p className="text-gray-400 text-xs">{formatClipTime(duration)}</p>
           </div>
         </div>
       )}
@@ -354,9 +383,18 @@ function WaveSurferWithRegions({
       void region.play(true);
     });
 
-    const unsubPlay = ws.on("play", () => setIsPlaying(true));
-    const unsubPause = ws.on("pause", () => setIsPlaying(false));
-    const unsubFinish = ws.on("finish", () => setIsPlaying(false));
+    const unsubPlay = ws.on("play", () => {
+      claimSoloPlayback(ws);
+      setIsPlaying(true);
+    });
+    const unsubPause = ws.on("pause", () => {
+      releaseSoloPlayback(ws);
+      setIsPlaying(false);
+    });
+    const unsubFinish = ws.on("finish", () => {
+      releaseSoloPlayback(ws);
+      setIsPlaying(false);
+    });
 
     return () => {
       disableDragSelection();
@@ -365,6 +403,7 @@ function WaveSurferWithRegions({
       unsubPlay();
       unsubPause();
       unsubFinish();
+      releaseSoloPlayback(ws);
       ws.destroy();
       wsRef.current = null;
       regionsRef.current = null;
@@ -413,16 +452,18 @@ function WaveSurferWithRegions({
         Drag the region to select up to {MAX_SONG_CLIP_DURATION_SECONDS}s
       </p>
       <div ref={containerRef} className="w-full min-w-0" />
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={playAndPause}
-          disabled={!isReady}
-          className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors disabled:opacity-40"
-        >
-          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-        </button>
-        <p className="text-sm truncate">{file.name}</p>
+      <div className="flex items-center justify-between ">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={playAndPause}
+            disabled={!isReady}
+            className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors disabled:opacity-40"
+          >
+            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+          </button>
+          <p className="text-sm truncate">{file.name}</p>
+        </div>
       </div>
     </div>
   );

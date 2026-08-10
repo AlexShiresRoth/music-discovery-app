@@ -9,6 +9,7 @@ export default function BackButton() {
   return (
     <div>
       <button
+        type="button"
         onClick={() => router.back()}
         className="flex items-center text-sm text-gray-500 hover:underline hover:cursor-pointer"
       >

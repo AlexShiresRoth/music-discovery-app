@@ -19,10 +19,10 @@ export default function PublicSongClips({ clips }: Props) {
   return (
     <div className="flex flex-col gap-4 w-full">
       <PreHeader>Featured Song Clips</PreHeader>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         {filteredClips.map((clip) => {
           return (
-            <div key={clip.id}>
+            <div key={clip.id} className="border rounded-md p-4">
               <WaveSurferUI
                 url={clip.db_url as string}
                 clipName={clip.title || ""}
