@@ -79,7 +79,7 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
         </div>
 
         {!isVerified && (
-          <p className="text-sm ">Verify your account to upload song clips.</p>
+          <p className="text-sm">Verify your account to upload song clips.</p>
         )}
 
         <div className="flex gap-4 w-full md:flex-row flex-col">

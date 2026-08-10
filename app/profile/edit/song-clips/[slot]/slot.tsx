@@ -92,7 +92,7 @@ export default function SongClipSlot({
   };
 
   return (
-    <div className="flex flex-col gap-4 p-8 border rounded-md">
+    <div className="flex flex-col gap-4">
       <PreHeader>Clip {index + 1}</PreHeader>
 
       <div id={`waveform-${index}`} className="flex flex-col gap-2">

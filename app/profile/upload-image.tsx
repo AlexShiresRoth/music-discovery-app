@@ -158,33 +158,37 @@ export default function UploadImage({ imageUrl }: Props) {
   return (
     <div
       className={clsx(
-        "flex flex-col items-center justify-center md:absolute md:bottom-0 md:z-10 md:right-0 w-full h-full bg-background transition-all duration-300",
+        "flex flex-col items-center justify-center md:absolute md:bottom-0 md:z-10 md:right-0 w-full bg-background transition-all duration-300",
         !imageUrl && "opacity-100",
-        imageUrl && "md:hover:opacity-80 md:opacity-0 opacity-100",
+        imageUrl && "opacity-100 py-2 bg-background/80 backdrop-blur-sm",
       )}
     >
-      <div className="text-sm my-4">
-        <p>{imageUrl ? imageUrl : file?.name}</p>
+      <div className="text-sm my-4 md:my-1">
+        <p className="truncate">
+          {imageUrl
+            ? imageUrl.substring(0, 20) + "..."
+            : file?.name?.substring(0, 20) + "..."}
+        </p>
         {!imageUrl && <p>Upload an image</p>}
       </div>
       <div className="flex gap-4">
         <button
           disabled={isDeleting || isUploading}
           onClick={handleImageUpload}
-          className="p-2 hover:cursor-pointer border rounded-full hover:border-amber-500/80 transition-all hover:text-amber-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
+          className="p-1 hover:cursor-pointer border rounded-full hover:border-amber-500/80 transition-all hover:text-amber-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
         >
           {isUploading ? (
-            <Loader2 className="animate-spin" size={16} />
+            <Loader2 className="animate-spin" size={12} />
           ) : (
-            <Upload size={16} />
+            <Upload size={12} />
           )}
         </button>
         <button
           disabled={isDeleting || isUploading || !imageUrl}
           onClick={handleDeleteImage}
-          className="p-2 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all hover:text-red-500 disabled:hover:cursor-not-allowed"
+          className="p-1 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all hover:text-red-500 disabled:hover:cursor-not-allowed"
         >
-          <Trash size={16} />
+          <Trash size={12} />
         </button>
       </div>
     </div>

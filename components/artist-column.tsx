@@ -41,14 +41,17 @@ export default function ArtistColumn({
       <div className="flex flex-col gap-2">
         <div className="relative w-20 h-20 md:w-70 md:h-60 overflow-hidden rounded border">
           {profile.imageUrl && (
-            <Image
-              src={profile.imageUrl}
-              alt={profile.profileName ?? "Profile Image"}
-              fill
-              loading="eager"
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+            <>
+              <Image
+                src={profile.imageUrl}
+                alt={profile.profileName ?? "Profile Image"}
+                fill
+                loading="eager"
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="w-full h-full absolute inset-0 bg-black/50 rounded animate-pulse -z-10" />
+            </>
           )}
           {!profile.imageUrl && (
             <EmptyState

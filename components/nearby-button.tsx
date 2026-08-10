@@ -29,6 +29,7 @@ export default function NearbyButton() {
   return (
     hasVisited && (
       <button
+        type="button"
         className="py-1 text-xs px-4 rounded bg-amber-500 font-bold border-2 border-b-4 hover:cursor-pointer hover:bg-amber-400 disabled:opacity-50"
         onClick={getLocation}
         disabled={pending}
