@@ -2,7 +2,7 @@ import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import type { Profile, SongClip } from "@/lib/db/types";
-import { ImageIcon } from "lucide-react";
+import { CogIcon, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import PrivateInfo from "./private-info";
@@ -98,6 +98,15 @@ export default async function Profile({ profile, clips }: Props) {
           <PublicInfo {...profile} />
           <SocialSection {...profile} />
           <PrivateInfo {...profile} />
+          <div className="flex items-center p-4 border rounded gap-2">
+            <CogIcon className="w-4 h-4" />
+            <Link
+              href="/profile/advanced"
+              className="hover:cursor-pointer transition-all hover:underline font-bold underline-offset-4 uppercase"
+            >
+              Advanced Settings
+            </Link>
+          </div>
         </div>
       </div>
     </div>

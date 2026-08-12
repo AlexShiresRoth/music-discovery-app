@@ -1,4 +1,5 @@
 import DecorativeBg from "@/components/decorative-bg";
+import Footer from "@/components/footer";
 
 export default function AboutPage() {
   return (
@@ -56,6 +57,7 @@ export default function AboutPage() {
       <div className="absolute -z-10 translate-y-1/2">
         <DecorativeBg isPlaying={false} />
       </div>
+      <Footer />
     </main>
   );
 }
