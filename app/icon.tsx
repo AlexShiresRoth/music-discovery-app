@@ -1,3 +1,4 @@
+import { getSerifFontData } from "@/lib/serif-font-data";
 import { ImageResponse } from "next/og";
 
 export const size = {
@@ -6,7 +7,9 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default async function Icon() {
+  const fontData = await getSerifFontData();
+
   return new ImageResponse(
     (
       <div
@@ -22,14 +25,28 @@ export default function Icon() {
       >
         <div
           style={{
-            width: 14,
-            height: 14,
-            borderRadius: 9999,
-            background: "#1c1917",
+            fontFamily: "Libre Baskerville",
+            fontSize: 22,
+            fontWeight: 700,
+            lineHeight: 1,
+            color: "#1c1917",
+            marginTop: 2,
           }}
-        />
+        >
+          0
+        </div>
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts: [
+        {
+          name: "Libre Baskerville",
+          data: fontData,
+          style: "normal",
+          weight: 700,
+        },
+      ],
+    },
   );
 }
