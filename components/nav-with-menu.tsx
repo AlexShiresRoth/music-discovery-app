@@ -57,9 +57,44 @@ export default function NavWithMenu({ user }: Props) {
 
         <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
           <NearbyButton />
-          <Link href="/">Artists</Link>
-          <Link href="/clips">Clips</Link>
-          {user && <Link href="/profile">Profile</Link>}
+          <Link
+            href="/"
+            className={clsx(
+              "hover:underline underline-offset-4 decoration-black/30",
+              pathname === "/" && "underline",
+            )}
+          >
+            Discover
+          </Link>
+          <Link
+            href="/clips"
+            className={clsx(
+              "hover:underline underline-offset-4 decoration-black/30",
+              pathname === "/clips" && "underline",
+            )}
+          >
+            Clips
+          </Link>
+          {user && (
+            <Link
+              href="/profile"
+              className={clsx(
+                "hover:underline underline-offset-4 decoration-black/30",
+                pathname === "/profile" && "underline",
+              )}
+            >
+              Profile
+            </Link>
+          )}
+          <Link
+            href="/about"
+            className={clsx(
+              "hover:underline underline-offset-4 decoration-black/30",
+              pathname === "/about" && "underline",
+            )}
+          >
+            About
+          </Link>
           {!user ? (
             <Link href="/login">Login</Link>
           ) : (

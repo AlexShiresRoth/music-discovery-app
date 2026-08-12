@@ -62,7 +62,18 @@ export default function NavContent({ user }: Props) {
           <Dot className="h-4 w-4" />
         </span>
       )}
-
+      <Link
+        href="/about"
+        className={clsx(
+          "hover:underline underline-offset-4 decoration-black/30",
+          pathname === "/about" && "underline",
+        )}
+      >
+        About
+      </Link>
+      <span>
+        <Dot className="h-4 w-4" />
+      </span>
       {!user ? (
         <Link
           href="/login"
