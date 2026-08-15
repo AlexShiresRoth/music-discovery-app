@@ -17,7 +17,9 @@ export default async function Navigation() {
         <NavContent user={user} />
       </div>
       <div className="md:hidden block">
-        <NavWithMenu user={user} />
+        <NavWithMenu user={user}>
+          <NavContent user={user} />
+        </NavWithMenu>
       </div>
     </nav>
   );

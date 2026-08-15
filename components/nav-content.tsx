@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Dot } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import NavWithMenu from "./nav-with-menu";
 import NearbyButton from "./nearby-button";
 
 type Props = {
@@ -62,41 +63,43 @@ export default function NavContent({ user }: Props) {
           <Dot className="h-4 w-4" />
         </span>
       )}
-      <Link
-        href="/about"
-        className={clsx(
-          "hover:underline underline-offset-4 decoration-black/30",
-          pathname === "/about" && "underline",
-        )}
-      >
-        About
-      </Link>
-      <span>
-        <Dot className="h-4 w-4" />
-      </span>
-      {!user ? (
+      <NavWithMenu user={user}>
         <Link
-          href="/login"
+          href="/about"
           className={clsx(
             "hover:underline underline-offset-4 decoration-black/30",
-            pathname === "/login" && "underline",
+            pathname === "/about" && "underline",
           )}
         >
-          Login
+          About
         </Link>
-      ) : (
-        // Full navigation so auth cookies clear and the nav re-renders
-        // with the signed-out session (Link soft-nav can keep a stale layout).
-        <a
-          href="/logout"
-          className={clsx(
-            "hover:underline underline-offset-4 decoration-black/30",
-            pathname === "/logout" && "underline",
-          )}
-        >
-          Logout
-        </a>
-      )}
+        <span>
+          <Dot className="h-4 w-4" />
+        </span>
+        {!user ? (
+          <Link
+            href="/login"
+            className={clsx(
+              "hover:underline underline-offset-4 decoration-black/30",
+              pathname === "/login" && "underline",
+            )}
+          >
+            Login
+          </Link>
+        ) : (
+          // Full navigation so auth cookies clear and the nav re-renders
+          // with the signed-out session (Link soft-nav can keep a stale layout).
+          <a
+            href="/logout"
+            className={clsx(
+              "hover:underline underline-offset-4 decoration-black/30",
+              pathname === "/logout" && "underline",
+            )}
+          >
+            Logout
+          </a>
+        )}
+      </NavWithMenu>
     </div>
   );
 }

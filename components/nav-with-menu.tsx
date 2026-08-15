@@ -2,17 +2,16 @@
 
 import { User } from "@supabase/supabase-js";
 import clsx from "clsx";
-import { MenuIcon, XIcon } from "lucide-react";
-import Link from "next/link";
+import { XIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import NearbyButton from "./nearby-button";
 
 type Props = {
   user: User | null;
+  children: React.ReactNode;
 };
 
-export default function NavWithMenu({ user }: Props) {
+export default function NavWithMenu({ user, children }: Props) {
   const pathname = usePathname();
   const [menuState, setMenuState] = useState<{
     open: boolean;
@@ -32,11 +31,12 @@ export default function NavWithMenu({ user }: Props) {
         aria-label="Open menu"
         aria-expanded={showMenu}
         className={clsx(
-          "z-50 flex h-10 w-10 items-center justify-center rounded-full transition-opacity duration-200 hover:cursor-pointer",
+          "z-50 flex h-10 w-10 flex-col items-end justify-center rounded-full transition-opacity duration-200 hover:cursor-pointer",
           showMenu && "pointer-events-none opacity-0",
         )}
       >
-        <MenuIcon className="h-6 w-6" />
+        <span className="block h-1 w-6 bg-black"></span>
+        <span className="block h-1 w-4 bg-black"></span>
       </button>
 
       <div
@@ -56,52 +56,7 @@ export default function NavWithMenu({ user }: Props) {
         </button>
 
         <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-          <NearbyButton />
-          <Link
-            href="/"
-            className={clsx(
-              "hover:underline underline-offset-4 decoration-black/30",
-              pathname === "/" && "underline",
-            )}
-          >
-            Discover
-          </Link>
-          <Link
-            href="/clips"
-            className={clsx(
-              "hover:underline underline-offset-4 decoration-black/30",
-              pathname === "/clips" && "underline",
-            )}
-          >
-            Clips
-          </Link>
-          {user && (
-            <Link
-              href="/profile"
-              className={clsx(
-                "hover:underline underline-offset-4 decoration-black/30",
-                pathname === "/profile" && "underline",
-              )}
-            >
-              Profile
-            </Link>
-          )}
-          <Link
-            href="/about"
-            className={clsx(
-              "hover:underline underline-offset-4 decoration-black/30",
-              pathname === "/about" && "underline",
-            )}
-          >
-            About
-          </Link>
-          {!user ? (
-            <Link href="/login">Login</Link>
-          ) : (
-            // Full navigation so auth cookies clear and the nav re-renders
-            // with the signed-out session (Link soft-nav can keep a stale layout).
-            <a href="/logout">Logout</a>
-          )}
+          {children}
         </div>
       </div>
     </>
