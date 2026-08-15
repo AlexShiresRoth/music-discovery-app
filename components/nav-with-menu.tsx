@@ -1,17 +1,39 @@
 "use client";
 
-import { User } from "@supabase/supabase-js";
 import clsx from "clsx";
-import { XIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  user: User | null;
   children: React.ReactNode;
 };
 
-export default function NavWithMenu({ user, children }: Props) {
+function MenuButton({ showMenu }: { showMenu: boolean }) {
+  return (
+    <button
+      type="button"
+      className={clsx(
+        "flex h-10 w-10 flex-col gap-1 items-end justify-center px-2rounded-full transition-opacity duration-200 hover:cursor-pointer",
+        showMenu && "pointer-events-none",
+      )}
+    >
+      <span
+        className={clsx(
+          "block h-0.5 bg-black transition-all duration-200",
+          showMenu ? "w-4" : "w-6",
+        )}
+      />
+      <span
+        className={clsx(
+          "block h-0.5 bg-black transition-all duration-200",
+          showMenu ? "w-6" : "w-4",
+        )}
+      />
+    </button>
+  );
+}
+
+export default function NavWithMenu({ children }: Props) {
   const pathname = usePathname();
   const [menuState, setMenuState] = useState<{
     open: boolean;
@@ -20,45 +42,42 @@ export default function NavWithMenu({ user, children }: Props) {
 
   const showMenu = menuState.open && menuState.atPath === pathname;
 
-  const openMenu = () => setMenuState({ open: true, atPath: pathname });
+  const openMenu = () => setMenuState({ open: !showMenu, atPath: pathname });
   const closeMenu = () => setMenuState({ open: false, atPath: pathname });
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={openMenu}
-        aria-label="Open menu"
-        aria-expanded={showMenu}
-        className={clsx(
-          "z-50 flex h-10 w-10 flex-col items-end justify-center rounded-full transition-opacity duration-200 hover:cursor-pointer",
-          showMenu && "pointer-events-none opacity-0",
-        )}
-      >
-        <span className="block h-1 w-6 bg-black"></span>
-        <span className="block h-1 w-4 bg-black"></span>
-      </button>
+    <div
+      className="relative z-50 flex items-center"
+      onClick={openMenu}
+      onMouseEnter={openMenu}
+      onMouseLeave={closeMenu}
+      aria-label="Open menu"
+      aria-expanded={showMenu}
+      aria-controls="menu"
+    >
+      <div className="h-10 w-10" aria-hidden />
 
       <div
         className={clsx(
-          "fixed inset-0 z-50 bg-background transition-opacity duration-200",
-          showMenu ? "opacity-100" : "pointer-events-none opacity-0",
+          "absolute top-0 right-0 flex flex-col items-center bg-background border-2 border-b-4 rounded transition-[border-color,width] duration-200",
+          showMenu ? "border-black w-36" : "border-transparent w-10",
         )}
-        aria-hidden={!showMenu}
       >
-        <button
-          type="button"
-          onClick={closeMenu}
-          aria-label="Close menu"
-          className="absolute top-4 right-2 hover:cursor-pointer h-10 w-10"
+        <div
+          className={clsx(
+            "flex w-full justify-end px-2 border-b transition-all duration-200",
+            showMenu && "border-black",
+            !showMenu && "border-transparent",
+          )}
         >
-          <XIcon className="h-6 w-6" />
-        </button>
-
-        <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-          {children}
+          <MenuButton showMenu={showMenu} />
         </div>
+        {showMenu && (
+          <div id="menu" className="flex w-full flex-col" role="menu">
+            {children}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

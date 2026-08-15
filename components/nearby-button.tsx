@@ -30,7 +30,7 @@ export default function NearbyButton() {
     hasVisited && (
       <button
         type="button"
-        className="py-1 text-xs px-4 rounded bg-amber-500 font-bold border-2 border-b-4 hover:cursor-pointer hover:bg-amber-400 disabled:opacity-50"
+        className="md:py-1 text-xs px-2 py-2 md:px-4 flex items-center justify-end md:rounded border-b md:bg-amber-500 font-bold md:border-2 md:border-b-4 hover:cursor-pointer hover:bg-amber-400 disabled:opacity-50"
         onClick={getLocation}
         disabled={pending}
       >
