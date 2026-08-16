@@ -1,6 +1,8 @@
-import { ilike, or } from "drizzle-orm";
+import { and, eq, ilike, or } from "drizzle-orm";
 import { db } from ".";
 import { profilesSchema } from "./schema";
+
+const isPublic = eq(profilesSchema.public, true);
 
 export async function searchProfiles(query: string, limit = 10) {
   return await db
@@ -9,7 +11,7 @@ export async function searchProfiles(query: string, limit = 10) {
       profileName: profilesSchema.profileName,
     })
     .from(profilesSchema)
-    .where(or(ilike(profilesSchema.profileName, `${query}%`)))
+    .where(and(isPublic, or(ilike(profilesSchema.profileName, `${query}%`))))
     .limit(limit);
 }
 
@@ -22,6 +24,6 @@ export async function searchCities(query: string, limit = 10) {
       lon: profilesSchema.lon,
     })
     .from(profilesSchema)
-    .where(ilike(profilesSchema.city, `${query}%`))
+    .where(and(isPublic, ilike(profilesSchema.city, `${query}%`)))
     .limit(limit);
 }

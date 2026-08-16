@@ -159,19 +159,19 @@ export default function UploadImage({ imageUrl }: Props) {
     <div
       className={clsx(
         "flex flex-col items-center justify-center md:absolute md:bottom-0 md:z-10 md:right-0 w-full bg-background transition-all duration-300",
-        !imageUrl && "opacity-100",
+        !imageUrl && "opacity-100 md:bottom-1/3",
         imageUrl && "opacity-100 py-2 bg-background/80 backdrop-blur-sm",
       )}
     >
       <div className="text-sm my-4 md:my-1">
         <p className="truncate">
-          {imageUrl
+          {imageUrl && imageUrl.length > 20
             ? imageUrl.substring(0, 20) + "..."
-            : file?.name?.substring(0, 20) + "..."}
+            : imageUrl}
         </p>
         {!imageUrl && <p>Upload an image</p>}
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 py-2">
         <button
           disabled={isDeleting || isUploading}
           onClick={handleImageUpload}

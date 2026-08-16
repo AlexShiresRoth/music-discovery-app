@@ -26,21 +26,21 @@ const libreBaskerville = Libre_Baskerville({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: "Music Discovery App",
-    template: "%s · Music Discovery App",
+    default: "Side0",
+    template: "%s · Side0",
   },
   description:
     "Discover independent artists and local scenes — no algorithms, just music nearby.",
   openGraph: {
-    siteName: "Music Discovery App",
+    siteName: "Side0",
     type: "website",
-    title: "Music Discovery App",
+    title: "Side0",
     description:
       "Discover independent artists and local scenes — no algorithms, just music nearby.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Music Discovery App",
+    title: "Side0",
     description:
       "Discover independent artists and local scenes — no algorithms, just music nearby.",
   },

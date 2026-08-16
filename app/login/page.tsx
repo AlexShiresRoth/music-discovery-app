@@ -1,3 +1,4 @@
+import Footer from "@/components/footer";
 import AppleIcon from "@/icons/apple";
 import GithubIcon from "@/icons/github";
 import GoogleIcon from "@/icons/google";
@@ -67,6 +68,7 @@ export default async function SignInPage({ searchParams }: Props) {
           )}
         </div>
       </div>
+      <Footer />
     </main>
   );
 }

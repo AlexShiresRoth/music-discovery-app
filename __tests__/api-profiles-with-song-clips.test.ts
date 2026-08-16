@@ -28,6 +28,7 @@ vi.mock("@/lib/db/schema", () => ({
     genre: "genre",
     songClips: "songClips",
     location: "location",
+    public: "public",
   },
 }));
 
@@ -37,10 +38,13 @@ vi.mock("@/lib/db/song-clips", () => ({
 
 vi.mock("drizzle-orm", () => ({
   inArray: vi.fn((column, values) => ({ column, values, type: "inArray" })),
+  eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
   and: vi.fn((...conditions) => ({ conditions, type: "and" })),
   asc: vi.fn((column) => ({ column, type: "asc" })),
   sql: vi.fn((strings, ...values) => ({ strings, values, type: "sql" })),
 }));
+
+const isPublicFilter = { column: "public", value: true, type: "eq" };
 
 const profile = {
   id: 1,
@@ -93,6 +97,7 @@ describe("GET /api/profiles/with-song-clips", () => {
     ]);
     expect(mockWhere).toHaveBeenCalledWith({
       conditions: [
+        isPublicFilter,
         {
           column: "genre",
           values: ["Rock", "Jazz"],
@@ -127,6 +132,7 @@ describe("GET /api/profiles/with-song-clips", () => {
     expect(mockOrderBy).toHaveBeenCalled();
     expect(mockWhere).toHaveBeenCalledWith({
       conditions: [
+        isPublicFilter,
         { column: "genre", values: ["Rock"], type: "inArray" },
         expect.objectContaining({ type: "sql" }),
       ],
@@ -142,6 +148,24 @@ describe("GET /api/profiles/with-song-clips", () => {
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toEqual([]);
     expect(mockGetSongClipsByIds).not.toHaveBeenCalled();
+  });
+
+  it("applies the public filter when no genres are provided", async () => {
+    mockLimit.mockResolvedValue([profile]);
+
+    await GET(makeRequest({ start: "0", limit: "15" }));
+
+    expect(mockWhere).toHaveBeenCalledWith({
+      conditions: [
+        isPublicFilter,
+        {
+          strings: ["jsonb_array_length(", ") > 0"],
+          values: ["songClips"],
+          type: "sql",
+        },
+      ],
+      type: "and",
+    });
   });
 
   it("returns 500 when the database query fails", async () => {

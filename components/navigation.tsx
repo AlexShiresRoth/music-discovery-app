@@ -1,7 +1,6 @@
 import { getSession } from "@/lib/auth/session";
 import FeedFilter from "./feed-filter";
 import NavContent from "./nav-content";
-import NavWithMenu from "./nav-with-menu";
 import Search from "./search";
 
 export default async function Navigation() {
@@ -13,12 +12,7 @@ export default async function Navigation() {
         <Search />
         <FeedFilter />
       </div>
-      <div className="md:block hidden">
-        <NavContent user={user} />
-      </div>
-      <div className="md:hidden block">
-        <NavWithMenu user={user} />
-      </div>
+      <NavContent user={user} />
     </nav>
   );
 }

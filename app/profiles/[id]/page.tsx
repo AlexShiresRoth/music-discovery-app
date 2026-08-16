@@ -1,6 +1,7 @@
 import ShareProfileButton from "@/app/profile/share-profile-button";
 import BackButton from "@/components/breadcrumbs";
 import EmptyState from "@/components/empty-state";
+import Footer from "@/components/footer";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
@@ -159,6 +160,7 @@ export default async function ProfilePage({ params }: Props) {
 
         <PublicSongClips clips={profile.songClips} />
       </div>
+      <Footer />
     </div>
   );
 }

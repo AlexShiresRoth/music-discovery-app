@@ -1,8 +1,10 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
 import { getSongClipsByIds } from "@/lib/db/song-clips";
-import { and, asc, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+
+const isPublic = eq(profilesSchema.public, true);
 
 async function fetchProfilesByLocation(
   longitude: number,
@@ -30,10 +32,14 @@ async function fetchProfilesByLocation(
     .where(
       genres.length > 0
         ? and(
+            isPublic,
             inArray(profilesSchema.genre, genres),
             sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
           )
-        : sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+        : and(
+            isPublic,
+            sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+          ),
     )
     .orderBy(asc(distance))
     .offset(startIndex)
@@ -51,10 +57,14 @@ async function fetchProfilesByGenres(
     .where(
       genres.length > 0
         ? and(
+            isPublic,
             inArray(profilesSchema.genre, genres as string[]),
             sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
           )
-        : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+        : and(
+            isPublic,
+            sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          ),
     )
     .offset(Number(startIndex))
     .limit(Number(limit));

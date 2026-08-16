@@ -7,6 +7,9 @@ import { getSongClipsByIds } from "../db/song-clips";
 import { ProfileWithSongClips } from "../db/types";
 import { getSession } from "./session";
 
+/** Discovery/list queries only return profiles marked public. */
+const isPublic = eq(profilesSchema.public, true);
+
 export async function getProfile() {
   try {
     const user = await getSession();
@@ -39,6 +42,14 @@ export const getProfileById = cache(async (id: string) => {
       return null;
     }
 
+    // Hidden profiles are only visible to their owner.
+    if (!profile.public) {
+      const user = await getSession();
+      if (!user || user.id !== profile.userRefId) {
+        return null;
+      }
+    }
+
     const songClips = await getSongClipsByIds(
       profile.songClips.map((clip) => clip.id),
     );
@@ -60,6 +71,7 @@ export async function getPublicProfilesForSitemap() {
         imageUrl: profilesSchema.imageUrl,
       })
       .from(profilesSchema)
+      .where(isPublic)
       .orderBy(desc(profilesSchema.updatedAt));
   } catch (error) {
     console.error("Error fetching profiles for sitemap:", error);
@@ -79,10 +91,14 @@ export async function getProfilesWithSongClips(
       .where(
         genres.length > 0
           ? and(
+              isPublic,
               inArray(profilesSchema.genre, genres),
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             )
-          : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          : and(
+              isPublic,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            ),
       )
       .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)
@@ -116,10 +132,14 @@ export async function getTotalProfilesWithSongClips(
       .where(
         genres.length > 0
           ? and(
+              isPublic,
               inArray(profilesSchema.genre, genres),
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             )
-          : sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          : and(
+              isPublic,
+              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+            ),
       );
     return totalProfiles[0].count;
   } catch (error) {
@@ -137,7 +157,9 @@ export async function getProfilesWithSongClipsByQuery(
     const profiles = await db
       .select()
       .from(profilesSchema)
-      .where(ilike(profilesSchema.profileName, `${query}%`))
+      .where(
+        and(isPublic, ilike(profilesSchema.profileName, `${query}%`)),
+      )
       .offset(startIndex)
       .limit(limit);
     if (profiles.length === 0) {
@@ -169,6 +191,7 @@ export async function getProfilesWithSongClipsByGenre(
       .from(profilesSchema)
       .where(
         and(
+          isPublic,
           ilike(profilesSchema.genre, `${query}%`),
           sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
         ),
@@ -221,11 +244,13 @@ export async function getProfilesWithSongClipsByLocation(
       .where(
         genres.length > 0
           ? and(
+              isPublic,
               inArray(profilesSchema.genre, genres),
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             )
           : and(
+              isPublic,
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             ),
@@ -273,11 +298,13 @@ export async function getTotalProfilesWithSongClipsByLocation(
       .where(
         genres.length > 0
           ? and(
+              isPublic,
               inArray(profilesSchema.genre, genres),
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             )
           : and(
+              isPublic,
               sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
               sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
             ),

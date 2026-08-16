@@ -35,6 +35,7 @@ export const songClipsSchema = pgTable("song_clips", {
 
 export const profilesSchema = pgTable("profiles", {
   id: serial("id").primaryKey(),
+  public: boolean("public").default(true),
   fullName: text("full_name"),
   contactEmail: text("contact_email"),
   profileName: text("profile_name"),
