@@ -13,8 +13,7 @@ function MenuButton({ showMenu }: { showMenu: boolean }) {
     <button
       type="button"
       className={clsx(
-        "flex h-10 w-10 flex-col gap-1 items-end justify-center px-2rounded-full transition-opacity duration-200 hover:cursor-pointer",
-        showMenu && "pointer-events-none",
+        "flex h-10 w-10 flex-col gap-1 items-end justify-center rounded-full transition-opacity duration-200 hover:cursor-pointer",
       )}
     >
       <span
@@ -60,7 +59,7 @@ export default function NavWithMenu({ children }: Props) {
       <div
         className={clsx(
           "absolute top-0 right-0 flex flex-col items-center bg-background border-2 border-b-4 rounded transition-[border-color,width] duration-200",
-          showMenu ? "border-black w-36" : "border-transparent w-10",
+          showMenu ? "border-black w-54 md:w-36" : "border-transparent w-10",
         )}
       >
         <div

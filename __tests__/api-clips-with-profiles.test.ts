@@ -29,12 +29,14 @@ vi.mock("@/lib/db/schema", () => ({
   },
   profilesSchema: {
     id: "id",
+    public: "public",
   },
 }));
 
 vi.mock("drizzle-orm", () => ({
   inArray: vi.fn((column, values) => ({ column, values, type: "inArray" })),
   eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
+  and: vi.fn((...conditions) => ({ conditions, type: "and" })),
   desc: vi.fn((column) => ({ column, type: "desc" })),
 }));
 

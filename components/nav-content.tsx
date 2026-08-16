@@ -30,7 +30,7 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
           pathname === "/" && "underline",
         )}
       >
-        Artists
+        Main
       </Link>
       <span>
         <Dot className="h-4 w-4" />

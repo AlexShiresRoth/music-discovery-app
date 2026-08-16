@@ -2,7 +2,7 @@ import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import type { Profile, SongClip } from "@/lib/db/types";
-import { CogIcon, ImageIcon } from "lucide-react";
+import { CogIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import PrivateInfo from "./private-info";
@@ -23,10 +23,23 @@ export default async function Profile({ profile, clips }: Props) {
   return (
     <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">
+        <div className="flex items-center gap-2 w-full rounded">
+          {!profile.public && (
+            <p className="text-sm flex items-center">
+              Your profile is currently hidden. &nbsp;
+              <Link
+                href="/profile/advanced"
+                className="text-amber-700 hover:underline"
+              >
+                Go here to make it public.
+              </Link>
+            </p>
+          )}
+        </div>
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center w-full md:w-sm h-75 border rounded relative">
-              {profile.imageUrl ? (
+              {profile.imageUrl && (
                 <Image
                   src={profile.imageUrl}
                   alt={profile.profileName ?? "Image"}
@@ -34,11 +47,6 @@ export default async function Profile({ profile, clips }: Props) {
                   loading="eager"
                   className="object-cover rounded block"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              ) : (
-                <EmptyState
-                  message="No Image Yet."
-                  icon={<ImageIcon className="w-10 h-10" />}
                 />
               )}
               <div className="md:visible hidden h-full w-full relative md:flex flex-col">
@@ -92,6 +100,7 @@ export default async function Profile({ profile, clips }: Props) {
               Get Verified
             </Link>
           )}
+
           {isVerified && (
             <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
           )}
@@ -101,10 +110,10 @@ export default async function Profile({ profile, clips }: Props) {
           <div className="flex items-center p-4 border rounded gap-2">
             <CogIcon className="w-4 h-4" />
             <Link
-              href="/profile/advanced"
+              href="/profile/settings"
               className="hover:cursor-pointer transition-all hover:underline font-bold underline-offset-4 uppercase"
             >
-              Advanced Settings
+              Profile Settings
             </Link>
           </div>
         </div>

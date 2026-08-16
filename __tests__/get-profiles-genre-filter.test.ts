@@ -28,6 +28,7 @@ vi.mock("@/lib/db/schema", () => ({
     genre: "genre",
     songClips: "songClips",
     updatedAt: "updatedAt",
+    public: "public",
   },
 }));
 
@@ -37,13 +38,16 @@ vi.mock("@/lib/db/song-clips", () => ({
 
 vi.mock("drizzle-orm", () => ({
   inArray: vi.fn((column, values) => ({ column, values, type: "inArray" })),
-  eq: vi.fn(),
+  eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
   ilike: vi.fn(),
   and: vi.fn((...conditions) => ({ conditions, type: "and" })),
   asc: vi.fn(),
   desc: mockDesc,
   sql: vi.fn((strings, ...values) => ({ strings, values, type: "sql" })),
+  count: vi.fn(),
 }));
+
+const isPublicFilter = { column: "public", value: true, type: "eq" };
 
 const hasSongClipsFilter = {
   strings: ["jsonb_array_length(", ") > 0"],
@@ -73,7 +77,10 @@ describe("getProfilesWithSongClips genre filter", () => {
 
     const results = await getProfilesWithSongClips(0, 15, []);
 
-    expect(mockWhere).toHaveBeenCalledWith(hasSongClipsFilter);
+    expect(mockWhere).toHaveBeenCalledWith({
+      conditions: [isPublicFilter, hasSongClipsFilter],
+      type: "and",
+    });
     expect(mockOrderBy).toHaveBeenCalledWith({
       column: "updatedAt",
       direction: "desc",
@@ -89,6 +96,7 @@ describe("getProfilesWithSongClips genre filter", () => {
 
     expect(mockWhere).toHaveBeenCalledWith({
       conditions: [
+        isPublicFilter,
         {
           column: "genre",
           values: ["Rock", "Jazz"],

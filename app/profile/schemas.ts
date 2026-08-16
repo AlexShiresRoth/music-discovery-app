@@ -100,7 +100,13 @@ export const songClipFormFields: Record<
 
 export type ProfileFormSchemaWithoutId = Omit<
   Profile,
-  "id" | "joinedDate" | "songClips" | "userRefId" | "isVerified" | "genre"
+  | "id"
+  | "joinedDate"
+  | "songClips"
+  | "userRefId"
+  | "isVerified"
+  | "genre"
+  | "public"
 >;
 
 const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {

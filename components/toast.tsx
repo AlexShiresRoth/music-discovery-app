@@ -23,22 +23,20 @@ function ToastWrapper({
   return (
     <div
       className={clsx(
-        "relative border-2 p-4 rounded-md rounded-t-none w-fit flex flex-col bg-background",
-        {
-          "border-green-500/20 text-green-500/80": type === "success",
-          "border-red-500/20 text-red-500/80": type === "error",
-          "border-blue-500/20 text-blue-500/80": type === "info",
-          "border-yellow-500/20 text-yellow-500/80": type === "warning",
-        },
+        "relative border-2 border-b-4 p-4 rounded rounded-b-none w-fit flex flex-col bg-amber-500 border-black text-black",
       )}
     >
+      {children}
       <div
-        className={clsx("absolute top-0 left-0 h-1 w-full flex items-center", {
-          "bg-green-500/30": type === "success",
-          "bg-red-500/30": type === "error",
-          "bg-blue-500/30": type === "info",
-          "bg-yellow-500/30": type === "warning",
-        })}
+        className={clsx(
+          "absolute bottom-0 left-0 h-1 w-full flex items-center",
+          {
+            "bg-green-500/30": type === "success",
+            "bg-red-500/30": type === "error",
+            "bg-blue-500/30": type === "info",
+            "bg-yellow-500/30": type === "warning",
+          },
+        )}
       >
         <span
           className={clsx("h-1", {
@@ -51,7 +49,6 @@ function ToastWrapper({
           })}
         />
       </div>
-      {children}
     </div>
   );
 }
@@ -76,8 +73,8 @@ export default function Toast({
       className={clsx(
         "fixed left-1/2 -translate-x-1/2 mx-auto py-4 transition-all duration-300 z-50",
         {
-          "translate-y-0 bottom-0": isVisible,
-          "translate-y-full bottom-0": !isVisible,
+          "translate-y-0 top-0": isVisible,
+          "translate-y-full top-0": !isVisible,
         },
       )}
     >
