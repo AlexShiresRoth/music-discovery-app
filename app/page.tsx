@@ -16,7 +16,7 @@ type Props = {
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Music Discovery App",
+    absolute: "Side0",
   },
   description:
     "Browse independent artists and local scenes. Discover music the algorithms missed.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Music Discovery App",
+    title: "Side0",
     description:
       "Browse independent artists and local scenes. Discover music the algorithms missed.",
     url: "/",
