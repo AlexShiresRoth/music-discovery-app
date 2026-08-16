@@ -141,4 +141,13 @@ describe("GET /api/clips/with-profiles", () => {
       error: "Internal Server Error",
     });
   });
+
+  it("omits clips when the related profile is not public", async () => {
+    setupDbChain([clip], []);
+
+    const res = await GET(makeRequest({ start: "0", limit: "15" }));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual([]);
+  });
 });

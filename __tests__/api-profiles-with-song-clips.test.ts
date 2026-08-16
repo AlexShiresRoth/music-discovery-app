@@ -150,6 +150,24 @@ describe("GET /api/profiles/with-song-clips", () => {
     expect(mockGetSongClipsByIds).not.toHaveBeenCalled();
   });
 
+  it("applies the public filter when no genres are provided", async () => {
+    mockLimit.mockResolvedValue([profile]);
+
+    await GET(makeRequest({ start: "0", limit: "15" }));
+
+    expect(mockWhere).toHaveBeenCalledWith({
+      conditions: [
+        isPublicFilter,
+        {
+          strings: ["jsonb_array_length(", ") > 0"],
+          values: ["songClips"],
+          type: "sql",
+        },
+      ],
+      type: "and",
+    });
+  });
+
   it("returns 500 when the database query fails", async () => {
     mockLimit.mockRejectedValue(new Error("db down"));
 

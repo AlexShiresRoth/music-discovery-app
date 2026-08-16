@@ -1,9 +1,19 @@
 import ClipsPage from "@/app/clips/page";
 import type { SongClipWithProfile } from "@/lib/db/types";
+import { HAS_VISITED_COOKIE } from "@/lib/has-visited";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetSongClips = vi.fn();
+const { mockCookieGet } = vi.hoisted(() => ({
+  mockCookieGet: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(async () => ({
+    get: mockCookieGet,
+  })),
+}));
 
 vi.mock("@/lib/auth/clips", () => ({
   getSongClips: (...args: unknown[]) => mockGetSongClips(...args),
@@ -20,6 +30,10 @@ vi.mock("@/components/feed-list", () => ({
   ),
 }));
 
+vi.mock("@/components/feed-overlay", () => ({
+  default: () => <div>Intro overlay</div>,
+}));
+
 const clip = {
   id: 1,
   title: "Night Drive",
@@ -30,6 +44,7 @@ describe("ClipsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetSongClips.mockResolvedValue([clip]);
+    mockCookieGet.mockReturnValue({ value: "true" });
   });
 
   it("loads clips without a genre filter", async () => {
@@ -63,5 +78,24 @@ describe("ClipsPage", () => {
 
     expect(screen.getByText("Clips feed")).toBeDefined();
     expect(screen.queryByText("Night Drive")).toBeNull();
+  });
+
+  it("shows the intro overlay when the visit cookie is unset", async () => {
+    mockCookieGet.mockReturnValue(undefined);
+
+    const page = await ClipsPage({ searchParams: Promise.resolve({}) });
+    render(page);
+
+    expect(screen.getByText("Intro overlay")).toBeDefined();
+    expect(mockCookieGet).toHaveBeenCalledWith(HAS_VISITED_COOKIE);
+  });
+
+  it("omits the intro overlay when the visit cookie is set", async () => {
+    mockCookieGet.mockReturnValue({ value: "true" });
+
+    const page = await ClipsPage({ searchParams: Promise.resolve({}) });
+    render(page);
+
+    expect(screen.queryByText("Intro overlay")).toBeNull();
   });
 });
