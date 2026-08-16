@@ -1,13 +1,16 @@
+import { getSerifFontData } from "@/lib/serif-font-data";
 import { ImageResponse } from "next/og";
 
-export const alt = "Music Discovery App";
+export const alt = "Side0";
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const fontData = await getSerifFontData();
+
   return new ImageResponse(
     (
       <div
@@ -15,51 +18,35 @@ export default function OpenGraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(160deg, #fffbeb 0%, #f5f5f4 55%, #e7e5e4 100%)",
-          color: "#1c1917",
-          fontFamily: "Georgia, serif",
+          background: "#f59e0b",
         }}
       >
         <div
           style={{
-            width: 220,
-            height: 220,
-            borderRadius: 9999,
-            border: "3px solid rgba(120,113,108,0.25)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 40,
-            background: "rgba(245,158,11,0.12)",
+            fontFamily: "Libre Baskerville",
+            fontSize: 420,
+            fontWeight: 700,
+            lineHeight: 1,
+            color: "#1c1917",
+            marginTop: 24,
           }}
         >
-          <div
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 9999,
-              background: "#f59e0b",
-            }}
-          />
-        </div>
-        <div style={{ fontSize: 64, fontWeight: 700, letterSpacing: -1 }}>
-          Music Discovery App
-        </div>
-        <div
-          style={{
-            marginTop: 16,
-            fontSize: 28,
-            color: "#57534e",
-            fontFamily: "ui-sans-serif, system-ui, sans-serif",
-          }}
-        >
-          Independent artists. Local scenes. No algorithms.
+          0
         </div>
       </div>
     ),
-    { ...size },
+    {
+      ...size,
+      fonts: [
+        {
+          name: "Libre Baskerville",
+          data: fontData,
+          style: "normal",
+          weight: 700,
+        },
+      ],
+    },
   );
 }
