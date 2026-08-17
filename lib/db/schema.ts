@@ -4,6 +4,7 @@ import {
   doublePrecision,
   integer,
   jsonb,
+  pgEnum,
   pgTable,
   serial,
   text,
@@ -19,6 +20,13 @@ export const geographyPoint = customType<{ data: string | null }>({
   },
 });
 
+export const feedbackStatusEnum = pgEnum("feedback_status", [
+  "open",
+  "in_progress",
+  "resolved",
+  "closed",
+]);
+
 export const songClipsSchema = pgTable("song_clips", {
   id: serial("id").primaryKey(),
   slot: integer("slot").notNull(),
@@ -29,6 +37,24 @@ export const songClipsSchema = pgTable("song_clips", {
   profileRefId: integer("profile_ref_id")
     .notNull()
     .references(() => profilesSchema.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const featureRequestsSchema = pgTable("feature_requests", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  status: feedbackStatusEnum("status").notNull().default("open"),
+  userRefId: uuid("user_ref_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const bugReportsSchema = pgTable("bug_reports", {
+  id: serial("id").primaryKey(),
+  message: text("message").notNull(),
+  status: feedbackStatusEnum("status").notNull().default("open"),
+  userRefId: uuid("user_ref_id").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

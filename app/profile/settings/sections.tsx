@@ -1,18 +1,15 @@
 "use client";
 import ActionButton from "@/components/action-button";
-import BackButton from "@/components/breadcrumbs";
+import {
+  SettingsModal,
+  SettingsPageHeader,
+  SettingsSection,
+  SettingsSectionCopy,
+} from "@/components/settings-layout";
 import { ToastContext } from "@/context/toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
-
-function Section({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex justify-between gap-2 border-b py-4 items-end">
-      {children}
-    </div>
-  );
-}
 
 type Props = {
   hasProfile: boolean;
@@ -71,13 +68,12 @@ export default function ProfileSettingsSections({
   };
   return (
     <>
-      <Section>
-        <h1 className="text-4xl font-bold font-serif">Profile Settings</h1>
-        <BackButton />
-      </Section>
+      <SettingsPageHeader title="Profile Settings" />
       {hasProfile && (
-        <Section>
-          <p className="text-xl">Toggle your profile visibility.</p>
+        <SettingsSection>
+          <SettingsSectionCopy>
+            Toggle your profile visibility.
+          </SettingsSectionCopy>
           <div>
             <ActionButton onClick={hideProfile} disabled={isProfileLoading}>
               {isProfileLoading
@@ -87,41 +83,53 @@ export default function ProfileSettingsSections({
                   : "Make Profile Public"}
             </ActionButton>
           </div>
-        </Section>
+        </SettingsSection>
       )}
-      <Section>
-        <p className="text-xl">Delete your profile and all your song clips.</p>
+      <SettingsSection>
+        <SettingsSectionCopy>
+          Delete your profile and all your song clips.
+        </SettingsSectionCopy>
         <div>
           <ActionButton onClick={() => setDeleteModal(true)}>
             Delete Profile
           </ActionButton>
         </div>
-      </Section>
+      </SettingsSection>
       {deleteModal && (
-        <div className="fixed z-99 inset-0 flex flex-col items-center justify-center bg-black/20 w-full h-full animate-fade-in">
-          <div className="bg-background border-2 border-b-4 p-4 flex flex-col gap-4 max-w-2xl w-full">
-            <h1 className="text-4xl font-bold font-serif">Delete Profile</h1>
-            <p className="text-xl">
-              Are you sure you want to delete your profile? This action is
-              irreversible. You will have to create a new profile and re-upload
-              your song clips.
-            </p>
-            <div className="flex gap-2">
-              <ActionButton onClick={() => setDeleteModal(false)}>
+        <SettingsModal
+          title="Delete Profile"
+          onClose={() => !isDeleting && setDeleteModal(false)}
+          actions={
+            <>
+              <ActionButton
+                type="button"
+                onClick={() => setDeleteModal(false)}
+                disabled={isDeleting}
+              >
                 Cancel
               </ActionButton>
-              <ActionButton onClick={deleteProfile} disabled={isProfileLoading}>
+              <ActionButton
+                type="button"
+                onClick={deleteProfile}
+                disabled={isDeleting}
+              >
                 {isDeleting ? (
-                  <span>
+                  <span className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" /> Deleting...
                   </span>
                 ) : (
                   "Delete Profile"
                 )}
               </ActionButton>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        >
+          <p className="text-xl">
+            Are you sure you want to delete your profile? This action is
+            irreversible. You will have to create a new profile and re-upload
+            your song clips.
+          </p>
+        </SettingsModal>
       )}
     </>
   );

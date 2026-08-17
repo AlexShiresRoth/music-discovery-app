@@ -1,4 +1,4 @@
-import Footer from "@/components/footer";
+import { SettingsPage } from "@/components/settings-layout";
 import { getProfile } from "@/lib/auth";
 import ProfileSettingsSections from "./sections";
 
@@ -8,11 +8,8 @@ export default async function ProfileSettingsPage() {
   const isPublic = !!profile?.public;
 
   return (
-    <main className="flex flex-col gap-4 items-center @container py-18">
-      <div className="flex flex-col gap-4 max-w-4xl w-full">
-        <ProfileSettingsSections hasProfile={hasProfile} isPublic={isPublic} />
-      </div>
-      <Footer />
-    </main>
+    <SettingsPage>
+      <ProfileSettingsSections hasProfile={hasProfile} isPublic={isPublic} />
+    </SettingsPage>
   );
 }

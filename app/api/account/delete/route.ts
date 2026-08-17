@@ -1,11 +1,10 @@
-import { createServerClient } from "@/lib/auth";
+import { createAdminClient, createServerClient } from "@/lib/auth";
 import { deleteProfileForUser } from "@/lib/profile/delete-profile";
 import { NextResponse } from "next/server";
 
 export async function DELETE() {
   try {
     const supabase = await createServerClient();
-
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -16,15 +15,25 @@ export async function DELETE() {
 
     const result = await deleteProfileForUser(user.id);
 
-    if (result.status === "not_found") {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-    }
-
     if (result.status === "error") {
       return NextResponse.json({ error: result.message }, { status: 500 });
     }
 
-    return NextResponse.json({ message: "Profile deleted" }, { status: 200 });
+    // No profile is fine — still delete the auth account.
+    const admin = createAdminClient();
+    const { error } = await admin.auth.admin.deleteUser(user.id);
+    if (error) {
+      console.error(error);
+      return NextResponse.json(
+        { error: "Failed to delete account" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(
+      { message: "Account deleted successfully" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
