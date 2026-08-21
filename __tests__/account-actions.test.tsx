@@ -1,11 +1,10 @@
 import AccountActions from "@/app/account/actions";
 import { ToastContext } from "@/context/toast";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush, refresh: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 
 function renderActions(setToast = vi.fn()) {
@@ -16,10 +15,40 @@ function renderActions(setToast = vi.fn()) {
   );
 }
 
+function openAndConfirmDelete() {
+  fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
+  const confirmButtons = screen.getAllByRole("button", {
+    name: "Delete account",
+  });
+  fireEvent.click(confirmButtons[confirmButtons.length - 1]!);
+}
+
 describe("AccountActions", () => {
+  const assignSpy = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();
+    vi.stubGlobal("location", {
+      ...window.location,
+      assign: assignSpy,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("renders the three account action triggers", () => {
+    renderActions();
+
+    expect(
+      screen.getByRole("button", { name: "Submit a request" }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Submit a report" }),
+    ).toBeDefined();
+    expect(screen.getByRole("button", { name: "Delete account" })).toBeDefined();
   });
 
   it("opens the feature request modal", () => {
@@ -50,6 +79,26 @@ describe("AccountActions", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
+  it("shows an error toast when feature request message is empty", async () => {
+    const setToast = vi.fn();
+    renderActions(setToast);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit a request" }));
+    fireEvent.change(screen.getByPlaceholderText("Describe the feature..."), {
+      target: { value: "   " },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit request" }));
+
+    await waitFor(() => {
+      expect(setToast).toHaveBeenCalledWith({
+        message: "Please enter a message",
+        type: "error",
+      });
+    });
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog")).toBeDefined();
+  });
+
   it("submits a feature request and shows a success toast", async () => {
     const setToast = vi.fn();
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -78,6 +127,29 @@ describe("AccountActions", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
+  it("shows an error toast when feature request submission fails", async () => {
+    const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Unauthorized" }),
+    });
+    renderActions(setToast);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit a request" }));
+    fireEvent.change(screen.getByPlaceholderText("Describe the feature..."), {
+      target: { value: "Add playlists" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit request" }));
+
+    await waitFor(() => {
+      expect(setToast).toHaveBeenCalledWith({
+        message: "Unauthorized",
+        type: "error",
+      });
+    });
+    expect(screen.getByRole("dialog")).toBeDefined();
+  });
+
   it("submits a bug report through the bug reports endpoint", async () => {
     const setToast = vi.fn();
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -103,9 +175,32 @@ describe("AccountActions", () => {
         type: "success",
       });
     });
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("deletes the account after confirmation", async () => {
+  it("shows an error toast when bug report submission fails", async () => {
+    const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Failed to submit" }),
+    });
+    renderActions(setToast);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit a report" }));
+    fireEvent.change(screen.getByPlaceholderText("Describe the bug..."), {
+      target: { value: "Crash on load" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit report" }));
+
+    await waitFor(() => {
+      expect(setToast).toHaveBeenCalledWith({
+        message: "Failed to submit",
+        type: "error",
+      });
+    });
+  });
+
+  it("deletes the account then force-logs out via /logout", async () => {
     const setToast = vi.fn();
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
@@ -113,11 +208,7 @@ describe("AccountActions", () => {
     });
 
     renderActions(setToast);
-    fireEvent.click(screen.getByRole("button", { name: "Delete account" }));
-    const confirmButtons = screen.getAllByRole("button", {
-      name: "Delete account",
-    });
-    fireEvent.click(confirmButtons[confirmButtons.length - 1]!);
+    openAndConfirmDelete();
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith("/api/account/delete", {
@@ -127,7 +218,45 @@ describe("AccountActions", () => {
         message: "Account deleted successfully",
         type: "success",
       });
-      expect(mockPush).toHaveBeenCalledWith("/");
+      expect(assignSpy).toHaveBeenCalledWith("/logout");
     });
+  });
+
+  it("shows an error toast when account deletion fails", async () => {
+    const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Failed to delete account" }),
+    });
+
+    renderActions(setToast);
+    openAndConfirmDelete();
+
+    await waitFor(() => {
+      expect(setToast).toHaveBeenCalledWith({
+        message: "Failed to delete account",
+        type: "error",
+      });
+    });
+    expect(assignSpy).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog")).toBeDefined();
+  });
+
+  it("shows a generic error toast when account deletion throws", async () => {
+    const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error("network"),
+    );
+
+    renderActions(setToast);
+    openAndConfirmDelete();
+
+    await waitFor(() => {
+      expect(setToast).toHaveBeenCalledWith({
+        message: "An error occurred",
+        type: "error",
+      });
+    });
+    expect(assignSpy).not.toHaveBeenCalled();
   });
 });
