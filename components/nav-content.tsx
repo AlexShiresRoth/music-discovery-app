@@ -68,13 +68,26 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
           <Link
             href="/about"
             className={clsx(
-              "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+              "w-full flex items-center justify-end p-2 hover:bg-amber-500/20 border-b",
               pathname === "/about" && "bg-amber-500/20",
             )}
           >
             About
           </Link>
         </div>
+        {user && (
+          <div>
+            <Link
+              href="/account"
+              className={clsx(
+                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                pathname === "/account" && "bg-amber-500/20",
+              )}
+            >
+              Account
+            </Link>
+          </div>
+        )}
         <div className="flex w-full justify-end border-t">
           {!user ? (
             <Link
@@ -156,6 +169,17 @@ function MobileNavContent({ user, pathname }: Props) {
             About
           </Link>
         </div>
+        <div className="flex w-full justify-end border-b">
+          <Link
+            href="/account"
+            className={clsx(
+              "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+              pathname === "/account" && "bg-amber-500/20",
+            )}
+          >
+            Account
+          </Link>
+        </div>
         <div className="flex w-full justify-end">
           {!user ? (
             <Link
@@ -189,6 +213,7 @@ function MobileNavContent({ user, pathname }: Props) {
 export default function NavContent({ user }: Props) {
   const pathname = usePathname();
   const hasVisited = useHasVisited();
+
   return (
     <div className="flex items-start gap-2 text-sm">
       <WidescreenNavContent
