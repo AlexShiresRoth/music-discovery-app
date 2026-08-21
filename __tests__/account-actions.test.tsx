@@ -52,6 +52,10 @@ describe("AccountActions", () => {
 
   it("submits a feature request and shows a success toast", async () => {
     const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ message: "Feature request submitted" }),
+    });
     renderActions(setToast);
 
     fireEvent.click(screen.getByRole("button", { name: "Submit a request" }));
@@ -61,12 +65,44 @@ describe("AccountActions", () => {
     fireEvent.click(screen.getByRole("button", { name: "Submit request" }));
 
     await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/api/feature-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Add playlist sharing" }),
+      });
       expect(setToast).toHaveBeenCalledWith({
         message: "Feature request submitted",
         type: "success",
       });
     });
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("submits a bug report through the bug reports endpoint", async () => {
+    const setToast = vi.fn();
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ message: "Bug report submitted" }),
+    });
+    renderActions(setToast);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit a report" }));
+    fireEvent.change(screen.getByPlaceholderText("Describe the bug..."), {
+      target: { value: "Audio skips" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit report" }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/api/bug-reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Audio skips" }),
+      });
+      expect(setToast).toHaveBeenCalledWith({
+        message: "Bug report submitted",
+        type: "success",
+      });
+    });
   });
 
   it("deletes the account after confirmation", async () => {

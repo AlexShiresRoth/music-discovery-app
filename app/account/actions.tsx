@@ -9,7 +9,7 @@ import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useContext, useState } from "react";
+import { useContext, useState } from "react";
 
 type Modal = "feature" | "bug" | "delete" | null;
 
@@ -25,7 +25,7 @@ export default function AccountActions() {
   };
 
   const submitFeedback = async (
-    event: FormEvent<HTMLFormElement>,
+    event: React.SyntheticEvent<HTMLFormElement>,
     type: "feature" | "bug",
   ) => {
     event.preventDefault();
@@ -39,14 +39,31 @@ export default function AccountActions() {
 
     try {
       setIsSubmitting(true);
-      setToast({
-        message:
-          type === "feature"
-            ? "Feature request submitted"
-            : "Bug report submitted",
-        type: "success",
+      const endpoint =
+        type === "feature" ? "/api/feature-requests" : "/api/bug-reports";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
       });
-      setModal(null);
+      const data = await response.json();
+
+      if (response.ok) {
+        setToast({
+          message:
+            data.message ||
+            (type === "feature"
+              ? "Feature request submitted"
+              : "Bug report submitted"),
+          type: "success",
+        });
+        setModal(null);
+      } else {
+        setToast({
+          message: data.error || "Failed to submit",
+          type: "error",
+        });
+      }
     } catch {
       setToast({ message: "An error occurred", type: "error" });
     } finally {
@@ -63,7 +80,7 @@ export default function AccountActions() {
       const data = await response.json();
       if (response.ok) {
         setToast({ message: data.message, type: "success" });
-        router.push("/");
+        return window.location.assign("/logout");
       } else {
         setToast({
           message: data.error || "Failed to delete account",

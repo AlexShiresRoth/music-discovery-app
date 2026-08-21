@@ -213,6 +213,7 @@ function MobileNavContent({ user, pathname }: Props) {
 export default function NavContent({ user }: Props) {
   const pathname = usePathname();
   const hasVisited = useHasVisited();
+
   return (
     <div className="flex items-start gap-2 text-sm">
       <WidescreenNavContent
