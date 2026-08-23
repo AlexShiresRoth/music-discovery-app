@@ -6,7 +6,7 @@ import { useHasVisited } from "@/stores/use-has-visited";
 import clsx from "clsx";
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 function useIsClient() {
   return useSyncExternalStore(
@@ -27,6 +27,27 @@ export default function FeedAudioControls() {
   const handleAnimationEnd = () => {
     setAnimEnded(true);
   };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== " " || event.repeat || !canPlay) return;
+
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest("input, textarea, select, [contenteditable='true']")
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      togglePlayPause();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [togglePlayPause, canPlay]);
+
   return (
     <div className="fixed bottom-6 right-6 z-10 flex gap-2 md:right-20">
       <button

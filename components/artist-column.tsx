@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import EmptyState from "./empty-state";
 import ProfileLocationDisplay from "./profile-location-display";
+import ReportAccount from "./report-account";
 
 type Props = {
   profile: ProfileWithSongClips;
@@ -17,6 +18,7 @@ type Props = {
   currentIndex: number;
   totalProfiles: number;
   isActive: boolean;
+  isAuthenticated: boolean;
 };
 
 export default function ArtistColumn({
@@ -29,6 +31,7 @@ export default function ArtistColumn({
   currentIndex,
   totalProfiles,
   isActive,
+  isAuthenticated,
 }: Props) {
   const published = formatPublishedAt(profile.updatedAt);
   return (
@@ -78,6 +81,10 @@ export default function ArtistColumn({
               <p className="text-sm text-gray-500">{published.label}</p>
             </div>
           )}
+          <ReportAccount
+            isAuthenticated={isAuthenticated}
+            profileId={profile.id}
+          />
         </div>
       </div>
       <div className="flex-col gap-2 md:flex hidden">

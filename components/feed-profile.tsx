@@ -13,6 +13,7 @@ function FeedProfile({
   advanceToNextProfile,
   clipsLength,
   totalProfiles,
+  isAuthenticated,
 }: {
   profile: ProfileWithSongClips;
   activeProfileIndex: number;
@@ -20,6 +21,7 @@ function FeedProfile({
   clipsLength: number;
   advanceToNextProfile: (index: number) => void;
   totalProfiles: number;
+  isAuthenticated: boolean;
 }) {
   const [clipIndex, setClipIndex] = useState(0);
 
@@ -92,6 +94,7 @@ function FeedProfile({
         advanceToNextProfile={advanceToNextProfile}
         currentIndex={currentIndex}
         totalProfiles={totalProfiles}
+        isAuthenticated={isAuthenticated}
       />
       <ClipColumn
         scrollRef={scrollRef}

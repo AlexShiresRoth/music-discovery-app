@@ -2,6 +2,7 @@ import BackButton from "@/components/breadcrumbs";
 import FeedList from "@/components/feed-list";
 import {
   getProfilesWithSongClipsByLocation,
+  getSession,
   getTotalProfilesWithSongClipsByLocation,
 } from "@/lib/auth";
 import type { Metadata } from "next";
@@ -30,6 +31,8 @@ export default async function LocationPage({ searchParams }: Props) {
     parseFloat(lat),
   );
 
+  const user = await getSession();
+
   return (
     <div>
       <div className="w-full flex justify-between items-center">
@@ -42,6 +45,7 @@ export default async function LocationPage({ searchParams }: Props) {
         profiles={results}
         searchTerm={q}
         totalProfiles={totalProfiles}
+        isAuthenticated={!!user}
       />
     </div>
   );

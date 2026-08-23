@@ -18,12 +18,14 @@ function Feed({
   longitude,
   latitude,
   totalProfiles,
+  isAuthenticated,
 }: {
   profiles: ProfileWithSongClips[];
   genres: string[];
   totalProfiles: number;
   longitude?: number;
   latitude?: number;
+  isAuthenticated: boolean;
 }) {
   const { onFinish } = useFeedAudio();
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -89,6 +91,7 @@ function Feed({
               advanceToNextProfile={handleAdvanceToNextProfile}
               clipsLength={profile.songClips.length}
               totalProfiles={totalProfiles}
+              isAuthenticated={isAuthenticated}
             />
           ))}
         </div>
@@ -182,11 +185,13 @@ export default function FeedList({
   songClips = [],
   searchTerm,
   totalProfiles = 15,
+  isAuthenticated,
 }: {
   profiles?: ProfileWithSongClips[];
   searchTerm?: string;
   songClips?: SongClipWithProfile[];
   totalProfiles?: number;
+  isAuthenticated: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -236,6 +241,7 @@ export default function FeedList({
         key={genres.join(",") + searchTerm + longitude + latitude}
         longitude={longitude ? parseFloat(longitude) : undefined}
         latitude={latitude ? parseFloat(latitude) : undefined}
+        isAuthenticated={isAuthenticated}
       />
       <FeedAudioControls />
     </FeedAudioProvider>

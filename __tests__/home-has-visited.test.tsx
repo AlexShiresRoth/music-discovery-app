@@ -3,13 +3,17 @@ import { HAS_VISITED_COOKIE } from "@/lib/has-visited";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockCookieGet, mockGetProfiles, mockGetTotalProfiles } = vi.hoisted(
-  () => ({
-    mockCookieGet: vi.fn(),
-    mockGetProfiles: vi.fn(),
-    mockGetTotalProfiles: vi.fn(),
-  }),
-);
+const {
+  mockCookieGet,
+  mockGetProfiles,
+  mockGetTotalProfiles,
+  mockGetSession,
+} = vi.hoisted(() => ({
+  mockCookieGet: vi.fn(),
+  mockGetProfiles: vi.fn(),
+  mockGetTotalProfiles: vi.fn(),
+  mockGetSession: vi.fn(),
+}));
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(async () => ({
@@ -18,6 +22,7 @@ vi.mock("next/headers", () => ({
 }));
 
 vi.mock("@/lib/auth", () => ({
+  getSession: (...args: unknown[]) => mockGetSession(...args),
   getProfilesWithSongClips: (...args: unknown[]) => mockGetProfiles(...args),
   getTotalProfilesWithSongClips: (...args: unknown[]) =>
     mockGetTotalProfiles(...args),
@@ -36,6 +41,7 @@ describe("Home visit cookie", () => {
     vi.clearAllMocks();
     mockGetProfiles.mockResolvedValue([]);
     mockGetTotalProfiles.mockResolvedValue(0);
+    mockGetSession.mockResolvedValue(null);
   });
 
   it("renders the intro when the visit cookie is unset", async () => {

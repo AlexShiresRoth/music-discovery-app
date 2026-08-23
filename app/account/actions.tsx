@@ -8,13 +8,11 @@ import {
 import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
 type Modal = "feature" | "bug" | "delete" | null;
 
 export default function AccountActions() {
-  const router = useRouter();
   const { setToast } = useContext(ToastContext);
   const [modal, setModal] = useState<Modal>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

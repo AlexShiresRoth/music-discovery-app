@@ -10,7 +10,7 @@ export default function Footer() {
         Privacy Policy
       </Link>
       <Link
-        href="/terms"
+        href="/terms-and-conditions"
         className="hover:underline hover:text-gray-900 transition-colors hover:cursor-pointer hover:underline-offset-4"
       >
         Terms of Service

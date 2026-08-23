@@ -1,5 +1,6 @@
 import FeedList from "@/components/feed-list";
 import IntroOverlay from "@/components/feed-overlay";
+import { getSession } from "@/lib/auth";
 import { getSongClips } from "@/lib/auth/clips";
 import { HAS_VISITED_COOKIE, hasVisitedFromCookie } from "@/lib/has-visited";
 import type { Metadata } from "next";
@@ -36,11 +37,11 @@ export default async function ClipsPage({ searchParams }: Props) {
   const hasVisited = hasVisitedFromCookie(
     cookieStore.get(HAS_VISITED_COOKIE)?.value,
   );
-
+  const user = await getSession();
   return (
     <>
       {!hasVisited && <IntroOverlay />}
-      <FeedList songClips={songClips} />
+      <FeedList songClips={songClips} isAuthenticated={!!user} />
     </>
   );
 }
