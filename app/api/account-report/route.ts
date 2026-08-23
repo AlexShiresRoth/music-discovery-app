@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       .from(profilesSchema)
       .where(eq(profilesSchema.id, parsedProfileId));
 
-    if (!foundProfile) {
+    if (foundProfile.length === 0) {
       return NextResponse.json(
         { message: "Profile not found." },
         { status: 404 },

@@ -2,6 +2,7 @@ import BackButton from "@/components/breadcrumbs";
 import FeedList from "@/components/feed-list";
 import {
   getProfilesWithSongClipsByQuery,
+  getSession,
   getTotalProfilesWithSongClips,
 } from "@/lib/auth";
 import type { Metadata } from "next";
@@ -24,6 +25,7 @@ export default async function ArtistsPage({ searchParams }: Props) {
   const { q } = await searchParams;
   const profiles = await getProfilesWithSongClipsByQuery(q);
   const totalProfiles = await getTotalProfilesWithSongClips();
+  const user = await getSession();
   return (
     <div>
       <div className="w-full flex justify-between items-center">
@@ -34,6 +36,7 @@ export default async function ArtistsPage({ searchParams }: Props) {
         profiles={profiles}
         searchTerm={q}
         totalProfiles={totalProfiles}
+        isAuthenticated={!!user}
       />
     </div>
   );

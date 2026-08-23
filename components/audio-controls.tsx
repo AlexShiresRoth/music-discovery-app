@@ -32,11 +32,10 @@ export default function FeedAudioControls() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== " " || event.repeat || !canPlay) return;
 
-      const target = event.target as HTMLElement | null;
+      const target = event.target;
       if (
-        target?.closest(
-          "input, textarea, select, [contenteditable='true']",
-        )
+        target instanceof Element &&
+        target.closest("input, textarea, select, [contenteditable='true']")
       ) {
         return;
       }
@@ -48,7 +47,6 @@ export default function FeedAudioControls() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [togglePlayPause, canPlay]);
-  
 
   return (
     <div className="fixed bottom-6 right-6 z-10 flex gap-2 md:right-20">
