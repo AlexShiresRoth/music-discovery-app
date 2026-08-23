@@ -46,6 +46,15 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
 
     setIsSubmitting(true);
     try {
+      if (!description || !reportReason) {
+        setToast({
+          message: "Please provide a report reason and description",
+          type: "error",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await fetch("/api/account-report", {
         method: "POST",
         body: JSON.stringify({
