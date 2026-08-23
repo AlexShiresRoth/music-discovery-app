@@ -2,6 +2,7 @@ import FeedList from "@/components/feed-list";
 import IntroOverlay from "@/components/feed-overlay";
 import {
   getProfilesWithSongClips,
+  getSession,
   getTotalProfilesWithSongClips,
 } from "@/lib/auth";
 import { HAS_VISITED_COOKIE, hasVisitedFromCookie } from "@/lib/has-visited";
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
 
 export default async function Home({ searchParams }: Props) {
   const { g } = await searchParams;
+  const user = await getSession();
 
   const profiles = await getProfilesWithSongClips(
     0,
@@ -50,7 +52,11 @@ export default async function Home({ searchParams }: Props) {
   return (
     <>
       {!hasVisited && <IntroOverlay />}
-      <FeedList profiles={profiles} totalProfiles={totalProfiles} />
+      <FeedList
+        profiles={profiles}
+        totalProfiles={totalProfiles}
+        isAuthenticated={!!user}
+      />
     </>
   );
 }

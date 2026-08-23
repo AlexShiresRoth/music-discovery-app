@@ -120,3 +120,13 @@ export const profilesSchema = pgTable("profiles", {
     .default({ url: "", show: true }),
   userRefId: uuid("user_ref_id").notNull(),
 });
+
+export const accountReportsSchema = pgTable("account_reports", {
+  id: serial("id").primaryKey(),
+  userRefId: uuid("user_ref_id"),
+  profileRefId: integer("profile_ref_id").notNull(),
+  reportReason: text("report_reason").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  status: feedbackStatusEnum("status").notNull().default("open"),
+});
