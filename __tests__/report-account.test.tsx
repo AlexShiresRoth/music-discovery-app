@@ -29,7 +29,9 @@ describe("ReportAccount", () => {
     fireEvent.click(screen.getByRole("button"));
 
     expect(screen.getByRole("dialog")).toBeDefined();
-    expect(screen.getByText("Report Account")).toBeDefined();
+    expect(
+      screen.getByRole("heading", { name: "Report Account" }),
+    ).toBeDefined();
   });
 
   it("shows full reason options when authenticated", () => {
@@ -108,6 +110,9 @@ describe("ReportAccount", () => {
 
     renderReport({}, setToast);
     fireEvent.click(screen.getByRole("button"));
+    fireEvent.change(screen.getByRole("combobox"), {
+      target: { value: "spam" },
+    });
     fireEvent.change(screen.getByPlaceholderText("Description"), {
       target: { value: "Bad content" },
     });

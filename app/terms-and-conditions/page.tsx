@@ -64,7 +64,7 @@ export default function TermsAndConditions() {
         </p>
 
         <p>
-          You may not upload content that infringes someone else's rights,
+          You may not upload content that infringes someone else&apos;s rights,
           impersonates another person or artist, contains unlawful material, or
           otherwise violates these Terms or the Community Guidelines.
         </p>
@@ -96,7 +96,7 @@ export default function TermsAndConditions() {
 
         <p>
           Users may report content that they believe violates these rules.
-          Reports may be reviewed and appropriate action may be taken at Side0's
+          Reports may be reviewed and appropriate action may be taken at Side0&apos;s
           discretion.
         </p>
       </section>
@@ -138,7 +138,7 @@ export default function TermsAndConditions() {
         <h2 className="text-3xl font-semibold">Availability of the Service</h2>
 
         <p>
-          Side0 is provided on an "as is" and "as available" basis. We cannot
+          Side0 is provided on an &quot;as is&quot; and &quot;as available&quot; basis. We cannot
           guarantee that the service will always be available, uninterrupted,
           secure, or free from errors.
         </p>
@@ -161,7 +161,7 @@ export default function TermsAndConditions() {
 
         <p>
           These Terms may be updated as Side0 evolves. If significant changes
-          are made, the "Last updated" date above will be revised. Continued use
+          are made, the &quot;Last updated&quot; date above will be revised. Continued use
           of Side0 after updated Terms take effect means you accept the updated
           Terms.
         </p>
@@ -177,10 +177,10 @@ export default function TermsAndConditions() {
 
         <p>
           <a
-            href="mailto:hello@side0.fm"
+            href="mailto:hello@side0.com"
             className="underline underline-offset-4 hover:text-amber-700 transition-colors"
           >
-            hello@side0.fm
+            hello@side0.com
           </a>
         </p>
       </section>

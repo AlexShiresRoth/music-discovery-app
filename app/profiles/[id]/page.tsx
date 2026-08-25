@@ -5,7 +5,8 @@ import Footer from "@/components/footer";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
-import { getProfileById } from "@/lib/auth";
+import ReportAccount from "@/components/report-account";
+import { getProfileById, getSession } from "@/lib/auth";
 import { ImageIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -83,6 +84,9 @@ export default async function ProfilePage({ params }: Props) {
     return notFound();
   }
 
+  const user = await getSession();
+  const isAuthenticated = !!user;
+
   return (
     <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">
@@ -146,13 +150,17 @@ export default async function ProfilePage({ params }: Props) {
                 className="items-start h-auto"
               />
             )}
-            <div>
+            <div className="flex items-center gap-4">
               <ShareProfileButton
                 profile={{
                   id: profile.id.toString(),
                   profileName: profile.profileName ?? "",
                   bio: profile.bio ?? "",
                 }}
+              />
+              <ReportAccount
+                isAuthenticated={isAuthenticated}
+                profileId={profile.id}
               />
             </div>
           </div>

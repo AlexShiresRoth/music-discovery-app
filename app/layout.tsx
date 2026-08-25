@@ -60,7 +60,7 @@ export default async function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${libreBaskerville.variable} h-full antialiased`}
     >
-      <GoogleTagManager gtmId="GTM-KBRNM6GP" />
+      <GoogleTagManager gtmId="GTM-T4J4GR93" />
       <body className="flex w-full justify-center">
         <main className="max-w-450 w-11/12">
           <Navigation />
