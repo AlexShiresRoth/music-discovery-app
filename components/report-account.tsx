@@ -46,6 +46,15 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
 
     setIsSubmitting(true);
     try {
+      if (!description || !reportReason) {
+        setToast({
+          message: "Please provide a report reason and description",
+          type: "error",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await fetch("/api/account-report", {
         method: "POST",
         body: JSON.stringify({
@@ -81,11 +90,10 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
         className="hover:cursor-pointer hover:text-gray-900 transition-colors relative flex items-center gap-2"
       >
         <AlertCircle className="w-3 h-3 text-gray-500" />
-        {showInfoModal && (
-          <div className="absolute bottom-full left-0 bg-background p-1 rounded border w-32 text-sm flex items-center text-gray-500">
-            <p>Report this account</p>
-          </div>
-        )}
+
+        <div className="text-gray-500 text-xs">
+          <p>Report Account</p>
+        </div>
       </button>
       {showModal && (
         <SettingsModal

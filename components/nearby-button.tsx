@@ -10,19 +10,22 @@ export default function NearbyButton() {
   const [pending, setPending] = useState(false);
   const router = useRouter();
   const getLocation = () => {
-    navigator.geolocation.getCurrentPosition((event) => {
-      setPending(true);
+    setPending(true);
+    return navigator.geolocation.getCurrentPosition((event) => {
       if (event.coords) {
         track("allow_location_access");
         router.push(
           `/location?lat=${event.coords.latitude}&lon=${event.coords.longitude}`,
         );
+        setPending(false);
       } else {
         console.info("Location access denied");
         track("deny_location_access");
+        setPending(false);
       }
     });
   };
+
   return (
     hasVisited && (
       <button

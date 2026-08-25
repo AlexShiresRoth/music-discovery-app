@@ -130,10 +130,10 @@ export default function PrivacyPage() {
 
         <p>
           <a
-            href="mailto:hello@side0.fm"
+            href="mailto:hello@side0.com"
             className="underline underline-offset-4 hover:text-amber-700 transition-colors"
           >
-            hello@side0.fm
+            hello@side0.com
           </a>
         </p>
       </section>

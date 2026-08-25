@@ -19,6 +19,10 @@ vi.mock("@/lib/auth/clips", () => ({
   getSongClips: (...args: unknown[]) => mockGetSongClips(...args),
 }));
 
+vi.mock("@/lib/auth", () => ({
+  getSession: vi.fn(async () => null),
+}));
+
 vi.mock("@/components/feed-list", () => ({
   default: ({ songClips }: { songClips: SongClipWithProfile[] }) => (
     <div>
