@@ -79,4 +79,16 @@ describe("IntroOverlay", () => {
     expect(mockPush).toHaveBeenCalledWith("/location?lat=40.7&lon=-74");
     expect(mockRefresh).toHaveBeenCalledTimes(1);
   });
+
+  it("dismisses the intro and sets the visit cookie", () => {
+    render(<IntroOverlay />);
+
+    const header = screen.getByRole("banner");
+    expect(header.className).toContain("max-h-screen");
+
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+
+    expect(document.cookie).toContain(`${HAS_VISITED_COOKIE}=true`);
+    expect(header.className).toContain("max-h-0");
+  });
 });

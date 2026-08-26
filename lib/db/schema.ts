@@ -130,3 +130,15 @@ export const accountReportsSchema = pgTable("account_reports", {
   createdAt: timestamp("created_at").defaultNow(),
   status: feedbackStatusEnum("status").notNull().default("open"),
 });
+
+export const verificationRequestsSchema = pgTable("verification_requests", {
+  id: serial("id").primaryKey(),
+  userRefId: uuid("user_ref_id").notNull(),
+  profileRefId: integer("profile_ref_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  status: feedbackStatusEnum("status").notNull().default("open"),
+});
+
+export type VerificationRequestStatus =
+  (typeof feedbackStatusEnum.enumValues)[number];

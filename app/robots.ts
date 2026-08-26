@@ -8,7 +8,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       // Keep /profiles/ allowed — Disallow /profile would prefix-match it.
-      allow: ["/", "/clips", "/profiles/"],
+      allow: [
+        "/",
+        "/clips",
+        "/profiles/",
+        "/about",
+        "/community-guidelines",
+        "/privacy",
+        "/terms-and-conditions",
+      ],
       disallow: [
         "/profile$",
         "/profile/",
@@ -18,6 +26,7 @@ export default function robots(): MetadataRoute.Robots {
         "/logout",
         "/artist",
         "/location",
+        "/account",
       ],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
