@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { accountReportsSchema, profilesSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -12,6 +13,10 @@ type RequestBody = {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("report", ip);
+    if (limited) return limited;
+
     const { profileId, reportReason, description } =
       (await request.json()) as RequestBody;
 

@@ -1,13 +1,17 @@
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import "server-only";
 
 // TODO - this is a placeholder for the actual verification process
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("mutate", ip);
+    if (limited) return limited;
     const supabase = await createServerClient();
 
     const {

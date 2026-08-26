@@ -1,11 +1,15 @@
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { bugReportsSchema } from "@/lib/db/schema";
 import { parseFeedbackMessage } from "@/lib/feedback/parse-message";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("report", ip);
+    if (limited) return limited;
     const supabase = await createServerClient();
     const {
       data: { user },

@@ -1,6 +1,7 @@
 import { ProfileFormSchemaWithoutId } from "@/app/profile/schemas";
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema } from "@/lib/db/schema";
 import type { SocialField } from "@/lib/db/types";
 import { SOCIAL_PLATFORMS, validateSocialFields } from "@/lib/validation/url";
@@ -11,6 +12,9 @@ import "server-only";
 const MAX_INFLUENCES = 5;
 
 export const POST = async (request: Request) => {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("mutate", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {
