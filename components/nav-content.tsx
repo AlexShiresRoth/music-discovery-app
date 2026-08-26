@@ -169,17 +169,19 @@ function MobileNavContent({ user, pathname }: Props) {
             About
           </Link>
         </div>
-        <div className="flex w-full justify-end border-b">
-          <Link
-            href="/account"
-            className={clsx(
-              "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
-              pathname === "/account" && "bg-amber-500/20",
-            )}
-          >
-            Account
-          </Link>
-        </div>
+        {user && (
+          <div className="flex w-full justify-end border-b">
+            <Link
+              href="/account"
+              className={clsx(
+                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                pathname === "/account" && "bg-amber-500/20",
+              )}
+            >
+              Account
+            </Link>
+          </div>
+        )}
         <div className="flex w-full justify-end">
           {!user ? (
             <Link

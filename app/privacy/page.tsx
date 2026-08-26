@@ -1,4 +1,20 @@
 import Footer from "@/components/footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "How Side0 collects, uses, and protects your information. We do not sell your personal data.",
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    title: "Privacy Policy · Side0",
+    description:
+      "How Side0 collects, uses, and protects your information. We do not sell your personal data.",
+    url: "/privacy",
+  },
+};
 
 export default function PrivacyPage() {
   return (

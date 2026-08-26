@@ -21,7 +21,7 @@ describe("sitemap", () => {
     process.env = { ...originalEnv };
   });
 
-  it("includes home, clips, and public profile URLs", async () => {
+  it("includes home, clips, legal pages, and public profile URLs", async () => {
     mockGetPublicProfilesForSitemap.mockResolvedValue([
       {
         id: 12,
@@ -47,6 +47,22 @@ describe("sitemap", () => {
     });
     expect(entries).toEqual(
       expect.arrayContaining([
+        expect.objectContaining({
+          url: "https://music.example.com/about",
+          priority: 0.6,
+        }),
+        expect.objectContaining({
+          url: "https://music.example.com/community-guidelines",
+          priority: 0.5,
+        }),
+        expect.objectContaining({
+          url: "https://music.example.com/privacy",
+          priority: 0.3,
+        }),
+        expect.objectContaining({
+          url: "https://music.example.com/terms-and-conditions",
+          priority: 0.3,
+        }),
         expect.objectContaining({
           url: "https://music.example.com/profiles/12",
           images: ["https://cdn.example.com/nora.jpg"],

@@ -1,6 +1,7 @@
 import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
+import { VerificationRequestStatus } from "@/lib/db/schema";
 import type { Profile, SongClip } from "@/lib/db/types";
 import { CogIcon } from "lucide-react";
 import Image from "next/image";
@@ -15,9 +16,14 @@ import UploadImage from "./upload-image";
 type Props = {
   profile: Profile;
   clips: SongClip[];
+  verificationRequest: VerificationRequestStatus | null;
 };
 
-export default async function Profile({ profile, clips }: Props) {
+export default async function Profile({
+  profile,
+  clips,
+  verificationRequest,
+}: Props) {
   const isVerified = profile.isVerified;
 
   return (
@@ -92,13 +98,31 @@ export default async function Profile({ profile, clips }: Props) {
           </div>
         </header>
         <div className="flex flex-col gap-10 w-full">
-          {!isVerified && (
+          {!isVerified && !verificationRequest && (
             <Link
               href="/profile/verify"
               className="p-2 rounded border-2 bg-amber-500 shadow-[2px_2px_0_0_black] hover:shadow-none uppercase text-black font-bold hover:cursor-pointer transition-all"
             >
               Get Verified
             </Link>
+          )}
+
+          {verificationRequest === "open" && !isVerified && (
+            <div className="flex flex-col gap-2 bg-amber-500/20 border-2 rounded p-2">
+              <p>Your verification request is pending review.</p>
+            </div>
+          )}
+
+          {verificationRequest === "closed" && !isVerified && (
+            <div className="flex flex-col gap-2 bg-orange-500/20 border-2 rounded p-2">
+              <p>
+                Your profile could not be verified. Please try again. You can
+                request a new verification request{" "}
+                <Link href="/profile/verify" className="underline">
+                  here
+                </Link>
+              </p>
+            </div>
           )}
 
           {isVerified && (

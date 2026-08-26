@@ -1,11 +1,14 @@
 "use client";
 
 import { setHasVisited } from "@/lib/has-visited";
+import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 /** In-flow intro header. Layout only mounts this when the visit cookie is unset. */
 export default function IntroOverlay() {
+  const [isDismissed, setIsDismissed] = useState(false);
   const router = useRouter();
 
   const getLocation = () => {
@@ -25,7 +28,13 @@ export default function IntroOverlay() {
   };
 
   return (
-    <header className="@container relative flex w-full shrink-0 flex-col items-center justify-center overflow-hidden border-b border-gray-500/10">
+    <header
+      className={clsx(
+        "@container relative flex w-full shrink-0 flex-col items-center justify-center overflow-hidden border-gray-500/10 transition-all duration-300",
+        isDismissed && "max-h-0 border-b-0",
+        !isDismissed && "max-h-screen border-b",
+      )}
+    >
       <div className="relative z-0 flex flex-col w-full items-center justify-center gap-8 py-8 md:py-16">
         <div className="relative flex max-w-2xl flex-col items-center gap-4 text-center">
           <h1 className="animate-grow-vertical font-serif text-4xl font-bold md:text-6xl">
@@ -53,6 +62,15 @@ export default function IntroOverlay() {
             </Link>
           </div>
         </div>
+        <button
+          onClick={() => {
+            setHasVisited();
+            setIsDismissed(true);
+          }}
+          className="text-gray-400 text-sm text-center hover:cursor-pointer hover:text-gray-600"
+        >
+          Dismiss
+        </button>
       </div>
 
       <div className="relative w-full flex items-center justify-center">

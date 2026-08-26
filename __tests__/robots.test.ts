@@ -14,7 +14,15 @@ describe("robots", () => {
     expect(robots()).toEqual({
       rules: {
         userAgent: "*",
-        allow: ["/", "/clips", "/profiles/"],
+        allow: [
+          "/",
+          "/clips",
+          "/profiles/",
+          "/about",
+          "/community-guidelines",
+          "/privacy",
+          "/terms-and-conditions",
+        ],
         disallow: [
           "/profile$",
           "/profile/",
@@ -24,6 +32,7 @@ describe("robots", () => {
           "/logout",
           "/artist",
           "/location",
+          "/account",
         ],
       },
       sitemap: "https://music.example.com/sitemap.xml",

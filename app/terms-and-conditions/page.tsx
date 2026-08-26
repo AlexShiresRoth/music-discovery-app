@@ -1,4 +1,20 @@
 import Footer from "@/components/footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Terms governing your use of Side0, including accounts, content, copyright, and moderation.",
+  alternates: {
+    canonical: "/terms-and-conditions",
+  },
+  openGraph: {
+    title: "Terms of Service · Side0",
+    description:
+      "Terms governing your use of Side0, including accounts, content, copyright, and moderation.",
+    url: "/terms-and-conditions",
+  },
+};
 
 export default function TermsAndConditions() {
   return (

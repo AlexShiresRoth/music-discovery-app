@@ -1,5 +1,21 @@
 import DecorativeBg from "@/components/decorative-bg";
 import Footer from "@/components/footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Community Guidelines",
+  description:
+    "Rules for sharing music and discovering artists on Side0 — no spam, harassment, or stolen work.",
+  alternates: {
+    canonical: "/community-guidelines",
+  },
+  openGraph: {
+    title: "Community Guidelines · Side0",
+    description:
+      "Rules for sharing music and discovering artists on Side0 — no spam, harassment, or stolen work.",
+    url: "/community-guidelines",
+  },
+};
 
 export default function CommunityGuidelines() {
   return (

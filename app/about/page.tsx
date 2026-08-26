@@ -1,5 +1,21 @@
 import DecorativeBg from "@/components/decorative-bg";
 import Footer from "@/components/footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Side0 is a music discovery platform for independent artists and local scenes — before the algorithm takes over.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About Side0",
+    description:
+      "Side0 is a music discovery platform for independent artists and local scenes — before the algorithm takes over.",
+    url: "/about",
+  },
+};
 
 export default function AboutPage() {
   return (
