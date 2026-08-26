@@ -1,8 +1,13 @@
+import { enforceRateLimit } from "@/lib/db/redis";
 import { searchCities, searchProfiles } from "@/lib/db/search";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request): Promise<Response> {
   try {
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("mutate", ip);
+    if (limited) return limited;
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query");
 

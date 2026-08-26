@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
 import { validateUrl } from "@/lib/validation/url";
@@ -7,6 +8,9 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("mutate", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {

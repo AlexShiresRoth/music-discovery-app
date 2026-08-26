@@ -1,10 +1,12 @@
 import { DELETE as deleteAccount } from "@/app/api/account/delete/route";
 import { DELETE as deleteProfile } from "@/app/api/profile/delete/route";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetUser = vi.fn();
 const mockDeleteUser = vi.fn();
 const mockDeleteProfileForUser = vi.fn();
+const mockEnforceRateLimit = vi.mocked(enforceRateLimit);
 
 vi.mock("@/lib/auth", () => ({
   createServerClient: vi.fn(async () => ({
@@ -20,15 +22,23 @@ vi.mock("@/lib/profile/delete-profile", () => ({
     mockDeleteProfileForUser(...args),
 }));
 
+function makeRequest(path: string) {
+  return new Request(`http://localhost${path}`, {
+    method: "DELETE",
+    headers: { "x-forwarded-for": "203.0.113.10" },
+  });
+}
+
 describe("DELETE /api/profile/delete", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnforceRateLimit.mockResolvedValue(undefined);
   });
 
   it("returns 401 when unauthenticated", async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
-    const res = await deleteProfile();
+    const res = await deleteProfile(makeRequest("/api/profile/delete") as never);
     expect(res.status).toBe(401);
   });
 
@@ -36,7 +46,7 @@ describe("DELETE /api/profile/delete", () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } } });
     mockDeleteProfileForUser.mockResolvedValue({ status: "not_found" });
 
-    const res = await deleteProfile();
+    const res = await deleteProfile(makeRequest("/api/profile/delete") as never);
     expect(res.status).toBe(404);
     expect(mockDeleteProfileForUser).toHaveBeenCalledWith("user-1");
   });
@@ -45,7 +55,7 @@ describe("DELETE /api/profile/delete", () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } } });
     mockDeleteProfileForUser.mockResolvedValue({ status: "deleted" });
 
-    const res = await deleteProfile();
+    const res = await deleteProfile(makeRequest("/api/profile/delete") as never);
     const body = await res.json();
 
     expect(res.status).toBe(200);
@@ -56,6 +66,7 @@ describe("DELETE /api/profile/delete", () => {
 describe("DELETE /api/account/delete", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnforceRateLimit.mockResolvedValue(undefined);
     mockDeleteUser.mockResolvedValue({ error: null });
   });
 
@@ -63,7 +74,7 @@ describe("DELETE /api/account/delete", () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } } });
     mockDeleteProfileForUser.mockResolvedValue({ status: "deleted" });
 
-    const res = await deleteAccount();
+    const res = await deleteAccount(makeRequest("/api/account/delete"));
     const body = await res.json();
 
     expect(mockDeleteProfileForUser).toHaveBeenCalledWith("user-1");
@@ -76,7 +87,7 @@ describe("DELETE /api/account/delete", () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: "user-1" } } });
     mockDeleteProfileForUser.mockResolvedValue({ status: "not_found" });
 
-    const res = await deleteAccount();
+    const res = await deleteAccount(makeRequest("/api/account/delete"));
 
     expect(res.status).toBe(200);
     expect(mockDeleteUser).toHaveBeenCalledWith("user-1");
@@ -89,7 +100,7 @@ describe("DELETE /api/account/delete", () => {
       message: "Failed to delete clips",
     });
 
-    const res = await deleteAccount();
+    const res = await deleteAccount(makeRequest("/api/account/delete"));
     const body = await res.json();
 
     expect(res.status).toBe(500);

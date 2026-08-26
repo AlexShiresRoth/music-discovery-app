@@ -18,9 +18,8 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
   const { setToast } = useContext(ToastContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [reportReason, setReportReason] = useState<string | undefined>(
-    undefined,
+  const [reportReason, setReportReason] = useState<string>(
+    "copyright-infringement",
   );
   const [description, setDescription] = useState("");
   const reasons = useMemo(() => {
@@ -85,12 +84,9 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        onMouseEnter={() => setShowInfoModal(true)}
-        onMouseLeave={() => setShowInfoModal(false)}
         className="hover:cursor-pointer hover:text-gray-900 transition-colors relative flex items-center gap-2"
       >
         <AlertCircle className="w-3 h-3 text-gray-500" />
-
         <div className="text-gray-500 text-xs">
           <p>Report Account</p>
         </div>

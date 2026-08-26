@@ -1,4 +1,5 @@
 import { POST } from "@/app/api/account-report/route";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
@@ -37,10 +38,15 @@ vi.mock("drizzle-orm", () => ({
   eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
 }));
 
-function makeRequest(body: unknown) {
+const mockEnforceRateLimit = vi.mocked(enforceRateLimit);
+
+function makeRequest(body: unknown, ip = "203.0.113.10") {
   return new Request("http://localhost/api/account-report", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-forwarded-for": ip,
+    },
     body: JSON.stringify(body),
   });
 }
@@ -48,11 +54,35 @@ function makeRequest(body: unknown) {
 describe("POST /api/account-report", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnforceRateLimit.mockResolvedValue(undefined);
     mockSelect.mockReturnValue({ from: mockFrom });
     mockFrom.mockReturnValue({ where: mockWhere });
     mockInsert.mockReturnValue({ values: mockValues });
     mockValues.mockResolvedValue(undefined);
     mockGetSession.mockResolvedValue({ id: "user-1" });
+  });
+
+  it("returns 429 when the rate limiter blocks the request", async () => {
+    mockEnforceRateLimit.mockResolvedValue(
+      Response.json(
+        { message: "Too many requests. Try again later." },
+        { status: 429 },
+      ),
+    );
+
+    const res = await POST(
+      makeRequest({
+        profileId: "12",
+        reportReason: "spam",
+        description: "Looks fake",
+      }),
+    );
+    const body = await res.json();
+
+    expect(mockEnforceRateLimit).toHaveBeenCalledWith("report", "203.0.113.10");
+    expect(res.status).toBe(429);
+    expect(body.message).toBe("Too many requests. Try again later.");
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 
   it("returns 400 when required fields are missing", async () => {

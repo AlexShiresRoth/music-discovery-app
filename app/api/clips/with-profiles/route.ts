@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { SongClipWithProfile } from "@/lib/db/types";
 import { and, desc, eq, inArray } from "drizzle-orm";
@@ -7,6 +8,10 @@ import "server-only";
 
 export async function GET(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("upload", ip);
+    if (limited) return limited;
+
     const { searchParams } = new URL(request.url);
     const genres = searchParams.getAll("g") || [];
     const startIndex = searchParams.get("start") || "0";

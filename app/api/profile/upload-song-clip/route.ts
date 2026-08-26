@@ -1,5 +1,6 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { SongClipWithSlot } from "@/lib/db/types";
 import { nextUpdatedAt } from "@/lib/profile/update-cooldown";
@@ -35,6 +36,9 @@ function isAllowedAudio(file: File) {
 }
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("upload", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {

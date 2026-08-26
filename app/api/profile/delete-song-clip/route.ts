@@ -1,11 +1,15 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema, songClipsSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { env } from "process";
 
 export async function DELETE(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("mutate", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {

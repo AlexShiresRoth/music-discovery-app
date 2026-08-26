@@ -1,8 +1,12 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { NextResponse } from "next/server";
 import { env } from "process";
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("upload", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {

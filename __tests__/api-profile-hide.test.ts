@@ -1,7 +1,10 @@
 import { GET } from "@/app/api/profile/hide/route";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetUser = vi.fn();
+const mockEnforceRateLimit = vi.mocked(enforceRateLimit);
+
 vi.mock("@/lib/auth", () => ({
   createServerClient: vi.fn(() => ({
     auth: { getUser: mockGetUser },
@@ -36,9 +39,16 @@ vi.mock("drizzle-orm", () => ({
   eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
 }));
 
+function makeRequest() {
+  return new Request("http://localhost/api/profile/hide", {
+    headers: { "x-forwarded-for": "203.0.113.10" },
+  });
+}
+
 describe("GET /api/profile/hide", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnforceRateLimit.mockResolvedValue(undefined);
     mockSelect.mockReturnValue({ from: mockFrom });
     mockFrom.mockReturnValue({ where: mockWhere });
     mockUpdate.mockReturnValue({ set: mockSet });
@@ -52,7 +62,7 @@ describe("GET /api/profile/hide", () => {
       error: new Error("Auth failed"),
     });
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(500);
@@ -62,7 +72,7 @@ describe("GET /api/profile/hide", () => {
   it("returns 401 when the user is not authenticated", async () => {
     mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(401);
@@ -76,7 +86,7 @@ describe("GET /api/profile/hide", () => {
     });
     mockWhere.mockResolvedValue([]);
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(404);
@@ -91,7 +101,7 @@ describe("GET /api/profile/hide", () => {
     });
     mockWhere.mockResolvedValue([{ id: 12, public: true }]);
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -111,7 +121,7 @@ describe("GET /api/profile/hide", () => {
     });
     mockWhere.mockResolvedValue([{ id: 12, public: false }]);
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(200);
@@ -127,7 +137,7 @@ describe("GET /api/profile/hide", () => {
     mockWhere.mockResolvedValue([{ id: 12, public: true }]);
     mockUpdateWhere.mockRejectedValue(new Error("db down"));
 
-    const response = await GET();
+    const response = await GET(makeRequest());
     const body = await response.json();
 
     expect(response.status).toBe(500);

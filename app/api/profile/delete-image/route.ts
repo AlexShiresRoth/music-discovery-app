@@ -1,8 +1,12 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { NextResponse } from "next/server";
 import { env } from "process";
 
 export const DELETE = async (request: Request) => {
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const limited = await enforceRateLimit("mutate", ip);
+  if (limited) return limited;
   const supabase = await createServerClient();
 
   const {

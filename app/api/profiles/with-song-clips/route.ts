@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema } from "@/lib/db/schema";
 import { getSongClipsByIds } from "@/lib/db/song-clips";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
@@ -72,6 +73,9 @@ async function fetchProfilesByGenres(
 
 export async function GET(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const limited = await enforceRateLimit("mutate", ip);
+    if (limited) return limited;
     const { searchParams } = new URL(request.url);
     const genres = searchParams.getAll("g") || [];
     const startIndex = searchParams.get("start") || "0";
