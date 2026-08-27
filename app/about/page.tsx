@@ -21,21 +21,9 @@ export default function AboutPage() {
   return (
     <main className="@container flex flex-col gap-4 w-full items-center justify-center relative overflow-hidden">
       <div className="flex flex-col gap-4 w-full max-w-2xl items-center justify-center py-20">
+        <h1 className="text-6xl font-bold font-serif w-full">Sidezero</h1>
         <div className="flex flex-col gap-4 border-b pb-4">
-          <h1 className="text-6xl font-bold font-serif">Sidezero</h1>
-          <p>
-            The idea behind the name is a play on how records usually contain a
-            side A and side B.
-          </p>
-          <p>
-            Side0 is what comes before Side A and Side B. It&apos;s the moment
-            when an artist is still being discovered.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 border-b pb-4">
-          <h2 className="text-2xl font-bold font-serif">
-            So what is Sidezero?
-          </h2>
+          <h2 className="text-2xl font-bold font-serif">So what is it?</h2>
           <p className="text-amber-700">Another music platform?</p>
           <p>That&apos;s a fair question.</p>
           <p>

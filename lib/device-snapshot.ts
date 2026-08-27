@@ -1,6 +1,7 @@
 const SERVER_SNAPSHOT = {
   isIOS: false,
   isStandalone: false,
+  isMacOS: false,
 };
 
 /** Stable server snapshot — must be the same reference every call. */
