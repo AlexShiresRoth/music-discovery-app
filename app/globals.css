@@ -10,7 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-libre-baskerville), ui-serif, Georgia, Cambria,
+  --font-serif:
+    var(--font-libre-baskerville), ui-serif, Georgia, Cambria,
     "Times New Roman", serif;
 }
 
@@ -129,6 +130,17 @@ input:-webkit-autofill:focus {
   }
 }
 
+@keyframes translate-in-vertical {
+  from {
+    opacity: 0;
+    transform: translateY(-20vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes translate-out {
   from {
     opacity: 1;
@@ -168,6 +180,11 @@ input:-webkit-autofill:focus {
     transform: scaleY(1);
   }
 }
+
+.animate-translate-in-vertical {
+  animation: translate-in-vertical 0.5s ease-in-out forwards;
+}
+
 .animate-grow-vertical {
   transform-origin: top;
   animation: grow-vertical 0.5s ease-in-out forwards;
