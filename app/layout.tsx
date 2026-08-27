@@ -1,3 +1,4 @@
+import InstallPrompt from "@/components/install-prompt";
 import Navigation from "@/components/navigation";
 import ToastWrapper from "@/components/toast-wrapper";
 import ToastProvider from "@/context/toast";
@@ -63,6 +64,7 @@ export default async function RootLayout({
       <GoogleTagManager gtmId="GTM-T4J4GR93" />
       <body className="flex w-full justify-center">
         <main className="max-w-450 w-11/12">
+          <InstallPrompt />
           <Navigation />
           <ToastProvider>
             <ToastWrapper>{children}</ToastWrapper>
