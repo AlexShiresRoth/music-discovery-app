@@ -46,7 +46,7 @@ describe("InstallPrompt", () => {
     mockIsInstallPromptDismissed.mockReturnValue(false);
   });
 
-  it("renders nothing when there is no deferred install event", () => {
+  it("renders nothing when there is no deferred install event on non-iOS", () => {
     mockUseInstall.mockReturnValue(null);
     const { container } = render(<InstallPrompt />);
     expect(container.firstChild).toBeNull();
@@ -93,12 +93,13 @@ describe("InstallPrompt", () => {
     expect(mockTrack).toHaveBeenCalledWith("install_prompt_closed");
   });
 
-  it("shows iOS install instructions instead of the install button", () => {
+  it("shows iOS install instructions without a deferred install event", () => {
     mockUseDeviceType.mockReturnValue({ isIOS: true, isStandalone: false });
+    mockUseInstall.mockReturnValue(null);
     render(<InstallPrompt />);
 
     expect(screen.getByText(/Add to Home Screen/i)).toBeDefined();
     expect(screen.queryByRole("button", { name: "Install" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Dismiss" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Dismiss" })).toBeDefined();
   });
 });

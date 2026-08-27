@@ -1,6 +1,6 @@
 "use client";
 import { track } from "@vercel/analytics";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -8,6 +8,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 let installPrompt: BeforeInstallPromptEvent | null = null;
+
+const INSTALL_PROMPT_DELAY_MS = 2 * 60 * 1000;
 
 const listeners = new Set<() => void>();
 
@@ -108,17 +110,51 @@ export function isInstallPromptDismissed() {
   return isDismissed();
 }
 
+export function useIsInstallPromptDismissed() {
+  const { subscribe } = installPromptStore();
+  return useSyncExternalStore(subscribe, isInstallPromptDismissed, () => false);
+}
+
+let canShowInstallPrompt = false;
+let canShowTimeout: ReturnType<typeof setTimeout> | null = null;
+const canShowListeners = new Set<() => void>();
+
+function emitCanShowChange() {
+  for (const listener of canShowListeners) {
+    listener();
+  }
+}
+
+function ensureCanShowTimer() {
+  if (canShowInstallPrompt || canShowTimeout) return;
+
+  canShowTimeout = setTimeout(() => {
+    canShowInstallPrompt = true;
+    canShowTimeout = null;
+    track("install_prompt_initialized");
+    emitCanShowChange();
+  }, INSTALL_PROMPT_DELAY_MS);
+}
+
+/** @internal test helper */
+export function resetCanShowInstallPromptForTests() {
+  if (canShowTimeout) {
+    clearTimeout(canShowTimeout);
+    canShowTimeout = null;
+  }
+  canShowInstallPrompt = false;
+}
+
 export function useCanShowInstallPrompt() {
-  const [canShowInstallPrompt, setCanShowInstallPrompt] = useState(false);
-  useEffect(() => {
-    const timeout = setTimeout(
-      () => {
-        setCanShowInstallPrompt(true);
-        track("install_prompt_initialized");
-      },
-      3 * 60 * 1000,
-    );
-    return () => clearTimeout(timeout);
-  }, []);
-  return canShowInstallPrompt;
+  return useSyncExternalStore(
+    (listener) => {
+      canShowListeners.add(listener);
+      ensureCanShowTimer();
+      return () => {
+        canShowListeners.delete(listener);
+      };
+    },
+    () => canShowInstallPrompt,
+    () => false,
+  );
 }
