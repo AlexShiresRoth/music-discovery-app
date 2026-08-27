@@ -7,12 +7,15 @@ import {
 } from "@/components/settings-layout";
 import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
+import { useDeviceType } from "@/stores/use-device-type";
+import { handleInstall } from "@/stores/use-install";
 import { Loader2 } from "lucide-react";
 import { useContext, useState } from "react";
 
 type Modal = "feature" | "bug" | "delete" | null;
 
 export default function AccountActions() {
+  const { isIOS, isStandalone, isMacOS } = useDeviceType();
   const { setToast } = useContext(ToastContext);
   const [modal, setModal] = useState<Modal>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,9 +94,26 @@ export default function AccountActions() {
       setIsSubmitting(false);
     }
   };
-
   return (
     <>
+      {!isStandalone && (
+        <SettingsSection>
+          <SettingsSectionCopy>
+            {isMacOS
+              ? "You can install the app by clicking the icon in the URL bar."
+              : isIOS
+                ? "You can install the app by clicking the share button and then 'Add to Home Screen'."
+                : "Install the app."}
+          </SettingsSectionCopy>
+          {isMacOS || isIOS ? (
+            <></>
+          ) : (
+            <ActionButton type="button" onClick={handleInstall}>
+              Install Side0
+            </ActionButton>
+          )}
+        </SettingsSection>
+      )}
       <SettingsSection>
         <SettingsSectionCopy>Feature requests.</SettingsSectionCopy>
         <ActionButton type="button" onClick={() => setModal("feature")}>
@@ -112,7 +132,6 @@ export default function AccountActions() {
           Delete account
         </ActionButton>
       </SettingsSection>
-
       {modal === "feature" && (
         <SettingsModal
           title="Feature Request"
@@ -161,7 +180,6 @@ export default function AccountActions() {
           </form>
         </SettingsModal>
       )}
-
       {modal === "bug" && (
         <SettingsModal
           title="Bug Report"
@@ -210,7 +228,6 @@ export default function AccountActions() {
           </form>
         </SettingsModal>
       )}
-
       {modal === "delete" && (
         <SettingsModal
           title="Delete Account"

@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 
 type DeviceType = {
   isIOS: boolean;
+  isMacOS: boolean;
   isStandalone: boolean;
 };
 
@@ -14,6 +15,7 @@ function getDeviceType(): DeviceType {
   const isIOS =
     /iPad|iPhone|iPod/.test(navigator.userAgent) &&
     !(window as Window & typeof globalThis).MSStream;
+  const isMacOS = /Macintosh/gi.test(navigator.userAgent);
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
   if (
@@ -24,7 +26,7 @@ function getDeviceType(): DeviceType {
     return cachedClientSnapshot;
   }
 
-  cachedClientSnapshot = { isIOS, isStandalone };
+  cachedClientSnapshot = { isIOS, isStandalone, isMacOS };
   return cachedClientSnapshot;
 }
 
