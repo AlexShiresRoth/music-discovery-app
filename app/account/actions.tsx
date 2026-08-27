@@ -9,6 +9,7 @@ import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
 import { useDeviceType } from "@/stores/use-device-type";
 import { handleInstall } from "@/stores/use-install";
+import { track } from "@vercel/analytics";
 import { Loader2 } from "lucide-react";
 import { useContext, useState } from "react";
 
@@ -108,7 +109,13 @@ export default function AccountActions() {
           {isMacOS || isIOS ? (
             <></>
           ) : (
-            <ActionButton type="button" onClick={handleInstall}>
+            <ActionButton
+              type="button"
+              onClick={() => {
+                handleInstall();
+                track("install_button_from_settings");
+              }}
+            >
               Install Side0
             </ActionButton>
           )}
