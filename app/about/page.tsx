@@ -23,7 +23,7 @@ export default function AboutPage() {
       <div className="flex flex-col gap-4 w-full max-w-2xl items-center justify-center py-20">
         <h1 className="text-6xl font-bold font-serif w-full">Sidezero</h1>
         <div className="flex flex-col gap-4 border-b pb-4">
-          <h2 className="text-2xl font-bold font-serif">So what is it?</h2>
+          <h2 className="text-2xl font-bold font-serif">What is it?</h2>
           <p className="text-amber-700">Another music platform?</p>
           <p>That&apos;s a fair question.</p>
           <p>

@@ -2,6 +2,7 @@ import {
   dismissInstallPrompt,
   handleInstall,
   isInstallPromptDismissed,
+  resetCanShowInstallPromptForTests,
   useCanShowInstallPrompt,
   useInstall,
 } from "@/stores/use-install";
@@ -22,7 +23,9 @@ function CanShowProbe() {
   return <span>{canShow ? "visible" : "hidden"}</span>;
 }
 
-function createBeforeInstallEvent(outcome: "accepted" | "dismissed" = "accepted") {
+function createBeforeInstallEvent(
+  outcome: "accepted" | "dismissed" = "accepted",
+) {
   const prompt = vi.fn().mockResolvedValue(undefined);
   const userChoice = Promise.resolve({ outcome });
   const event = new Event("beforeinstallprompt", {
@@ -39,6 +42,7 @@ function createBeforeInstallEvent(outcome: "accepted" | "dismissed" = "accepted"
 function resetInstallState() {
   window.localStorage.removeItem("installPromptDismissed");
   window.dispatchEvent(new Event("appinstalled"));
+  resetCanShowInstallPromptForTests();
 }
 
 describe("use-install store", () => {
@@ -150,6 +154,24 @@ describe("use-install store", () => {
 
     act(() => {
       vi.advanceTimersByTime(1);
+    });
+    expect(screen.getByText("visible")).toBeDefined();
+  });
+
+  it("keeps the delay timer across remounts", () => {
+    vi.useFakeTimers();
+    const { unmount } = render(<CanShowProbe />);
+
+    act(() => {
+      vi.advanceTimersByTime(2 * 60 * 1000);
+    });
+    unmount();
+
+    render(<CanShowProbe />);
+    expect(screen.getByText("hidden")).toBeDefined();
+
+    act(() => {
+      vi.advanceTimersByTime(60 * 1000);
     });
     expect(screen.getByText("visible")).toBeDefined();
   });

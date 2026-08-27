@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fef2e0;
   --foreground: #111111;
 }
 
@@ -13,13 +13,6 @@
   --font-serif:
     var(--font-libre-baskerville), ui-serif, Georgia, Cambria,
     "Times New Roman", serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #fef2e0;
-    --foreground: #111111;
-  }
 }
 
 body {
