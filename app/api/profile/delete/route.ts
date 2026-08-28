@@ -1,6 +1,9 @@
 import { createServerClient } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { enforceRateLimit } from "@/lib/db/redis";
+import { verificationRequestsSchema } from "@/lib/db/schema";
 import { deleteProfileForUser } from "@/lib/profile/delete-profile";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest) {
@@ -17,6 +20,10 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    await db
+      .delete(verificationRequestsSchema)
+      .where(eq(verificationRequestsSchema.userRefId, user.id));
 
     const result = await deleteProfileForUser(user.id);
 
