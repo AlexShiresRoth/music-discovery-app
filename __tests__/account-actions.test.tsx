@@ -3,8 +3,26 @@ import { ToastContext } from "@/context/toast";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const { mockUseDeviceType, mockHandleInstall, mockTrack } = vi.hoisted(() => ({
+  mockUseDeviceType: vi.fn(),
+  mockHandleInstall: vi.fn(),
+  mockTrack: vi.fn(),
+}));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+
+vi.mock("@/stores/use-device-type", () => ({
+  useDeviceType: () => mockUseDeviceType(),
+}));
+
+vi.mock("@/stores/use-install", () => ({
+  handleInstall: (...args: unknown[]) => mockHandleInstall(...args),
+}));
+
+vi.mock("@vercel/analytics", () => ({
+  track: (...args: unknown[]) => mockTrack(...args),
 }));
 
 function renderActions(setToast = vi.fn()) {
@@ -29,6 +47,11 @@ describe("AccountActions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();
+    mockUseDeviceType.mockReturnValue({
+      isIOS: false,
+      isMacOS: false,
+      isStandalone: false,
+    });
     vi.stubGlobal("location", {
       ...window.location,
       assign: assignSpy,
@@ -49,6 +72,51 @@ describe("AccountActions", () => {
       screen.getByRole("button", { name: "Submit a report" }),
     ).toBeDefined();
     expect(screen.getByRole("button", { name: "Delete account" })).toBeDefined();
+  });
+
+  it("shows an install button for non-Apple browsers", () => {
+    renderActions();
+
+    expect(screen.getByText("Install the app.")).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Install Side0" }));
+    expect(mockHandleInstall).toHaveBeenCalledTimes(1);
+    expect(mockTrack).toHaveBeenCalledWith("install_button_from_settings");
+  });
+
+  it("shows iOS install instructions without an install button", () => {
+    mockUseDeviceType.mockReturnValue({
+      isIOS: true,
+      isMacOS: false,
+      isStandalone: false,
+    });
+    renderActions();
+
+    expect(screen.getByText(/Add to Home Screen/i)).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Install Side0" })).toBeNull();
+  });
+
+  it("shows macOS install instructions without an install button", () => {
+    mockUseDeviceType.mockReturnValue({
+      isIOS: false,
+      isMacOS: true,
+      isStandalone: false,
+    });
+    renderActions();
+
+    expect(screen.getByText(/icon in the URL bar/i)).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Install Side0" })).toBeNull();
+  });
+
+  it("hides install guidance when already running standalone", () => {
+    mockUseDeviceType.mockReturnValue({
+      isIOS: false,
+      isMacOS: false,
+      isStandalone: true,
+    });
+    renderActions();
+
+    expect(screen.queryByText("Install the app.")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Install Side0" })).toBeNull();
   });
 
   it("opens the feature request modal", () => {

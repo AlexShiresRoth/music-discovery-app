@@ -7,6 +7,7 @@ describe("getDeviceSnapshot", () => {
     expect(getDeviceSnapshot()).toEqual({
       isIOS: false,
       isStandalone: false,
+      isMacOS: false,
     });
   });
 });

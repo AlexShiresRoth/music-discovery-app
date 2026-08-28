@@ -1,6 +1,7 @@
 import {
   dismissInstallPrompt,
   handleInstall,
+  INSTALL_PROMPT_DELAY_MS,
   isInstallPromptDismissed,
   resetCanShowInstallPromptForTests,
   useCanShowInstallPrompt,
@@ -141,14 +142,14 @@ describe("use-install store", () => {
     await expect(handleInstall()).resolves.toBeUndefined();
   });
 
-  it("delays showing the install prompt for three minutes", () => {
+  it("delays showing the install prompt", () => {
     vi.useFakeTimers();
     render(<CanShowProbe />);
 
     expect(screen.getByText("hidden")).toBeDefined();
 
     act(() => {
-      vi.advanceTimersByTime(3 * 60 * 1000 - 1);
+      vi.advanceTimersByTime(INSTALL_PROMPT_DELAY_MS - 1);
     });
     expect(screen.getByText("hidden")).toBeDefined();
 
@@ -163,7 +164,7 @@ describe("use-install store", () => {
     const { unmount } = render(<CanShowProbe />);
 
     act(() => {
-      vi.advanceTimersByTime(2 * 60 * 1000);
+      vi.advanceTimersByTime(INSTALL_PROMPT_DELAY_MS / 2);
     });
     unmount();
 
@@ -171,7 +172,7 @@ describe("use-install store", () => {
     expect(screen.getByText("hidden")).toBeDefined();
 
     act(() => {
-      vi.advanceTimersByTime(60 * 1000);
+      vi.advanceTimersByTime(INSTALL_PROMPT_DELAY_MS / 2);
     });
     expect(screen.getByText("visible")).toBeDefined();
   });

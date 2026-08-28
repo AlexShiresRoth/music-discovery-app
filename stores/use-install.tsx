@@ -9,7 +9,8 @@ interface BeforeInstallPromptEvent extends Event {
 
 let installPrompt: BeforeInstallPromptEvent | null = null;
 
-const INSTALL_PROMPT_DELAY_MS = 2 * 60 * 1000;
+export const INSTALL_PROMPT_DELAY_MS = 2 * 60 * 1000;
+
 
 const listeners = new Set<() => void>();
 
