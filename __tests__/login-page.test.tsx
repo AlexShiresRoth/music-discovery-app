@@ -50,7 +50,7 @@ describe("SignInPage", () => {
     const page = await SignInPage({ searchParams: Promise.resolve({}) });
     renderPage(page);
 
-    expect(screen.getByText("Welcome back")).toBeDefined();
+    expect(screen.getByText("Welcome to Side0")).toBeDefined();
     expect(screen.getByPlaceholderText("Email")).toBeDefined();
     expect(screen.queryByPlaceholderText("Confirm Password")).toBeNull();
     expect(screen.getByText("Continue with Google")).toBeDefined();

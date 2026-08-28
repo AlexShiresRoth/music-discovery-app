@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { Dot } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AccountIndicator from "./account-indicator";
 import NavWithMenu from "./nav-with-menu";
 import NearbyButton from "./nearby-button";
 
@@ -64,6 +65,7 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
         </span>
       )}
       <NavWithMenu>
+        <AccountIndicator user={user} />
         <div className="flex w-full justify-end">
           <Link
             href="/about"
@@ -75,20 +77,7 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
             About
           </Link>
         </div>
-        {user && (
-          <div>
-            <Link
-              href="/account"
-              className={clsx(
-                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
-                pathname === "/account" && "bg-amber-500/20",
-              )}
-            >
-              Account
-            </Link>
-          </div>
-        )}
-        <div className="flex w-full justify-end border-t">
+        <div className="flex w-full justify-end">
           {!user ? (
             <Link
               href="/login"
@@ -123,6 +112,7 @@ function MobileNavContent({ user, pathname }: Props) {
     <div className="md:hidden flex flex-col gap-2">
       <NavWithMenu>
         <NearbyButton />
+        <AccountIndicator user={user} />
         <div className="flex items-center gap-2 w-full border-b">
           <Link
             href="/"
@@ -169,19 +159,6 @@ function MobileNavContent({ user, pathname }: Props) {
             About
           </Link>
         </div>
-        {user && (
-          <div className="flex w-full justify-end border-b">
-            <Link
-              href="/account"
-              className={clsx(
-                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
-                pathname === "/account" && "bg-amber-500/20",
-              )}
-            >
-              Account
-            </Link>
-          </div>
-        )}
         <div className="flex w-full justify-end">
           {!user ? (
             <Link

@@ -59,7 +59,9 @@ export default function NavWithMenu({ children }: Props) {
       <div
         className={clsx(
           "absolute top-0 right-0 flex flex-col items-center bg-background border-2 border-b-4 rounded transition-[border-color,width] duration-200",
-          showMenu ? "border-black w-54 md:w-36" : "border-transparent w-10",
+          showMenu
+            ? "border-black min-w-54 md:min-w-36"
+            : "border-transparent w-10",
         )}
       >
         <div

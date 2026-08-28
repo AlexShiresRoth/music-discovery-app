@@ -60,6 +60,22 @@ describe("useDeviceType", () => {
     expect(screen.getByText("ios:browser")).toBeDefined();
   });
 
+  it("detects macOS from the user agent", () => {
+    Object.defineProperty(navigator, "userAgent", {
+      configurable: true,
+      get: () =>
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+    });
+
+    function MacProbe() {
+      const { isMacOS } = useDeviceType();
+      return <span>{isMacOS ? "mac" : "not-mac"}</span>;
+    }
+
+    render(<MacProbe />);
+    expect(screen.getByText("mac")).toBeDefined();
+  });
+
   it("detects standalone display mode", () => {
     Object.defineProperty(navigator, "userAgent", {
       configurable: true,
