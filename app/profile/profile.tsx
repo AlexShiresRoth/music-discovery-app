@@ -25,7 +25,6 @@ export default async function Profile({
   verificationRequest,
 }: Props) {
   const isVerified = profile.isVerified;
-
   return (
     <div className="flex flex-col w-full items-center py-8">
       <div className="w-full flex flex-col gap-8">

@@ -1,6 +1,9 @@
 import { createAdminClient, createServerClient } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { enforceRateLimit } from "@/lib/db/redis";
+import { verificationRequestsSchema } from "@/lib/db/schema";
 import { deleteProfileForUser } from "@/lib/profile/delete-profile";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function DELETE(request: Request) {
@@ -28,6 +31,9 @@ export async function DELETE(request: Request) {
     // No profile is fine — still delete the auth account.
     const admin = createAdminClient();
     const { error } = await admin.auth.admin.deleteUser(user.id);
+    await db
+      .delete(verificationRequestsSchema)
+      .where(eq(verificationRequestsSchema.userRefId, user.id));
     if (error) {
       console.error(error);
       return NextResponse.json(
