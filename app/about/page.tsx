@@ -26,36 +26,51 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold font-serif">What is it?</h2>
           <p className="text-amber-700">Another music platform?</p>
           <p>That&apos;s a fair question.</p>
+          <p>Let me just set the stage before diving into the details…</p>
           <p>
-            If you&apos;re anything like me, you&apos;ve probably opened a
-            streaming app hoping to discover something new, only to be
-            recommended familiar artists and songs. Streaming services are great
-            at helping us revisit what we already enjoy. I wanted to build
-            something that made exploring the unknown feel just as easy.
+            If you’re anything like me, you’ve probably opened a streaming app
+            hoping to discover something new, only to be recommended the same
+            old stuff again and again.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 border-b pb-4">
           <p>
-            I built this because I missed the feeling of stumbling across a new
-            artist or song that I&apos;d never heard before. I&apos;m not trying
-            to compete with streaming platforms. I&apos;m trying to make
-            discovering independent artists simple again. There are no
-            popularity rankings and no endless recommendations telling you what
-            you should hear next.
+            Yeah, streaming services are great at helping us revisit what we
+            already enjoy. But somewhere along the way, discovering something
+            completely new got dragged below the depths of recommendation
+            engines, trending content, and algorithms deciding what deserves our
+            attention.
           </p>
-          <p>Every artist starts somewhere.</p>
           <p>
-            This is a place to hear the musicians who are still building their
-            audience, whether they&apos;re down the street or across the
-            country.
+            I wanted to build something that makes music discovery simple and
+            straightforward.
           </p>
-        </div>
-        <div className="flex flex-col gap-4">
           <p>
-            Thank you for stopping by. I hope you discover an artist that
-            excites you enough to share with someone else.
+            There’s no algorithm trying to feed you what it thinks you’d like to
+            hear. No recommendation engine shoving trending songs into your
+            sensitive ears. No paying your way onto the main feed. No popularity
+            contest.
           </p>
+          <p>Is this getting too aggressive for an About page? Maybe. Idk.</p>
+          <p>I digress.</p>
+          <p>
+            <strong>
+              Sidezero is a level playing field for independent artists to share
+              their music and connect with new listeners without all the added
+              nonsense.
+            </strong>
+          </p>
+          <p>
+            I don’t want you to have to sell your soul to get somebody to hear
+            your music. Unless you want to, of course. I’m not your dad.
+          </p>
+          <p>Just let the jams speak for themselves. That’s the main idea.</p>
+          <p>
+            Anyway, I really hope you enjoy your time here on Sidezero and find
+            something cool enough that you want to share it with your friends &
+            enemies.
+          </p>
+          <p>And feel free to say hi.</p>
           <p>- Alex.</p>
+          <a href="mailto:hello@side0.com">hello@side0.com</a>
         </div>
       </div>
       <div className="absolute -z-10 translate-y-1/2">

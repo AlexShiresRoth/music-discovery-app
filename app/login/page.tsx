@@ -35,7 +35,7 @@ export default async function SignInPage({ searchParams }: Props) {
     <main className="flex flex-col items-center md:py-16 py-8 w-full">
       <div className="flex flex-col gap-4 md:w-1/2 max-w-sm w-full mx-auto">
         <h1 className="text-4xl font-bold">
-          {isSignUp ? "Create an account" : "Welcome back"}
+          {isSignUp ? "Create an account" : "Welcome to Side0"}
         </h1>
         <LoginForm isSignUp={isSignUp} />
         <div className="w-full flex items-center justify-center gap-2">
