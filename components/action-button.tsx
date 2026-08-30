@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ButtonHTMLAttributes } from "react";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -8,7 +9,10 @@ export default function ActionButton(props: Props) {
   return (
     <button
       {...rest}
-      className="text-sm  px-2 py-1 rounded border-2 bg-amber-500 shadow-[2px_2px_0_0_black] hover:shadow-none text-black font-bold hover:cursor-pointer transition-all disabled:bg-amber-500/30"
+      className={clsx(
+        "text-sm  px-2 py-1 rounded border-2 bg-amber-500 shadow-[2px_2px_0_0_black] hover:shadow-none text-black font-bold hover:cursor-pointer transition-all disabled:bg-amber-500/30",
+        rest.className,
+      )}
     >
       {children}
     </button>

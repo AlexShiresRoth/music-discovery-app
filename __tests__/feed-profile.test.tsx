@@ -138,12 +138,11 @@ describe("FeedProfile", () => {
 
     expect(screen.getByText("Test Band")).toBeDefined();
     expect(screen.queryByText("Rock")).toBeNull();
-    expect(
-      screen.getByText(
-        (_, node) =>
-          node?.tagName === "P" && node.textContent === "Austin, TX ",
-      ),
-    ).toBeDefined();
+    const location = screen.getByRole("link", { name: "Austin, TX" });
+    expect(location).toBeDefined();
+    expect(location.getAttribute("href")).toBe(
+      "/location?&q=Austin&lat=30&lon=-97",
+    );
     expect(screen.getByText("Published 3 days ago")).toBeDefined();
     expect(screen.queryByText("New")).toBeNull();
   });

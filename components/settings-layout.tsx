@@ -1,6 +1,8 @@
+"use client";
+
 import BackButton from "@/components/breadcrumbs";
 import Footer from "@/components/footer";
-import { useMemo } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 export function SettingsPage({ children }: { children: React.ReactNode }) {
@@ -48,32 +50,37 @@ export function SettingsModal({
   actions: React.ReactNode;
   onClose: () => void;
 }) {
-  const Modal = useMemo(() => {
-    return (
-      <div
-        className="fixed z-99 inset-0 flex flex-col items-center justify-center bg-black/20 w-full h-full animate-fade-in"
-        onClick={onClose}
-        role="presentation"
-      >
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="settings-modal-title"
-          className="bg-background border-2 border-b-4 p-4 flex flex-col gap-4 max-w-2xl w-11/12"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <h1
-            id="settings-modal-title"
-            className="md:text-4xl text-2xl font-bold font-serif"
-          >
-            {title}
-          </h1>
-          {children}
-          <div className="flex gap-2 flex-wrap">{actions}</div>
-        </div>
-      </div>
-    );
-  }, [title, children, actions, onClose]);
+  useEffect(() => {
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, []);
 
-  return createPortal(Modal, document.body);
+  return createPortal(
+    <div
+      className="fixed z-99 inset-0 flex flex-col items-center justify-center bg-black/20 w-full h-full animate-fade-in"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+        className="bg-background border-2 border-b-4 p-4 flex flex-col gap-4 max-w-2xl w-11/12"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h1
+          id="settings-modal-title"
+          className="md:text-4xl text-2xl font-bold font-serif"
+        >
+          {title}
+        </h1>
+        {children}
+        <div className="flex gap-2 flex-wrap">{actions}</div>
+      </div>
+    </div>,
+    document.body,
+  );
 }

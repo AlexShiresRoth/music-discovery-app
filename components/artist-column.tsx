@@ -74,6 +74,9 @@ export default function ArtistColumn({
             <ProfileLocationDisplay
               city={profile.city}
               stateCode={profile.stateCode}
+              lat={profile.lat}
+              lon={profile.lon}
+              className="text-sm text-gray-500 hover:underline underline-offset-4 decoration-black"
             />
           </div>
           {published && (
