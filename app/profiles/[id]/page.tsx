@@ -121,6 +121,8 @@ export default async function ProfilePage({ params }: Props) {
               <ProfileLocationDisplay
                 city={profile.city}
                 stateCode={profile.stateCode}
+                lat={profile.lat}
+                lon={profile.lon}
               />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
