@@ -4,6 +4,7 @@ import type { SongClip } from "@/lib/db/types";
 import { Edit, PlayIcon, Upload } from "lucide-react";
 import Link from "next/link";
 import PreHeader from "./pre-header";
+import ReorderClipsModal from "./reorder-clips-modal";
 import { MAX_SONG_CLIPS } from "./schemas";
 
 type Props = {
@@ -65,17 +66,21 @@ function ClipSlotView({
 
 export default function SongClipsSection({ clips, isVerified }: Props) {
   const filledSlots = clips.length;
+  const sortedClips = clips.sort((a, b) => a.slot - b.slot);
 
   return (
     <div className="flex flex-col w-full gap-4 relative z-0">
       <div className="flex flex-col w-full gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-bold uppercase">Featured Clips</h2>
-          {isVerified && (
-            <p className="text-sm ">
-              {filledSlots} / {MAX_SONG_CLIPS} clips
-            </p>
-          )}
+        <div className="flex justify-between items-start w-full">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-bold uppercase">Featured Clips</h2>
+            {isVerified && (
+              <p className="text-sm ">
+                {filledSlots} / {MAX_SONG_CLIPS} clips
+              </p>
+            )}
+          </div>
+          <ReorderClipsModal clips={clips} />
         </div>
 
         {!isVerified && (
@@ -83,12 +88,9 @@ export default function SongClipsSection({ clips, isVerified }: Props) {
         )}
 
         <div className="flex gap-4 w-full md:flex-row flex-col">
-          {Array.from({ length: MAX_SONG_CLIPS }, (_, index) => {
-            const clip = clips.find((clip) => clip.slot === index);
-            return (
-              <ClipSlotView key={index} clip={clip} slotNumber={index + 1} />
-            );
-          })}
+          {sortedClips.map((clip) => (
+            <ClipSlotView key={clip.id} clip={clip} slotNumber={clip.slot} />
+          ))}
         </div>
       </div>
     </div>

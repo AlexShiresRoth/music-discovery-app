@@ -71,6 +71,9 @@ export default async function Profile({
               <ProfileLocationDisplay
                 city={profile.city}
                 stateCode={profile.stateCode}
+                lat={profile.lat}
+                lon={profile.lon}
+                className="text-sm text-gray-500 hover:underline underline-offset-4"
               />
             </div>
             <h1 className="md:text-7xl text-3xl font-bold">
