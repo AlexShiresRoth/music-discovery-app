@@ -105,12 +105,11 @@ describe("PublicInfo", () => {
       expect(screen.queryByText("Rock")).toBeNull();
       expect(screen.getByText("A test bio")).toBeDefined();
       expect(screen.getByText("Radiohead, Bjork")).toBeDefined();
-      expect(
-        screen.getByText(
-          (_, node) =>
-            node?.tagName === "P" && node.textContent === "New York, NY ",
-        ),
-      ).toBeDefined();
+      const location = screen.getByRole("link", { name: "New York, NY" });
+      expect(location).toBeDefined();
+      expect(location.getAttribute("href")).toBe(
+        "/location?&q=New York&lat=40&lon=-74",
+      );
     });
 
     it("shows an Edit link pointing to /profile/edit/public", () => {
