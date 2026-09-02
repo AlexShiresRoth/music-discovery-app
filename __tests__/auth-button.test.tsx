@@ -2,8 +2,9 @@ import SignInButton from "@/app/login/auth-button";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockSignInWithOAuth } = vi.hoisted(() => ({
+const { mockSignInWithOAuth, mockUseSearchParams } = vi.hoisted(() => ({
   mockSignInWithOAuth: vi.fn(),
+  mockUseSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock("@/lib/supabase/client", () => ({
@@ -14,9 +15,14 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => mockUseSearchParams(),
+}));
+
 describe("SignInButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
     vi.stubGlobal("location", {
       origin: "http://localhost:3000",
     });
@@ -42,6 +48,27 @@ describe("SignInButton", () => {
         provider: "google",
         options: {
           redirectTo: "http://localhost:3000/auth/callback",
+        },
+      });
+    });
+  });
+
+  it("includes next=/profile when register=true", async () => {
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams("register=true"),
+    );
+    mockSignInWithOAuth.mockResolvedValue({ data: {}, error: null });
+
+    render(
+      <SignInButton provider="google">Continue with Google</SignInButton>,
+    );
+    fireEvent.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+        provider: "google",
+        options: {
+          redirectTo: "http://localhost:3000/auth/callback?next=/profile",
         },
       });
     });

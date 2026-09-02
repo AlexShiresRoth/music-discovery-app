@@ -15,6 +15,7 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => mockRedirect(url),
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock("@/lib/supabase/client", () => ({
