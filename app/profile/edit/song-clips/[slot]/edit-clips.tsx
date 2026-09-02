@@ -170,7 +170,7 @@ export default function EditClips({ clip, slot }: Props) {
         <BackButton />
       </div>
 
-      <div className="relative flex flex-col gap-4 border rounded p-8">
+      <div className="relative flex flex-col gap-4 border rounded md:p-8 p-4">
         <p className="text-sm text-gray-400/80">
           Each clip must be {MAX_SONG_CLIP_DURATION_SECONDS} seconds or shorter.
         </p>

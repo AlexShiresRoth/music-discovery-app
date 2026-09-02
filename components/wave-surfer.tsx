@@ -3,11 +3,12 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Fullscreen, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
+import ActionButton from "./action-button";
 import WaveformSkeleton from "./wave-form-skeleton";
 
 type ClipSelection = {
@@ -32,6 +33,32 @@ type Props = {
 const WAVE_COLOR = "#FACE85";
 const PROGRESS_COLOR = "black";
 const FADE_SECONDS = 1;
+const REGION_EDITOR_HEIGHT = 160;
+const REGION_EDITOR_FULLSCREEN_HEIGHT = 280;
+/** Zoom so a max-length clip fills most of the view and is easy to drag. */
+const REGION_VIEWPORT_FILL = 0.7;
+
+function zoomClipEditor(ws: WaveSurfer, region?: ClipSelection | null) {
+  const width = ws.getWidth();
+  if (!width) return;
+
+  const duration = ws.getDuration();
+  if (!duration) return;
+
+  const visibleSeconds = Math.min(
+    duration,
+    MAX_SONG_CLIP_DURATION_SECONDS / REGION_VIEWPORT_FILL,
+  );
+  ws.zoom(width / visibleSeconds);
+
+  if (region) {
+    const padding = Math.max(
+      0,
+      (visibleSeconds - (region.end - region.start)) / 2,
+    );
+    ws.setScrollTime(Math.max(0, region.start - padding));
+  }
+}
 
 /** Ensures only one WaveSurfer instance plays at a time on the page. */
 let activePlayer: WaveSurfer | null = null;
@@ -321,6 +348,7 @@ function WaveSurferWithRegions({
   const selectedRegionRef = useRef(selectedRegion);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     onSelectionChangeRef.current = onSelectionChange;
@@ -357,7 +385,7 @@ function WaveSurferWithRegions({
       container: containerRef.current,
       waveColor: WAVE_COLOR,
       progressColor: PROGRESS_COLOR,
-      height: 100,
+      height: REGION_EDITOR_HEIGHT,
       plugins: [regions, hover],
     });
 
@@ -410,6 +438,32 @@ function WaveSurferWithRegions({
     };
   }, []);
 
+  // Grow/zoom the waveform when entering the larger editor overlay
+  useEffect(() => {
+    const ws = wsRef.current;
+    if (!ws || !isReady) return;
+
+    const frame = requestAnimationFrame(() => {
+      ws.setOptions({
+        height: isFullscreen
+          ? REGION_EDITOR_FULLSCREEN_HEIGHT
+          : REGION_EDITOR_HEIGHT,
+      });
+      zoomClipEditor(ws, selectedRegionRef.current);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isFullscreen, isReady]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isFullscreen]);
+
   // Load audio whenever the file changes
   useEffect(() => {
     const ws = wsRef.current;
@@ -427,10 +481,13 @@ function WaveSurferWithRegions({
       const duration = ws.getDuration();
       const end = Math.min(MAX_SONG_CLIP_DURATION_SECONDS, duration);
       const existing = selectedRegionRef.current;
-
-      regions.addRegion({
+      const region = {
         start: existing?.start ?? 0,
         end: existing?.end ?? end,
+      };
+
+      regions.addRegion({
+        ...region,
         resize: true,
         drag: true,
         color: "rgba(255, 255, 255, 0.5)",
@@ -438,6 +495,7 @@ function WaveSurferWithRegions({
         maxLength: MAX_SONG_CLIP_DURATION_SECONDS,
       });
 
+      zoomClipEditor(ws, region);
       setIsReady(true);
     });
 
@@ -447,11 +505,38 @@ function WaveSurferWithRegions({
   }, [file]);
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 w-full min-w-0">
-      <p className="text-sm text-gray-400/80">
-        Drag the region to select up to {MAX_SONG_CLIP_DURATION_SECONDS}s
-      </p>
-      <div ref={containerRef} className="w-full min-w-0" />
+    <div
+      className={clsx(
+        "wave-region-editor flex flex-col gap-4 border rounded-md p-4 w-full min-w-0",
+        isFullscreen &&
+          "fixed inset-0 z-99999 h-dvh w-screen rounded-none border-0 bg-background justify-center",
+      )}
+    >
+      <div className="flex items-center gap-2 border-b pb-4">
+        <ActionButton
+          type="button"
+          aria-label={isFullscreen ? "Exit larger editor" : "Enlarge editor"}
+          className="hover:cursor-pointer p-1 rounded transition-colors shrink-0 text-xs"
+          onClick={() => setIsFullscreen((fullscreen) => !fullscreen)}
+        >
+          {!isFullscreen ? (
+            <div className="flex items-center gap-2">
+              <Fullscreen className="w-4 h-4" /> <p>Fullscreen editor</p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 ">
+              <X className="w-4 h-4" /> <p>Exit fullscreen editor</p>
+            </div>
+          )}
+        </ActionButton>
+      </div>
+      <div className="flex flex-col justify-between gap-2">
+        <p className="text-sm">
+          Scroll to find a section, then drag the highlighted region (up to{" "}
+          {MAX_SONG_CLIP_DURATION_SECONDS}s)
+        </p>
+      </div>
+      <div ref={containerRef} className="w-full min-w-0 touch-none" />
       <div className="flex items-center justify-between ">
         <div className="flex items-center gap-2">
           <button
@@ -462,7 +547,7 @@ function WaveSurferWithRegions({
           >
             {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           </button>
-          <p className="text-sm truncate">{file.name}</p>
+          <p className="text-base truncate">{file.name}</p>
         </div>
       </div>
     </div>
