@@ -14,55 +14,33 @@ type Props = {
   imageUrl: string;
 };
 
+function isAbortError(error: unknown) {
+  return (
+    (error instanceof DOMException && error.name === "AbortError") ||
+    (error instanceof Error && error.name === "AbortError")
+  );
+}
+
 export default function UploadImage({ imageUrl }: Props) {
   const router = useRouter();
   const { setToast } = useContext(ToastContext);
-  const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  /**
-   *
-   * @param imageUrl
-   * @returns  profile with updated image url
-   */
-  const handleSaveImageToProfile = async (imageUrl: string) => {
+
+  const handleSaveImageToProfile = async (nextImageUrl: string) => {
     return await fetch("/api/profile/edit", {
       method: "POST",
-      body: JSON.stringify({ imageUrl }),
+      body: JSON.stringify({ imageUrl: nextImageUrl }),
     });
   };
 
-  /**
-   *
-   * @param imageUrl
-   * @returns deleted image response & profile
-   */
-  const handleDeleteImageFromStorage = async (imageUrl: string) => {
+  const handleDeleteImageFromStorage = async (safeName: string) => {
     return await fetch("/api/profile/delete-image", {
       method: "DELETE",
-      body: JSON.stringify({ safeName: imageUrl }),
+      body: JSON.stringify({ safeName }),
     });
   };
 
-  /**
-   *
-   * @param file
-   * @returns image public url
-   */
-  const handleUpload = async (file: File) => {
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    return await fetch("/api/profile/upload-image", {
-      method: "POST",
-      body: formData,
-    });
-  };
-
-  /**
-   *
-   * @returns image file
-   */
   const getFile = async () => {
     const pickerOpts = {
       types: [
@@ -76,82 +54,81 @@ export default function UploadImage({ imageUrl }: Props) {
       excludeAcceptAllOption: true,
       multiple: false,
     };
-    if (typeof window !== "undefined") {
-      try {
-        // open file picker
-        const [fileHandle] = await window?.showOpenFilePicker(pickerOpts);
-        // get file contents
-        const fileData = await fileHandle.getFile();
-        return fileData;
-      } catch {
-        // if the user cancels the file picker, return null
-        console.error("User cancelled file picker");
+
+    if (typeof window === "undefined" || !window.showOpenFilePicker) {
+      return null;
+    }
+
+    try {
+      const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+      return await fileHandle.getFile();
+    } catch (error) {
+      // User dismissed the picker — not a real failure.
+      if (isAbortError(error)) {
         return null;
       }
+      console.error(error);
+      return null;
     }
   };
 
-  /**
-   *
-   * @description image uploaded to storage & profile with updated image url
-   */
   const handleImageUpload = async () => {
-    const file = await getFile();
-    if (file) {
-      setFile(file);
-      const res = await handleUpload(file);
+    const selected = await getFile();
+    if (!selected) {
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", selected);
+      const res = await fetch("/api/profile/upload-image", {
+        method: "POST",
+        body: formData,
+      });
 
       if (!res.ok) {
         setToast({ message: "Failed to upload image", type: "error" });
-        console.error("Failed to upload image");
-        setIsUploading(false);
         return;
       }
 
-      if (res.ok) {
-        const { publicUrl }: UploadImageAPIResponse = await res.json();
-        try {
-          const saveRes = await handleSaveImageToProfile(publicUrl);
+      const { publicUrl }: UploadImageAPIResponse = await res.json();
+      const saveRes = await handleSaveImageToProfile(publicUrl);
 
-          if (saveRes.ok) {
-            setToast({ message: "Image saved to profile", type: "success" });
-            router.refresh();
-          }
-        } catch (error) {
-          setToast({
-            message: "Failed to save image to profile",
-            type: "error",
-          });
-          console.error(error);
-        }
-
-        setIsUploading(false);
-      } else {
-        console.error("Failed to upload image");
-        setIsUploading(false);
+      if (!saveRes.ok) {
+        setToast({
+          message: "Failed to save image to profile",
+          type: "error",
+        });
+        return;
       }
+
+      setToast({ message: "Image saved to profile", type: "success" });
+      router.refresh();
+    } catch (error) {
+      setToast({
+        message: "Failed to upload image",
+        type: "error",
+      });
+      console.error(error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  /**
-   *
-   * @description image deleted from storage & profile with updated image url
-   */
   const handleDeleteImage = async () => {
     try {
       setIsDeleting(true);
       await handleSaveImageToProfile("");
       await handleDeleteImageFromStorage(imageUrl.split("/").pop() || "");
 
-      setFile(null);
       setToast({ message: "Image deleted", type: "success" });
-
-      setIsDeleting(false);
       router.refresh();
     } catch (error) {
-      setIsDeleting(false);
       setToast({ message: "Failed to delete image", type: "error" });
       console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -173,6 +150,8 @@ export default function UploadImage({ imageUrl }: Props) {
       </div>
       <div className="flex gap-4 py-2">
         <button
+          type="button"
+          aria-label="Upload image"
           disabled={isDeleting || isUploading}
           onClick={handleImageUpload}
           className="p-1 hover:cursor-pointer border rounded-full hover:border-amber-500/80 transition-all hover:text-amber-500 disabled:hover:cursor-not-allowed disabled:animate-pulse disabled:text-emerald-500 disabled:border-emerald-500"
@@ -184,11 +163,17 @@ export default function UploadImage({ imageUrl }: Props) {
           )}
         </button>
         <button
+          type="button"
+          aria-label="Delete image"
           disabled={isDeleting || isUploading || !imageUrl}
           onClick={handleDeleteImage}
           className="p-1 hover:cursor-pointer border rounded-full hover:border-red-500/80 transition-all hover:text-red-500 disabled:hover:cursor-not-allowed"
         >
-          <Trash size={12} />
+          {isDeleting ? (
+            <Loader2 className="animate-spin" size={12} />
+          ) : (
+            <Trash size={12} />
+          )}
         </button>
       </div>
     </div>

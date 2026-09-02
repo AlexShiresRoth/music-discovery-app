@@ -4,7 +4,7 @@ import { User } from "@supabase/supabase-js";
 import clsx from "clsx";
 import { Dot } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import AccountIndicator from "./account-indicator";
 import NavWithMenu from "./nav-with-menu";
 import NearbyButton from "./nearby-button";
@@ -77,17 +77,32 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
             About
           </Link>
         </div>
-        <div className="flex w-full justify-end">
+        <>
           {!user ? (
-            <Link
-              href="/login"
-              className={clsx(
-                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
-                pathname === "/login" && "bg-amber-500/20",
-              )}
-            >
-              Login
-            </Link>
+            <>
+              <div className="flex w-full justify-end border-b">
+                <Link
+                  href="/login"
+                  className={clsx(
+                    "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                    pathname === "/login" && "bg-amber-500/20",
+                  )}
+                >
+                  Login
+                </Link>
+              </div>
+              <div className="flex w-full justify-end">
+                <Link
+                  href="/login?register=true"
+                  className={clsx(
+                    "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                    pathname === "/login?register=true" && "bg-amber-500/20",
+                  )}
+                >
+                  Sign up
+                </Link>
+              </div>
+            </>
           ) : (
             // Full navigation so auth cookies clear and the nav re-renders
             // with the signed-out session (Link soft-nav can keep a stale layout).
@@ -101,7 +116,7 @@ function WidescreenNavContent({ user, pathname, hasVisited }: Props) {
               Logout
             </a>
           )}
-        </div>
+        </>
       </NavWithMenu>
     </div>
   );
@@ -159,17 +174,32 @@ function MobileNavContent({ user, pathname }: Props) {
             About
           </Link>
         </div>
-        <div className="flex w-full justify-end">
+        <>
           {!user ? (
-            <Link
-              href="/login"
-              className={clsx(
-                "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
-                pathname === "/login" && "bg-amber-500/20",
-              )}
-            >
-              Login
-            </Link>
+            <>
+              <div className="flex w-full justify-end border-b">
+                <Link
+                  href="/login"
+                  className={clsx(
+                    "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                    pathname === "/login" && "bg-amber-500/20",
+                  )}
+                >
+                  Login
+                </Link>
+              </div>
+              <div className="flex w-full justify-end">
+                <Link
+                  href="/login?register=true"
+                  className={clsx(
+                    "w-full flex items-center justify-end p-2 hover:bg-amber-500/20",
+                    pathname === "/login?register=true" && "bg-amber-500/20",
+                  )}
+                >
+                  Sign up
+                </Link>
+              </div>
+            </>
           ) : (
             // Full navigation so auth cookies clear and the nav re-renders
             // with the signed-out session (Link soft-nav can keep a stale layout).
@@ -183,7 +213,7 @@ function MobileNavContent({ user, pathname }: Props) {
               Logout
             </a>
           )}
-        </div>
+        </>
       </NavWithMenu>
     </div>
   );
@@ -191,20 +221,19 @@ function MobileNavContent({ user, pathname }: Props) {
 
 export default function NavContent({ user }: Props) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const hasVisited = useHasVisited();
-
+  const register =
+    searchParams.get("register") === "true" ? "?register=true" : "";
+  const path = pathname + register;
   return (
     <div className="flex items-start gap-2 text-sm">
       <WidescreenNavContent
         user={user}
-        pathname={pathname}
+        pathname={path}
         hasVisited={hasVisited}
       />
-      <MobileNavContent
-        user={user}
-        pathname={pathname}
-        hasVisited={hasVisited}
-      />
+      <MobileNavContent user={user} pathname={path} hasVisited={hasVisited} />
     </div>
   );
 }

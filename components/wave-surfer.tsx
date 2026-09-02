@@ -3,7 +3,15 @@
 import { MAX_SONG_CLIP_DURATION_SECONDS } from "@/app/profile/schemas";
 import { useFeedAudio } from "@/context/feed-audio";
 import clsx from "clsx";
-import { Fullscreen, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import {
+  Fullscreen,
+  Music2,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import HoverPlugin from "wavesurfer.js/dist/plugins/hover.js";
@@ -37,6 +45,17 @@ const REGION_EDITOR_HEIGHT = 160;
 const REGION_EDITOR_FULLSCREEN_HEIGHT = 280;
 /** Zoom so a max-length clip fills most of the view and is easy to drag. */
 const REGION_VIEWPORT_FILL = 0.7;
+/** Tracks longer than this get a zoomed clip view + overview toggle. */
+const LONG_TRACK_SECONDS =
+  MAX_SONG_CLIP_DURATION_SECONDS / REGION_VIEWPORT_FILL;
+
+function fitWaveformWidth(ws: WaveSurfer) {
+  const width = ws.getWidth();
+  const duration = ws.getDuration();
+  if (!width || !duration) return;
+  ws.zoom(width / duration);
+  ws.setScrollTime(0);
+}
 
 function zoomClipEditor(ws: WaveSurfer, region?: ClipSelection | null) {
   const width = ws.getWidth();
@@ -58,6 +77,19 @@ function zoomClipEditor(ws: WaveSurfer, region?: ClipSelection | null) {
     );
     ws.setScrollTime(Math.max(0, region.start - padding));
   }
+}
+
+function editorHelpText(duration: number, showOverview: boolean) {
+  if (!duration) {
+    return `Drag the highlighted region (up to ${MAX_SONG_CLIP_DURATION_SECONDS}s).`;
+  }
+  if (duration <= LONG_TRACK_SECONDS) {
+    return `Drag the highlighted region to choose up to ${MAX_SONG_CLIP_DURATION_SECONDS}s.`;
+  }
+  if (showOverview) {
+    return "Overview of the full track — zoom in to fine-tune the clip region.";
+  }
+  return `Scroll to find a section, then drag the highlighted region (up to ${MAX_SONG_CLIP_DURATION_SECONDS}s).`;
 }
 
 /** Ensures only one WaveSurfer instance plays at a time on the page. */
@@ -346,9 +378,13 @@ function WaveSurferWithRegions({
   const regionsRef = useRef<RegionsPlugin | null>(null);
   const onSelectionChangeRef = useRef(onSelectionChange);
   const selectedRegionRef = useRef(selectedRegion);
+  const loadIdRef = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const isLongTrack = duration > LONG_TRACK_SECONDS;
 
   useEffect(() => {
     onSelectionChangeRef.current = onSelectionChange;
@@ -403,12 +439,10 @@ function WaveSurferWithRegions({
         if (r.id !== region.id) r.remove();
       });
       onSelectionChangeRef.current({ start: region.start, end: region.end });
-      void region.play(true);
     });
 
     const unsubUpdated = regions.on("region-updated", (region) => {
       onSelectionChangeRef.current({ start: region.start, end: region.end });
-      void region.play(true);
     });
 
     const unsubPlay = ws.on("play", () => {
@@ -438,7 +472,7 @@ function WaveSurferWithRegions({
     };
   }, []);
 
-  // Grow/zoom the waveform when entering the larger editor overlay
+  // Grow/reflow the waveform when fullscreen or overview mode changes
   useEffect(() => {
     const ws = wsRef.current;
     if (!ws || !isReady) return;
@@ -449,18 +483,31 @@ function WaveSurferWithRegions({
           ? REGION_EDITOR_FULLSCREEN_HEIGHT
           : REGION_EDITOR_HEIGHT,
       });
-      zoomClipEditor(ws, selectedRegionRef.current);
+      if (showOverview) {
+        fitWaveformWidth(ws);
+      } else {
+        zoomClipEditor(ws, selectedRegionRef.current);
+      }
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [isFullscreen, isReady]);
+  }, [isFullscreen, isReady, showOverview]);
 
   useEffect(() => {
     if (!isFullscreen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
       document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [isFullscreen]);
 
@@ -470,16 +517,18 @@ function WaveSurferWithRegions({
     const regions = regionsRef.current;
     if (!ws || !regions || !file) return;
 
-    let cancelled = false;
+    const loadId = ++loadIdRef.current;
     setIsReady(false);
+    setShowOverview(false);
+    setDuration(0);
 
     void ws.loadBlob(file).then(() => {
-      if (cancelled) return;
+      if (loadId !== loadIdRef.current) return;
 
       regions.clearRegions();
 
-      const duration = ws.getDuration();
-      const end = Math.min(MAX_SONG_CLIP_DURATION_SECONDS, duration);
+      const nextDuration = ws.getDuration();
+      const end = Math.min(MAX_SONG_CLIP_DURATION_SECONDS, nextDuration);
       const existing = selectedRegionRef.current;
       const region = {
         start: existing?.start ?? 0,
@@ -495,13 +544,10 @@ function WaveSurferWithRegions({
         maxLength: MAX_SONG_CLIP_DURATION_SECONDS,
       });
 
+      setDuration(nextDuration);
       zoomClipEditor(ws, region);
       setIsReady(true);
     });
-
-    return () => {
-      cancelled = true;
-    };
   }, [file]);
 
   return (
@@ -509,10 +555,10 @@ function WaveSurferWithRegions({
       className={clsx(
         "wave-region-editor flex flex-col gap-4 border rounded-md p-4 w-full min-w-0",
         isFullscreen &&
-          "fixed inset-0 z-99999 h-dvh w-screen rounded-none border-0 bg-background justify-center",
+          "fixed inset-0 z-99999 h-dvh max-h-dvh w-screen rounded-none border-0 bg-background overflow-auto pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]",
       )}
     >
-      <div className="flex items-center gap-2 border-b pb-4">
+      <div className="flex flex-wrap items-center gap-2 border-b pb-4">
         <ActionButton
           type="button"
           aria-label={isFullscreen ? "Exit larger editor" : "Enlarge editor"}
@@ -529,25 +575,40 @@ function WaveSurferWithRegions({
             </div>
           )}
         </ActionButton>
+        {isLongTrack && (
+          <ActionButton
+            type="button"
+            className="text-xs"
+            onClick={() => setShowOverview((overview) => !overview)}
+          >
+            {showOverview ? "Zoom to clip" : "Show full track"}
+          </ActionButton>
+        )}
       </div>
       <div className="flex flex-col justify-between gap-2">
-        <p className="text-sm">
-          Scroll to find a section, then drag the highlighted region (up to{" "}
-          {MAX_SONG_CLIP_DURATION_SECONDS}s)
-        </p>
+        <p className="text-sm">{editorHelpText(duration, showOverview)}</p>
       </div>
-      <div ref={containerRef} className="w-full min-w-0 touch-none" />
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center gap-2">
+      {/* Avoid touch-none in the inline editor so the page can still scroll;
+          fullscreen already locks body scroll while editing. */}
+      <div
+        ref={containerRef}
+        className={clsx("w-full min-w-0", isFullscreen && "touch-none")}
+      />
+      <div className="flex items-center justify-between border-t pt-4 gap-3">
+        <p className="text-base truncate flex items-center gap-2 min-w-0">
+          <Music2 className="w-4 h-4 shrink-0" /> {file.name}
+        </p>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-sm text-gray-500">Preview</span>
           <button
             type="button"
             onClick={playAndPause}
             disabled={!isReady}
-            className="hover:cursor-pointer hover:bg-white/10 p-1 rounded transition-colors disabled:opacity-40"
+            aria-label={isPlaying ? "Pause clip preview" : "Play clip preview"}
+            className="hover:cursor-pointer bg-black text-white w-8 h-8 flex items-center justify-center rounded-full transition-colors disabled:opacity-40"
           >
             {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           </button>
-          <p className="text-base truncate">{file.name}</p>
         </div>
       </div>
     </div>
