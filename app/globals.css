@@ -242,3 +242,16 @@ input:-webkit-autofill:focus {
 .animate-grow-width-delay {
   animation: 0.3s grow-width-delay 0.82s linear forwards;
 }
+
+/* Wider region resize handles for touch editing (inline styles need override) */
+.wave-region-editor [part~="region-handle"] {
+  width: 18px !important;
+}
+
+.wave-region-editor [part~="region-handle-left"] {
+  border-left-width: 4px !important;
+}
+
+.wave-region-editor [part~="region-handle-right"] {
+  border-right-width: 4px !important;
+}
