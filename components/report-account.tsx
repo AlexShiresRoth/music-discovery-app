@@ -1,6 +1,7 @@
 "use client";
 
 import { ToastContext } from "@/context/toast";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useContext, useMemo, useState } from "react";
@@ -142,6 +143,7 @@ export default function ReportAccount({ isAuthenticated, profileId }: Props) {
               name="description"
               placeholder="Description"
               value={description}
+              maxLength={INPUT_MAX.reportDescription}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>

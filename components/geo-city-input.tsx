@@ -4,6 +4,7 @@ import {
   type ProfileLocation,
 } from "@/app/profile/schemas";
 import TextInput from "@/components/text-input";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { GeocoderAutocomplete } from "@geoapify/geocoder-autocomplete";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -46,6 +47,11 @@ export default function GeoCityInput({
       },
     );
     autoComplete.current = autocomplete;
+
+    const geocoderInput = container.querySelector("input");
+    if (geocoderInput) {
+      geocoderInput.maxLength = INPUT_MAX.locationQuery;
+    }
 
     if (!!locationState?.formattedLocation) {
       autocomplete.setValue(locationState.formattedLocation);
@@ -95,6 +101,7 @@ export default function GeoCityInput({
           name={fields[key].name}
           hidden
           readOnly
+          maxLength={fields[key].maxLength}
           value={String(locationState?.[key] ?? "")}
           className="max-h-0 hidden"
         />

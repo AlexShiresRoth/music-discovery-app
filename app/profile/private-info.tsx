@@ -98,6 +98,7 @@ export default function PrivateInfo({
                   defaultValue={fullName || ""}
                   isPending={isFormPending}
                   placeholder={fields.fullName.placeholder}
+                  maxLength={fields.fullName.maxLength}
                   isEdit
                   autoFocus
                 />
@@ -118,6 +119,7 @@ export default function PrivateInfo({
                   defaultValue={contactEmail || ""}
                   isPending={isFormPending}
                   placeholder={fields.contactEmail.placeholder}
+                  maxLength={fields.contactEmail.maxLength}
                   isEdit
                 />
               </>

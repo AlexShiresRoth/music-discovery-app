@@ -1,4 +1,5 @@
 "use client";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -6,12 +7,14 @@ type Props = {
   name: string;
   defaultValues?: string[];
   maxOptions?: number;
+  maxOptionLength?: number;
 };
 
 export default function MultiSelectInput({
   defaultValues,
   name,
   maxOptions = 5,
+  maxOptionLength = INPUT_MAX.influence,
 }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [addedOptions, setAddedOptions] = useState<string[]>(
@@ -19,7 +22,7 @@ export default function MultiSelectInput({
   );
 
   const addOption = (raw: string) => {
-    const value = raw.trim();
+    const value = raw.trim().slice(0, maxOptionLength);
     if (
       !value ||
       addedOptions.length >= maxOptions ||
@@ -52,6 +55,7 @@ export default function MultiSelectInput({
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={onKeyDown}
             value={inputValue}
+            maxLength={maxOptionLength}
             className="w-full focus:outline-0 hover:outline-0 focus:ring-0 hover:ring-0"
           />
           <button

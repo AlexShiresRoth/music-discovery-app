@@ -196,6 +196,7 @@ export default function SocialSection({
                   value={values[key]}
                   isFormPending={isFormPending}
                   index={index}
+                  maxLength={fields[key].maxLength}
                   icon={IconComponent && <IconComponent size={16} />}
                 />
               );

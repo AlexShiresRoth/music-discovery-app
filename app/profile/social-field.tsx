@@ -13,6 +13,7 @@ export default function SocialField({
   value,
   isFormPending,
   index,
+  maxLength,
 }: {
   icon?: React.ReactNode;
   label: string;
@@ -21,6 +22,7 @@ export default function SocialField({
   value: SocialField;
   isFormPending: boolean;
   index: number;
+  maxLength?: number;
 }) {
   return (
     <div className="flex flex-col gap-2 border-b">
@@ -39,6 +41,7 @@ export default function SocialField({
         defaultValue={value.url || ""}
         isPending={isFormPending}
         placeholder={placeholder}
+        maxLength={maxLength}
         isEdit
         autoFocus={index === 0}
       />

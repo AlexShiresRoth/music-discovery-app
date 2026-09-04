@@ -1,11 +1,14 @@
 import { createServerClient } from "@/lib/auth";
 import { enforceRateLimit } from "@/lib/db/redis";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { NextResponse } from "next/server";
 
 function normalizeEmail(email: unknown): string | null {
   if (typeof email !== "string") return null;
   const trimmed = email.trim().toLowerCase();
-  if (!trimmed || !trimmed.includes("@") || trimmed.length > 320) return null;
+  if (!trimmed || !trimmed.includes("@") || trimmed.length > INPUT_MAX.email) {
+    return null;
+  }
   return trimmed;
 }
 

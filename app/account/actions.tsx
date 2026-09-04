@@ -7,6 +7,7 @@ import {
 } from "@/components/settings-layout";
 import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { useDeviceType } from "@/stores/use-device-type";
 import { handleInstall } from "@/stores/use-install";
 import { track } from "@vercel/analytics";
@@ -182,6 +183,7 @@ export default function AccountActions() {
               placeholder="Describe the feature..."
               rows={5}
               required
+              maxLength={INPUT_MAX.feedbackMessage}
               isPending={isSubmitting}
             />
           </form>
@@ -230,6 +232,7 @@ export default function AccountActions() {
               placeholder="Describe the bug..."
               rows={5}
               required
+              maxLength={INPUT_MAX.feedbackMessage}
               isPending={isSubmitting}
             />
           </form>
