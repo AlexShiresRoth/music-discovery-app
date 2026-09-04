@@ -30,6 +30,8 @@ export const limiters = {
   feedback: createRateLimiter("rl:feedback", "1 h", 10),
   upload: createRateLimiter("rl:upload", "1 h", 10),
   mutate: createRateLimiter("rl:mutate", "1 m", 30),
+  /** Confirmation / auth emails — tight limits to limit inbox spam. */
+  authEmail: createRateLimiter("rl:auth-email", "1 h", 3),
 };
 
 export async function enforceRateLimit(
