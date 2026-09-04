@@ -171,6 +171,10 @@ describe("LoginForm", () => {
             /Please check your email for a verification link/i,
           ),
         ).toBeDefined();
+        expect(screen.getByText("user@example.com")).toBeDefined();
+        expect(
+          screen.getByRole("button", { name: /Resend available in \d+s/i }),
+        ).toHaveProperty("disabled", true);
         expect(mockRefresh).not.toHaveBeenCalled();
       });
     });
