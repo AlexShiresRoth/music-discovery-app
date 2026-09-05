@@ -1,6 +1,5 @@
+import { INPUT_MAX } from "@/lib/input-limits";
 import "server-only";
-
-const MAX_MESSAGE_LENGTH = 5_000;
 
 export function parseFeedbackMessage(body: unknown): {
   message?: string;
@@ -20,8 +19,10 @@ export function parseFeedbackMessage(body: unknown): {
     return { error: "Message is required" };
   }
 
-  if (trimmed.length > MAX_MESSAGE_LENGTH) {
-    return { error: `Message must be ${MAX_MESSAGE_LENGTH} characters or fewer` };
+  if (trimmed.length > INPUT_MAX.feedbackMessage) {
+    return {
+      error: `Message must be ${INPUT_MAX.feedbackMessage} characters or fewer`,
+    };
   }
 
   return { message: trimmed };

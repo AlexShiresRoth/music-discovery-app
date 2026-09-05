@@ -144,6 +144,7 @@ export default function PublicInfo({
                 defaultValue={profileName || ""}
                 isPending={isFormPending}
                 placeholder={fields.profileName.placeholder}
+                maxLength={fields.profileName.maxLength}
                 isEdit
                 autoFocus
               />
@@ -161,6 +162,8 @@ export default function PublicInfo({
                 defaultValue={bio || ""}
                 name={fields.bio.name}
                 isPending={isFormPending}
+                maxLength={fields.bio.maxLength}
+                placeholder={fields.bio.placeholder}
               />
             </ViewOrEditData>
           ) : (
@@ -179,6 +182,7 @@ export default function PublicInfo({
                 <MultiSelectInput
                   name={fields.influences.name}
                   defaultValues={influences ?? []}
+                  maxOptionLength={fields.influences.maxLength}
                 />
               </ViewOrEditData>
             ) : (

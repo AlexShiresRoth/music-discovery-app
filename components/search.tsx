@@ -1,5 +1,6 @@
 "use client";
 import { Profile } from "@/lib/db/types";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { Loader2, MapPinIcon, Music, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -100,6 +101,7 @@ function SearchUI() {
           placeholder="Search artists or locations"
           className="focus:outline-0 pl-4 py-2 w-full"
           data-search-input
+          maxLength={INPUT_MAX.search}
           onBlur={clearSearch}
           onChange={(e) => {
             const query = e.target.value;

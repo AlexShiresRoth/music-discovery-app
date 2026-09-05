@@ -159,6 +159,7 @@ export default function SongClipSlot({
           }
           isPending={isFormPending || isDeleting}
           placeholder={songClipFormFields.title.placeholder}
+          maxLength={songClipFormFields.title.maxLength}
           isEdit
         />
       </div>
@@ -186,6 +187,7 @@ export default function SongClipSlot({
           }
           isPending={isFormPending || isDeleting}
           placeholder={songClipFormFields.full_song_url.placeholder}
+          maxLength={songClipFormFields.full_song_url.maxLength}
           isEdit
         />
       </div>

@@ -27,7 +27,7 @@ export default function TextInput({
     >
       {label && (
         <label htmlFor={name} className="ml-2 text-sm font-semibold">
-          {label}
+          {label} {props.required && <span className="text-amber-500">*</span>}
         </label>
       )}
       {isEdit ? (

@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
   customType,
@@ -9,6 +10,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 import { SocialField, SongClipWithSlot } from "./types";
@@ -64,7 +66,7 @@ export const profilesSchema = pgTable("profiles", {
   public: boolean("public").default(true),
   fullName: text("full_name"),
   contactEmail: text("contact_email"),
-  profileName: text("profile_name"),
+  profileName: text("profile_name").unique(),
   bio: text("bio"),
   genre: text("genre"), // @deprecated - use songClips.genre instead
   influences: jsonb("influences").$type<string[]>().notNull().default([]),
@@ -119,7 +121,9 @@ export const profilesSchema = pgTable("profiles", {
     .notNull()
     .default({ url: "", show: true }),
   userRefId: uuid("user_ref_id").notNull(),
-});
+}, (table) => [
+  uniqueIndex("profiles_profile_name_lower_idx").on(sql`lower(${table.profileName})`),
+]);
 
 export const accountReportsSchema = pgTable("account_reports", {
   id: serial("id").primaryKey(),

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema } from "@/lib/db/schema";
 import type { SocialField } from "@/lib/db/types";
+import { isProfileNameTaken } from "@/lib/profile/display-name";
 import { SOCIAL_PLATFORMS, validateSocialFields } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -68,6 +69,22 @@ export const POST = async (request: Request) => {
     const lat = Number(data.lat ?? p.lat) || 0;
     const lon = Number(data.lon ?? p.lon) || 0;
 
+    const rawProfileName = data.profileName;
+    const newProfileName =
+      typeof rawProfileName === "string" ? rawProfileName.trim() : undefined;
+
+    if (newProfileName !== undefined && newProfileName.length > 0) {
+      if (newProfileName.toLowerCase() !== p.profileName?.toLowerCase()) {
+        const nameTaken = await isProfileNameTaken(newProfileName, user.id);
+        if (nameTaken) {
+          return NextResponse.json(
+            { error: "Display name is already taken" },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
     const influences = data.influences
       ? (data.influences as string)
           .split(",")
@@ -89,7 +106,7 @@ export const POST = async (request: Request) => {
         lat,
         lon,
         influences,
-        profileName: data.profileName || p.profileName,
+        profileName: newProfileName || p.profileName,
         location: `POINT(${lon} ${lat})`,
         genre: p.genre,
         fullName: data.fullName || p.fullName,
@@ -101,6 +118,21 @@ export const POST = async (request: Request) => {
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error(error);
+    const pgError = error as {
+      code?: string;
+      message?: string;
+      constraint?: string;
+    };
+    if (
+      pgError.code === "23505" ||
+      pgError.constraint?.includes("profile_name") ||
+      pgError.message?.toLowerCase().includes("unique")
+    ) {
+      return NextResponse.json(
+        { error: "Display name is already taken" },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Internal Server Error",

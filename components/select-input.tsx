@@ -20,6 +20,7 @@ function OptionList({
   if (groups?.length) {
     return groups.map((group) => (
       <optgroup key={group.label} label={group.label}>
+        <option value="">Select an option</option>
         {group.options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

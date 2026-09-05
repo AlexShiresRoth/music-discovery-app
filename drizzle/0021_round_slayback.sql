@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "profiles_profile_name_lower_idx" ON "profiles" USING btree (lower("profile_name"));--> statement-breakpoint
+ALTER TABLE "profiles" ADD CONSTRAINT "profiles_profile_name_unique" UNIQUE("profile_name");

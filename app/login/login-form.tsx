@@ -2,6 +2,7 @@
 
 import TextInput from "@/components/text-input";
 import { ToastContext } from "@/context/toast";
+import { INPUT_MAX } from "@/lib/input-limits";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -161,6 +162,7 @@ export default function LoginForm({ isSignUp = false }: Props) {
         placeholder="Email"
         name="email"
         isPending={isPending}
+        maxLength={INPUT_MAX.email}
         required
       />
       <TextInput
@@ -169,6 +171,7 @@ export default function LoginForm({ isSignUp = false }: Props) {
         name="password"
         isPending={isPending}
         togglePasswordVisibility={togglePasswordVisibility}
+        maxLength={INPUT_MAX.password}
         required
       />
       {isSignUp && (
@@ -178,6 +181,7 @@ export default function LoginForm({ isSignUp = false }: Props) {
           name="confirmPassword"
           isPending={isPending}
           togglePasswordVisibility={toggleConfirmPasswordVisibility}
+          maxLength={INPUT_MAX.password}
           required
         />
       )}

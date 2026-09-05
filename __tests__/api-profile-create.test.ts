@@ -31,11 +31,14 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("@/lib/db/schema", () => ({
-  profilesSchema: { userRefId: "userRefId" },
+  profilesSchema: { userRefId: "userRefId", profileName: "profileName" },
 }));
 
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(() => "mock-condition"),
+  ilike: vi.fn(() => "mock-condition"),
+  and: vi.fn((...args: unknown[]) => args),
+  ne: vi.fn(() => "mock-condition"),
 }));
 
 function makeRequest(body: object) {
@@ -117,6 +120,40 @@ describe("POST /api/profile/create", () => {
 
     expect(response.status).toBe(400);
     expect(body.error).toBe("Profile already exists");
+  });
+
+  it("returns 400 when display name is already taken", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+    mockLimit
+      .mockResolvedValueOnce([]) // existing profile check
+      .mockResolvedValueOnce([{ id: "existing-name" }]); // existing name check
+
+    const response = await POST(makeRequest(validProfileData));
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe("Display name is already taken");
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 when display name is missing or whitespace", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+    mockLimit.mockResolvedValue([]);
+
+    const response = await POST(
+      makeRequest({ ...validProfileData, profileName: "   " }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe("Display name is required");
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 
   it("inserts profile and returns success when user has no existing profile", async () => {
