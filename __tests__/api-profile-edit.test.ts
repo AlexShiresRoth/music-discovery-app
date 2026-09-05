@@ -31,11 +31,14 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("@/lib/db/schema", () => ({
-  profilesSchema: { userRefId: "userRefId" },
+  profilesSchema: { userRefId: "userRefId", profileName: "profileName" },
 }));
 
 vi.mock("drizzle-orm", () => ({
   eq: vi.fn(() => "mock-condition"),
+  ilike: vi.fn(() => "mock-condition"),
+  and: vi.fn((...args: unknown[]) => args),
+  ne: vi.fn(() => "mock-condition"),
 }));
 
 function makeRequest(body: object) {
@@ -111,7 +114,18 @@ describe("POST /api/profile/edit", () => {
     mockLimit.mockResolvedValue([existingProfile]);
     mockSelectWhere.mockReturnValue({ limit: mockLimit });
     mockFrom.mockReturnValue({ where: mockSelectWhere });
-    mockSelect.mockReturnValue({ from: mockFrom });
+    mockSelect.mockImplementation((fields?: unknown) => {
+      if (fields) {
+        return {
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({
+              limit: vi.fn().mockResolvedValue([]),
+            })),
+          })),
+        };
+      }
+      return { from: mockFrom };
+    });
   });
 
   it("returns 500 on auth error", async () => {
@@ -156,6 +170,50 @@ describe("POST /api/profile/edit", () => {
         contactEmail: "new@example.com",
       }),
     );
+  });
+
+  it("returns 400 when new display name is already taken by another user", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+    mockSelect.mockImplementation((fields?: unknown) => {
+      if (fields) {
+        return {
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({
+              limit: vi.fn().mockResolvedValue([{ id: "other-profile" }]),
+            })),
+          })),
+        };
+      }
+      return { from: mockFrom };
+    });
+
+    const response = await POST(
+      makeRequest({ ...validUpdateData, profileName: "Taken Name" }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe("Display name is already taken");
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("allows saving when display name is unchanged", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+
+    const response = await POST(
+      makeRequest({ ...validUpdateData, profileName: "Old Profile" }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(mockUpdate).toHaveBeenCalled();
   });
 
   it("falls back to existing profile values when request fields are empty", async () => {

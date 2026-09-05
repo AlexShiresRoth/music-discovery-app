@@ -16,7 +16,9 @@ function Section({ children }: { children: React.ReactNode }) {
 }
 
 function Columns({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-2 gap-4">{children}</div>;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
+  );
 }
 
 function Column({
@@ -43,7 +45,7 @@ function Heading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function ProfileForm() {
+export default function ProfileForm({ email }: { email: string }) {
   const fields = profileFormFields;
   const router = useRouter();
   const [pending, setIsFormPending] = useState(false);
@@ -110,7 +112,11 @@ export default function ProfileForm() {
               <TextInput {...fields.fullName} isPending={pending} />
             </Column>
             <Column>
-              <TextInput {...fields.contactEmail} isPending={pending} />
+              <TextInput
+                {...fields.contactEmail}
+                isPending={pending}
+                defaultValue={email}
+              />
             </Column>
             <Column span={2}>
               <label
@@ -118,12 +124,16 @@ export default function ProfileForm() {
                 className="ml-2 text-sm font-semibold"
               >
                 {fields.location.label}
+                {fields.location.required && (
+                  <span className="text-amber-500">*</span>
+                )}
               </label>
               <div className="border rounded-md p-2 py-4">
                 <GeoCityInput
                   placeholder={fields.location.placeholder}
                   defaultValue={null}
                   isPending={pending}
+                  required={fields.location.required}
                 />
               </div>
             </Column>
@@ -132,7 +142,7 @@ export default function ProfileForm() {
         <Section>
           <Heading>About You</Heading>
           <Columns>
-            <Column>
+            <Column span={2}>
               <TextInput {...fields.profileName} isPending={pending} />
             </Column>
             <WideColumn>
@@ -157,7 +167,7 @@ export default function ProfileForm() {
           </Columns>
         </Section>
 
-        <ActionButton disabled={pending} type="submit">
+        <ActionButton disabled={pending} type="submit" className="py-2">
           {pending ? "Creating Profile..." : "Create Profile"}
         </ActionButton>
       </form>

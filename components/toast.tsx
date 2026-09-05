@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { AlertCircle, AlertTriangle, Check, Info } from "lucide-react";
 import { useEffect } from "react";
 
 type Props = {
@@ -23,31 +24,17 @@ function ToastWrapper({
   return (
     <div
       className={clsx(
-        "relative border-2 border-b-4 p-4 rounded rounded-b-none w-fit flex flex-col bg-amber-500 border-black text-black",
+        "relative border-2 border-b-4 p-2 rounded w-fit flex flex-col bg-amber-500 font-bold animate-translate-in-vertical",
       )}
     >
-      {children}
-      <div
-        className={clsx(
-          "absolute bottom-0 left-0 h-1 w-full flex items-center",
-          {
-            "bg-green-500/30": type === "success",
-            "bg-red-500/30": type === "error",
-            "bg-blue-500/30": type === "info",
-            "bg-yellow-500/30": type === "warning",
-          },
+      <div className="flex items-center gap-2">
+        {type === "success" && <Check className="size-5 bg-emerald-500" />}
+        {type === "error" && <AlertCircle className="size-5 bg-red-500" />}
+        {type === "info" && <Info className="size-5 bg-amber-200" />}
+        {type === "warning" && (
+          <AlertTriangle className="size-5 bg-yellow-500" />
         )}
-      >
-        <span
-          className={clsx("h-1", {
-            "progress-3 w-full": duration === 3000 && isVisible,
-            "progress-5 w-full": duration === 5000 && isVisible,
-            "bg-green-500/80 text-green-500/80": type === "success",
-            "bg-red-500/80 text-red-500/80": type === "error",
-            "bg-blue-500/80 text-blue-500/80": type === "info",
-            "bg-yellow-500/80 text-yellow-500/80": type === "warning",
-          })}
-        />
+        <p className="whitespace-nowrap">{children}</p>
       </div>
     </div>
   );

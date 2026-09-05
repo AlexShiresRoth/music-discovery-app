@@ -183,26 +183,23 @@ export default function SocialSection({
         )}
       </div>
       {isEdit ? (
-        <div className="relative">
-          <div className="flex flex-col gap-6 h-[40vh] overflow-y-auto pb-10">
-            {SOCIAL_FIELDS.map(({ key, icon }, index) => {
-              const IconComponent = icon;
-              return (
-                <SocialField
-                  key={key}
-                  label={fields[key].label}
-                  placeholder={fields[key].placeholder || ""}
-                  name={fields[key].name}
-                  value={values[key]}
-                  isFormPending={isFormPending}
-                  index={index}
-                  maxLength={fields[key].maxLength}
-                  icon={IconComponent && <IconComponent size={16} />}
-                />
-              );
-            })}
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-5 backdrop-blur-xs bg-background/50" />
+        <div className="flex flex-col gap-6">
+          {SOCIAL_FIELDS.map(({ key, icon }, index) => {
+            const IconComponent = icon;
+            return (
+              <SocialField
+                key={key}
+                label={fields[key].label}
+                placeholder={fields[key].placeholder || ""}
+                name={fields[key].name}
+                value={values[key]}
+                isFormPending={isFormPending}
+                index={index}
+                maxLength={fields[key].maxLength}
+                icon={IconComponent && <IconComponent size={16} />}
+              />
+            );
+          })}
         </div>
       ) : (
         SOCIAL_FIELDS.map(({ key, fallback, icon: IconComponent }) => (

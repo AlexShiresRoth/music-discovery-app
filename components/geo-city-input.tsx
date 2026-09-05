@@ -15,6 +15,7 @@ type GeoCityInputProps = {
   fields?: Record<keyof ProfileLocation, FormField>;
   placeholder?: string;
   defaultValue: ProfileLocation | null;
+  required?: boolean;
 };
 
 export default function GeoCityInput({
@@ -22,6 +23,7 @@ export default function GeoCityInput({
   fields = locationFormFields,
   placeholder = "Enter your location (min 3 characters)",
   defaultValue,
+  required = false,
 }: GeoCityInputProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const autoComplete = useRef<GeocoderAutocomplete | null>(null);
@@ -104,6 +106,7 @@ export default function GeoCityInput({
           maxLength={fields[key].maxLength}
           value={String(locationState?.[key] ?? "")}
           className="max-h-0 hidden"
+          required={required}
         />
       ))}
     </div>

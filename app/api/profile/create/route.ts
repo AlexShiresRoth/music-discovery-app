@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { enforceRateLimit } from "@/lib/db/redis";
 import { profilesSchema } from "@/lib/db/schema";
+import { isProfileNameTaken } from "@/lib/profile/display-name";
 import { validateSocialFields } from "@/lib/validation/url";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -46,6 +47,24 @@ export async function POST(request: Request) {
       );
     }
 
+    const profileName =
+      typeof data.profileName === "string" ? data.profileName.trim() : "";
+
+    if (!profileName) {
+      return NextResponse.json(
+        { error: "Display name is required" },
+        { status: 400 },
+      );
+    }
+
+    const nameTaken = await isProfileNameTaken(profileName);
+    if (nameTaken) {
+      return NextResponse.json(
+        { error: "Display name is already taken" },
+        { status: 400 },
+      );
+    }
+
     const socialValidation = validateSocialFields(
       data as Record<string, unknown>,
     );
@@ -72,7 +91,7 @@ export async function POST(request: Request) {
         joinedDate: new Date(),
         songClips: [],
         bio: data.bio,
-        profileName: data.profileName,
+        profileName,
         isVerified: false,
         city: data.city ?? "",
         country: data.country ?? "",
@@ -101,6 +120,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     console.error(error);
+    const pgError = error as {
+      code?: string;
+      message?: string;
+      constraint?: string;
+    };
+    if (
+      pgError.code === "23505" ||
+      pgError.constraint?.includes("profile_name") ||
+      pgError.message?.toLowerCase().includes("unique")
+    ) {
+      return NextResponse.json(
+        { error: "Display name is already taken" },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Internal Server Error",
