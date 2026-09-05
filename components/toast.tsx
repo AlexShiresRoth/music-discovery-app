@@ -13,13 +13,9 @@ type Props = {
 function ToastWrapper({
   children,
   type,
-  duration,
-  isVisible,
 }: {
   children: React.ReactNode;
   type: "success" | "error" | "info" | "warning";
-  duration: 3000 | 5000;
-  isVisible: boolean;
 }) {
   return (
     <div
@@ -65,11 +61,7 @@ export default function Toast({
         },
       )}
     >
-      {
-        <ToastWrapper type={type} duration={duration} isVisible={isVisible}>
-          {message}
-        </ToastWrapper>
-      }
+      {<ToastWrapper type={type}>{message}</ToastWrapper>}
     </div>
   );
 }
