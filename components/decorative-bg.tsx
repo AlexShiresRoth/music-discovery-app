@@ -12,7 +12,7 @@ export default function DecorativeBg({ isPlaying }: DecorativeBgProps) {
   return (
     <div
       data-decorative-bg
-      className="flex aspect-square md:w-[max(130cqw,130cqh)] w-[max(120cqw,120cqh)] shrink-0 items-center justify-center rounded-full border-2 border-gray-400/10 bg-background"
+      className="flex aspect-square md:w-[max(130cqw,130cqh)] w-[max(90cqw,90cqh)] shrink-0 items-center justify-center rounded-full border-2 border-gray-400/10 bg-background"
     >
       <div
         className={clsx(

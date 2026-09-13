@@ -12,6 +12,16 @@ import "server-only";
 
 const MAX_INFLUENCES = 5;
 
+const DIFFERENCE_IN_MINUTES = 30;
+
+function getDifference(newDate: Date, oldDate: Date) {
+  return Math.abs(newDate.getTime() - oldDate.getTime()) / (1000 * 60);
+}
+
+function shouldUpdate(newDate: Date, oldDate: Date) {
+  return getDifference(newDate, oldDate) > DIFFERENCE_IN_MINUTES;
+}
+
 export const POST = async (request: Request) => {
   const ip = request.headers.get("x-forwarded-for") || "unknown";
   const limited = await enforceRateLimit("mutate", ip);
@@ -111,6 +121,13 @@ export const POST = async (request: Request) => {
         genre: p.genre,
         fullName: data.fullName || p.fullName,
         contactEmail: data.contactEmail || p.contactEmail,
+        openToCollaboration: data.openToCollaboration ?? p.openToCollaboration,
+        openToGigs: data.openToGigs ?? p.openToGigs,
+        needActForShow: data.needActForShow ?? p.needActForShow,
+        statusMessage: data.statusMessage ?? p.statusMessage,
+        updatedAt: shouldUpdate(new Date(), p.updatedAt ?? new Date())
+          ? new Date()
+          : p.updatedAt,
         imageUrl: data.imageUrl === "" ? null : data.imageUrl || p.imageUrl, // if this is specifically an empty string, set it to null to remove image
       })
       .where(eq(profilesSchema.userRefId, user.id));

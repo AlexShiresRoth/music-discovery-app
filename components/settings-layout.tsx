@@ -68,7 +68,7 @@ export function SettingsModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
-        className="bg-background border-2 border-b-4 p-4 flex flex-col gap-4 max-w-2xl w-11/12"
+        className="bg-background border-2 border-b-4 p-4 flex flex-col gap-4 max-w-2xl w-11/12 rounded"
         onClick={(event) => event.stopPropagation()}
       >
         <h1

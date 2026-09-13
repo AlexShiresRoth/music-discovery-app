@@ -116,12 +116,14 @@ function Filters({
   );
 }
 
+// TODO - handle status filter
 export default function FeedFilter() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
   const genres = searchParams.getAll("g");
+  const status = searchParams.get("status");
   const q = searchParams.get("q");
   const allowedPaths = ["/clips"];
 

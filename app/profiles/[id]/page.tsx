@@ -6,6 +6,7 @@ import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
 import ReportAccount from "@/components/report-account";
+import StatusDisplay from "@/components/status-display";
 import { getProfileById, getSession } from "@/lib/auth";
 import { ImageIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -167,7 +168,7 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
         </header>
-
+        <StatusDisplay profile={profile} onPublicProfile />
         <PublicSongClips clips={profile.songClips} />
       </div>
       <Footer />

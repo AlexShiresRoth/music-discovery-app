@@ -7,6 +7,7 @@ import Link from "next/link";
 import EmptyState from "./empty-state";
 import ProfileLocationDisplay from "./profile-location-display";
 import ReportAccount from "./report-account";
+import StatusDisplay from "./status-display";
 
 type Props = {
   profile: ProfileWithSongClips;
@@ -34,10 +35,15 @@ export default function ArtistColumn({
   isAuthenticated,
 }: Props) {
   const published = formatPublishedAt(profile.updatedAt);
+  const hasStatus =
+    profile.statusMessage ||
+    profile.openToCollaboration ||
+    profile.openToGigs ||
+    profile.needActForShow;
   return (
     <aside
       className={clsx(
-        "flex flex-col md:border-r border-r-black/10 pr-8 gap-20 opacity-60",
+        "flex flex-col md:border-r border-r-black/10 pr-8 md:gap-20 gap-4 opacity-60",
         isActive ? "animate-light-fade-in" : "animate-light-fade-out",
       )}
     >
@@ -90,11 +96,12 @@ export default function ArtistColumn({
           />
         </div>
       </div>
+
       <div className="flex-col gap-2 md:flex hidden">
         <div className="flex flex-col border-b border-b-black/10 pb-2">
           <p className="font-semibold text-lg">Clips</p>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {songClips.length > 0 &&
             songClips.map((clip, index) => (
               <div key={clip.id}>
@@ -123,6 +130,16 @@ export default function ArtistColumn({
             ))}
         </div>
       </div>
+      {hasStatus && (
+        <div className="flex-col gap-2 flex">
+          <div className="flex flex-col border-b border-b-black/10 md:pb-2">
+            <p className="font-semibold text-lg">Status</p>
+          </div>
+          <div className="flex flex-col md:ml-4">
+            <StatusDisplay profile={profile} />
+          </div>
+        </div>
+      )}
       <div className="flex-col h-full justify-end py-4 md:flex hidden">
         <p className="text-sm text-gray-500">
           Artist {currentIndex + 1} of {totalProfiles}

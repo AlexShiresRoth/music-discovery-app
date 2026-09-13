@@ -44,7 +44,7 @@ export default function ClipStage({
           Disc is sized via clip @container units so it still fills the slide;
           slide overflow-hidden clips bleed into neighbors.
         */}
-        <div className="relative h-45 w-full md:h-60">
+        <div className="relative h-40 w-full md:h-60">
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
             <DecorativeBg isPlaying={isActive && isPlaying} />
           </div>
