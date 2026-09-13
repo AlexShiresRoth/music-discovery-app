@@ -1,117 +1,32 @@
-import { db } from "@/lib/db";
+import { getProfilesWithSongClips, getProfilesWithSongClipsByLocation } from "@/lib/auth/profile";
 import { enforceRateLimit } from "@/lib/db/redis";
-import { profilesSchema } from "@/lib/db/schema";
-import { getSongClipsByIds } from "@/lib/db/song-clips";
-import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
-const isPublic = eq(profilesSchema.public, true);
-
-async function fetchProfilesByLocation(
-  longitude: number,
-  latitude: number,
-  genres: string[],
-  limit: number,
-  startIndex: number,
-) {
-  const searchPoint = sql`
-    ST_SetSRID(
-      ST_MakePoint(${longitude}, ${latitude}),
-      4326
-    )::geography
-  `;
-
-  const distance = sql<number>`
-    ST_Distance(${profilesSchema.location}, ${searchPoint})
-  `;
-
-  const RADIUS = 40_000;
-
-  return await db
-    .select()
-    .from(profilesSchema)
-    .where(
-      genres.length > 0
-        ? and(
-            isPublic,
-            inArray(profilesSchema.genre, genres),
-            sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-          )
-        : and(
-            isPublic,
-            sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-          ),
-    )
-    .orderBy(asc(distance))
-    .offset(startIndex)
-    .limit(limit);
-}
-
-async function fetchProfilesByGenres(
-  genres: string[],
-  limit: number,
-  startIndex: number,
-) {
-  return await db
-    .select()
-    .from(profilesSchema)
-    .where(
-      genres.length > 0
-        ? and(
-            isPublic,
-            inArray(profilesSchema.genre, genres as string[]),
-            sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-          )
-        : and(
-            isPublic,
-            sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-          ),
-    )
-    .offset(Number(startIndex))
-    .limit(Number(limit));
-}
 
 export async function GET(request: Request) {
   try {
     const ip = request.headers.get("x-forwarded-for") || "unknown";
     const limited = await enforceRateLimit("mutate", ip);
     if (limited) return limited;
+
     const { searchParams } = new URL(request.url);
-    const genres = searchParams.getAll("g") || [];
-    const startIndex = searchParams.get("start") || "0";
-    const limit = searchParams.get("limit") || "15";
-    const longitude = searchParams.get("lon") || "";
-    const latitude = searchParams.get("lat") || "";
+    const status = searchParams.getAll("status");
+    const startIndex = Number(searchParams.get("start") || "0");
+    const limit = Number(searchParams.get("limit") || "15");
+    const longitude = searchParams.get("lon");
+    const latitude = searchParams.get("lat");
 
     const profiles =
       longitude && latitude
-        ? await fetchProfilesByLocation(
+        ? await getProfilesWithSongClipsByLocation(
             parseFloat(longitude),
             parseFloat(latitude),
-            genres,
-            parseInt(limit),
-            parseInt(startIndex),
+            status,
+            startIndex,
+            limit,
           )
-        : await fetchProfilesByGenres(
-            genres,
-            parseInt(limit),
-            parseInt(startIndex),
-          );
+        : await getProfilesWithSongClips(startIndex, limit, status);
 
-    if (profiles.length === 0) {
-      return NextResponse.json([], { status: 200 });
-    }
-
-    return NextResponse.json(
-      await Promise.all(
-        profiles.map(async (profile) => {
-          const songClips = await getSongClipsByIds(
-            profile.songClips.map((clip) => clip.id),
-          );
-          return { ...profile, songClips };
-        }),
-      ),
-    );
+    return NextResponse.json(profiles);
   } catch (error) {
     console.error("Error fetching profiles:", error);
     return NextResponse.json(

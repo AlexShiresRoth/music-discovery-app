@@ -127,7 +127,11 @@ function FeedSongClips({
   const [activeClipIndex, setActiveClipIndex] = useState(0);
   const genresKey = genres.join(",");
   const fetchSearchParams = useMemo(() => {
-    return { g: genresKey.split(",") };
+    const params: Record<string, string | string[]> = {};
+    if (genresKey) {
+      params.g = genresKey.split(",");
+    }
+    return params;
   }, [genresKey]);
 
   const { fetchedData, error, isLoading } =
@@ -201,31 +205,22 @@ export default function FeedList({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const genres = searchParams.getAll("g") || [];
-  const status = searchParams.getAll("status") || [];
+  const genres = searchParams.getAll("g");
+  const status = searchParams.getAll("status");
   const genresKey = genres.join(",");
+  const statusKey = status.join(",");
   const longitude = searchParams.get("lon") || "";
   const latitude = searchParams.get("lat") || "";
-  const searchTermOrGenres = searchTerm || genres.join(", ");
-  const searchTermOrGenresSpan = (
-    <span className="font-bold">{searchTermOrGenres}</span>
-  );
-
-  console.log(
-    `${genresKey}-${searchTerm}-${longitude}-${latitude}-${status.join(",")}`,
-  );
+  const filterLabel = searchTerm || [...genres, ...status].join(", ");
+  const filterLabelSpan = <span className="font-bold">{filterLabel}</span>;
 
   if (profiles.length === 0 && songClips.length === 0) {
     return (
       <div className="flex justify-center flex-col gap-4 items-center h-screen">
         <p className="text-center text-2xl">
           No Artists Yet
-          {searchTermOrGenres.length > 0 ? (
-            <> for {searchTermOrGenresSpan}.</>
-          ) : (
-            <>.</>
-          )}{" "}
-          Be the first.
+          {filterLabel.length > 0 ? <> for {filterLabelSpan}.</> : <>.</>} Be
+          the first.
         </p>
         <ActionButton onClick={() => router.back()} type="button">
           Go Back
@@ -248,14 +243,12 @@ export default function FeedList({
       <Feed
         profiles={profiles}
         genres={genres}
+        status={status}
         totalProfiles={totalProfiles}
-        // key={
-
-        // }
+        key={`${genresKey}-${statusKey}-${searchTerm}-${longitude}-${latitude}`}
         longitude={longitude ? parseFloat(longitude) : undefined}
         latitude={latitude ? parseFloat(latitude) : undefined}
         isAuthenticated={isAuthenticated}
-        status={status}
       />
       <FeedAudioControls />
     </FeedAudioProvider>

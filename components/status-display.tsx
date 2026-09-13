@@ -1,5 +1,6 @@
 "use client";
 
+import { PROFILE_STATUS_FILTERS } from "@/constants";
 import { ProfileWithSongClips } from "@/lib/db/types";
 import clsx from "clsx";
 import { MessageCircle } from "lucide-react";
@@ -32,7 +33,7 @@ export default function StatusDisplay({
                 onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              Open to collaboration
+              {PROFILE_STATUS_FILTERS.openToCollaboration.label}
             </p>
           )}
           {profile.openToGigs && onPublicProfile && (
@@ -45,7 +46,7 @@ export default function StatusDisplay({
                 onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              Open to gigs
+              {PROFILE_STATUS_FILTERS.openToGigs.label}
             </p>
           )}
           {profile.needActForShow && onPublicProfile && (
@@ -58,7 +59,7 @@ export default function StatusDisplay({
                 onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              Booking shows
+              {PROFILE_STATUS_FILTERS.needActForShow.label}
             </p>
           )}
           {profile.statusMessage && !onPublicProfile && (

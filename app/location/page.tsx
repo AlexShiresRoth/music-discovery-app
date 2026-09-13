@@ -5,10 +5,16 @@ import {
   getSession,
   getTotalProfilesWithSongClipsByLocation,
 } from "@/lib/auth";
+import { asStringArray } from "@/lib/search-params";
 import type { Metadata } from "next";
 
 type Props = {
-  searchParams: Promise<{ q: string; lat: string; lon: string }>;
+  searchParams: Promise<{
+    q?: string;
+    lat: string;
+    lon: string;
+    status?: string[] | string;
+  }>;
 };
 
 export const metadata: Metadata = {
@@ -20,15 +26,18 @@ export const metadata: Metadata = {
 };
 
 export default async function LocationPage({ searchParams }: Props) {
-  const { q, lat, lon } = await searchParams;
+  const { q, lat, lon, status } = await searchParams;
+  const statusFilters = asStringArray(status);
   const results = await getProfilesWithSongClipsByLocation(
     parseFloat(lon),
     parseFloat(lat),
+    statusFilters,
   );
 
   const totalProfiles = await getTotalProfilesWithSongClipsByLocation(
     parseFloat(lon),
     parseFloat(lat),
+    statusFilters,
   );
 
   const user = await getSession();

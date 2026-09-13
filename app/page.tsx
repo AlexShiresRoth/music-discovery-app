@@ -6,6 +6,7 @@ import {
   getTotalProfilesWithSongClips,
 } from "@/lib/auth";
 import { HAS_VISITED_COOKIE, hasVisitedFromCookie } from "@/lib/has-visited";
+import { asStringArray } from "@/lib/search-params";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
@@ -34,22 +35,15 @@ export const metadata: Metadata = {
 
 export default async function Home({ searchParams }: Props) {
   const { status } = await searchParams;
+  const statusFilters = asStringArray(status);
   const user = await getSession();
 
-  const profiles = await getProfilesWithSongClips(
-    0,
-    15,
-    Array.isArray(status) ? status : status ? [status as string] : [],
-  );
-  const totalProfiles = await getTotalProfilesWithSongClips(
-    Array.isArray(status) ? status : status ? [status as string] : [],
-  );
+  const profiles = await getProfilesWithSongClips(0, 15, statusFilters);
+  const totalProfiles = await getTotalProfilesWithSongClips(statusFilters);
   const cookieStore = await cookies();
   const hasVisited = hasVisitedFromCookie(
     cookieStore.get(HAS_VISITED_COOKIE)?.value,
   );
-  const id = crypto.randomUUID();
-  console.log("id", id);
 
   return (
     <>
@@ -58,7 +52,6 @@ export default async function Home({ searchParams }: Props) {
         profiles={profiles}
         totalProfiles={totalProfiles}
         isAuthenticated={!!user}
-        key={id}
       />
     </>
   );

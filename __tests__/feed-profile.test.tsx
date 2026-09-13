@@ -122,6 +122,7 @@ function renderFeedProfile(
       advanceToNextProfile={advanceToNextProfile}
       clipsLength={clipsLength}
       totalProfiles={overrides.totalProfiles ?? 15}
+      isAuthenticated={false}
     />,
   );
 

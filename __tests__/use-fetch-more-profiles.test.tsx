@@ -150,6 +150,36 @@ describe("useFetchMoreData", () => {
     expect(fetchUrl.searchParams.has("q")).toBe(false);
   });
 
+  it("includes status search params in the fetch url", async () => {
+    const data = makeProfiles(15);
+
+    const { rerender } = renderHook(
+      ({ currentIndex }) =>
+        useFetchMoreData({
+          data,
+          currentIndex,
+          limit: 15,
+          baseUrl: "/api/profiles/with-song-clips",
+          searchParams: {
+            status: ["open-to-collaboration", "open-to-gigs"],
+          },
+        }),
+      { initialProps: { currentIndex: 0 } },
+    );
+
+    rerender({ currentIndex: 14 });
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    const fetchUrl = new URL(String(mockFetch.mock.calls[0]?.[0]));
+    expect(fetchUrl.searchParams.getAll("status")).toEqual([
+      "open-to-collaboration",
+      "open-to-gigs",
+    ]);
+  });
+
   it("does not restart an in-flight fetch when searchParams identity changes", async () => {
     let resolveFetch: (value: unknown) => void = () => {};
     mockFetch.mockImplementation(

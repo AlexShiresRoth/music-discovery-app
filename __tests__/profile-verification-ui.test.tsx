@@ -23,6 +23,10 @@ vi.mock("@/app/profile/song-clips", () => ({
   default: () => <div>Song clips</div>,
 }));
 
+vi.mock("@/components/status-setting", () => ({
+  default: () => <div>Status setting</div>,
+}));
+
 vi.mock("@/app/profile/share-profile-button", () => ({
   default: () => <button type="button">Share Profile</button>,
 }));

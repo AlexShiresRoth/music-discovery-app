@@ -65,10 +65,39 @@ export const GENRES: GenreOption[] = GENRE_GROUPS.flatMap(
   (group) => group.options,
 );
 
-export const STATUS_OPTIONS = [
-  { value: "open-to-collaboration", label: "Open to Collaboration" },
-  { value: "open-to-gigs", label: "Open to Gigs" },
-  { value: "booking-shows", label: "Booking Shows" },
-];
+/**
+ * Profile discovery status filters.
+ * `value` is the URL/search param slug; key is the profiles schema field.
+ */
+export const PROFILE_STATUS_FILTERS = {
+  openToCollaboration: {
+    value: "open-to-collaboration",
+    label: "Open to Collaboration",
+  },
+  openToGigs: {
+    value: "open-to-gigs",
+    label: "Open to Gigs",
+  },
+  needActForShow: {
+    value: "booking-shows",
+    label: "Booking Shows",
+  },
+} as const;
 
-export type STATUS_OPTION = Record<string, string>;
+export type ProfileStatusField = keyof typeof PROFILE_STATUS_FILTERS;
+export type ProfileStatusValue =
+  (typeof PROFILE_STATUS_FILTERS)[ProfileStatusField]["value"];
+
+export const STATUS_OPTIONS: Array<{
+  value: ProfileStatusValue;
+  label: string;
+}> = (
+  Object.values(PROFILE_STATUS_FILTERS) as Array<{
+    value: ProfileStatusValue;
+    label: string;
+  }>
+);
+
+export const STATUS_VALUES: ProfileStatusValue[] = STATUS_OPTIONS.map(
+  (option) => option.value,
+);

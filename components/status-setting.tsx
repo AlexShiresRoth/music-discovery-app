@@ -3,6 +3,7 @@ import ActionButton from "@/components/action-button";
 import { SettingsModal } from "@/components/settings-layout";
 import TextArea from "@/components/text-area";
 import { ToastContext } from "@/context/toast";
+import { PROFILE_STATUS_FILTERS } from "@/constants";
 import { Profile } from "@/lib/db/types";
 import clsx from "clsx";
 import { Edit, InfoIcon } from "lucide-react";
@@ -58,9 +59,9 @@ type StatusSettingKey =
   | "statusMessage";
 
 const STATUSES: Record<StatusSettingKey, string> = {
-  openToCollaboration: "Open to collaboration",
-  openToGigs: "Open to gigs",
-  needActForShow: "Need act for show",
+  openToCollaboration: PROFILE_STATUS_FILTERS.openToCollaboration.label,
+  openToGigs: PROFILE_STATUS_FILTERS.openToGigs.label,
+  needActForShow: PROFILE_STATUS_FILTERS.needActForShow.label,
   statusMessage: "Status message",
 };
 

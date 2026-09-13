@@ -1,3 +1,4 @@
+import { PROFILE_STATUS_FILTERS } from "@/constants";
 import { Profile, SongClip } from "@/lib/db/types";
 import { INPUT_MAX } from "@/lib/input-limits";
 
@@ -225,6 +226,28 @@ const ProfileFormSchema: Record<keyof ProfileFormSchemaWithoutId, FormField> = {
     placeholder: "Image URL",
     required: false,
     maxLength: INPUT_MAX.url,
+  },
+  openToCollaboration: {
+    name: "openToCollaboration",
+    label: PROFILE_STATUS_FILTERS.openToCollaboration.label,
+    required: false,
+  },
+  openToGigs: {
+    name: "openToGigs",
+    label: PROFILE_STATUS_FILTERS.openToGigs.label,
+    required: false,
+  },
+  needActForShow: {
+    name: "needActForShow",
+    label: PROFILE_STATUS_FILTERS.needActForShow.label,
+    required: false,
+  },
+  statusMessage: {
+    name: "statusMessage",
+    label: "Status Message",
+    placeholder: "Status message",
+    required: false,
+    maxLength: 200,
   },
   updatedAt: {
     name: "updatedAt",
