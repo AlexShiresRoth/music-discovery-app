@@ -1,10 +1,12 @@
 "use client";
-import { GENRE_GROUPS } from "@/constants";
+import { GENRE_GROUPS, STATUS_OPTIONS } from "@/constants";
 import clsx from "clsx";
 import { SlidersVertical, XIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+
+type AllowedFilters = "genres" | "status";
 
 function Filters({
   lat,
@@ -12,27 +14,41 @@ function Filters({
   q,
   pathname,
   genres,
+  status,
+  allowedFilters,
 }: {
   lat: string | null;
   lon: string | null;
   q: string | null;
   pathname: string;
   genres: string[];
+  status: string[];
+  allowedFilters: Record<AllowedFilters, boolean>;
 }) {
-  const selectedFilters = useMemo<string[]>(() => [...genres], [genres]);
+  const selectedFilters = useMemo<string[]>(
+    () => [...genres, ...status],
+    [genres, status],
+  );
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  const buildQueryString = (genres: string[]) => {
+  const buildQueryString = (genres?: string[], status?: string[]) => {
     const params = new URLSearchParams();
     if (lat) params.set("lat", lat);
     if (lon) params.set("lon", lon);
     if (q) params.set("q", q);
-    if (genres.length > 0) {
+    if (genres && genres?.length > 0) {
       for (const genre of genres) {
         params.append("g", genre);
       }
     } else {
       params.delete("g");
+    }
+    if (status && status?.length > 0) {
+      for (const s of status) {
+        params.append("status", s);
+      }
+    } else {
+      params.delete("status");
     }
     return `${pathname}?${params.toString()}` as const;
   };
@@ -64,40 +80,73 @@ function Filters({
           onMouseDown={(e) => e.preventDefault()}
         >
           <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center px-2 border-b pb-2">
-              <label className="font-semibold">Genre</label>
-              <XIcon
-                className="w-4 h-4 hover:cursor-pointer"
-                onClick={() => setShowFilters(false)}
-              />
-            </div>
+            {allowedFilters.genres && (
+              <div className="flex justify-between items-center px-2 border-b pb-2">
+                <label className="font-semibold">Genre</label>
+                <XIcon
+                  className="w-4 h-4 hover:cursor-pointer"
+                  onClick={() => setShowFilters(false)}
+                />
+              </div>
+            )}
+
             <div className="flex flex-col max-h-80 overflow-y-auto">
-              {GENRE_GROUPS.map((group) => (
-                <div key={group.label} className="flex flex-col">
-                  <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-foreground/50 border-b bg-foreground/5">
-                    {group.label}
-                  </p>
-                  <div className="grid grid-cols-3">
-                    {group.options.map((g) => (
-                      <Link
-                        href={buildQueryString(
-                          selectedFilters.includes(g.value)
-                            ? selectedFilters.filter((f) => f !== g.value)
-                            : [...selectedFilters, g.value],
-                        )}
-                        key={g.value}
-                        className={clsx(
-                          "hover:cursor-pointer hover:bg-amber-500/50 transition-colors border-b p-3 text-start",
-                          selectedFilters.includes(g.value) &&
-                            "bg-amber-500/50",
-                        )}
-                      >
-                        {g.label}
-                      </Link>
-                    ))}
+              {allowedFilters.genres &&
+                GENRE_GROUPS.map((group) => (
+                  <div key={group.label} className="flex flex-col">
+                    <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-foreground/50 border-b bg-foreground/5">
+                      {group.label}
+                    </p>
+                    <div className="grid grid-cols-3">
+                      {group.options.map((g) => (
+                        <Link
+                          href={buildQueryString(
+                            selectedFilters.includes(g.value)
+                              ? selectedFilters.filter((f) => f !== g.value)
+                              : [...selectedFilters, g.value],
+                          )}
+                          key={g.value}
+                          className={clsx(
+                            "hover:cursor-pointer hover:bg-amber-500/50 transition-colors border-b p-3 text-start",
+                            selectedFilters.includes(g.value) &&
+                              "bg-amber-500/50",
+                          )}
+                        >
+                          {g.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
+                ))}
+              {allowedFilters.status && (
+                <div className="flex justify-between items-center px-2 border-b py-2">
+                  <label className="font-semibold">Status</label>
+                  <XIcon
+                    className="w-4 h-4 hover:cursor-pointer"
+                    onClick={() => setShowFilters(false)}
+                  />
                 </div>
-              ))}
+              )}
+              {allowedFilters.status &&
+                STATUS_OPTIONS.map((statusOpt) => (
+                  <div key={statusOpt.value} className="flex flex-col">
+                    <Link
+                      href={buildQueryString(
+                        [],
+                        selectedFilters.includes(statusOpt.value)
+                          ? selectedFilters.filter((f) => f !== statusOpt.value)
+                          : [...selectedFilters, statusOpt.value],
+                      )}
+                      className={clsx(
+                        "hover:cursor-pointer hover:bg-amber-500/50 transition-colors border-b p-3 text-start",
+                        selectedFilters.includes(statusOpt.value) &&
+                          "bg-amber-500/50",
+                      )}
+                    >
+                      {statusOpt.label}
+                    </Link>
+                  </div>
+                ))}
             </div>
             {selectedFilters.length > 0 && (
               <div className="flex justify-center items-center w-full">
@@ -116,18 +165,22 @@ function Filters({
   );
 }
 
-// TODO - handle status filter
 export default function FeedFilter() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const lat = searchParams.get("lat");
   const lon = searchParams.get("lon");
   const genres = searchParams.getAll("g");
-  const status = searchParams.get("status");
+  const status = searchParams.getAll("status");
   const q = searchParams.get("q");
-  const allowedPaths = ["/clips"];
+  const allowedPaths = ["/clips", "/", "/location"];
 
-  if (allowedPaths.filter((path) => pathname.startsWith(path)).length === 0) {
+  const allowedFilters: Record<AllowedFilters, boolean> = {
+    genres: pathname === "/clips",
+    status: pathname === "/" || pathname === "/location",
+  };
+
+  if (allowedPaths.filter((path) => pathname === path).length === 0) {
     return null;
   }
 
@@ -136,9 +189,11 @@ export default function FeedFilter() {
       lat={lat}
       lon={lon}
       genres={genres}
+      status={status}
       q={q}
       pathname={pathname}
       key={`${lat}-${lon}-${q}`}
+      allowedFilters={allowedFilters}
     />
   );
 }

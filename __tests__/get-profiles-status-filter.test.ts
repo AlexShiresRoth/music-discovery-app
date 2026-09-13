@@ -29,6 +29,9 @@ vi.mock("@/lib/db/schema", () => ({
     songClips: "songClips",
     updatedAt: "updatedAt",
     public: "public",
+    openToCollaboration: "openToCollaboration",
+    openToGigs: "openToGigs",
+    needActForShow: "needActForShow",
   },
 }));
 
@@ -40,7 +43,11 @@ vi.mock("drizzle-orm", () => ({
   inArray: vi.fn((column, values) => ({ column, values, type: "inArray" })),
   eq: vi.fn((column, value) => ({ column, value, type: "eq" })),
   ilike: vi.fn(),
-  and: vi.fn((...conditions) => ({ conditions, type: "and" })),
+  and: vi.fn((...conditions) => ({
+    conditions: conditions.filter(Boolean),
+    type: "and",
+  })),
+  or: vi.fn((...conditions) => ({ conditions, type: "or" })),
   asc: vi.fn(),
   desc: mockDesc,
   sql: vi.fn((strings, ...values) => ({ strings, values, type: "sql" })),
@@ -62,7 +69,7 @@ const profile = {
   songClips: [{ id: "1", slot: 0 }],
 };
 
-describe("getProfilesWithSongClips genre filter", () => {
+describe("getProfilesWithSongClips status filter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSelect.mockReturnValue({ from: mockFrom });
@@ -72,7 +79,7 @@ describe("getProfilesWithSongClips genre filter", () => {
     mockOffset.mockReturnValue({ limit: mockLimit });
   });
 
-  it("returns profiles with song clips when no genres are provided", async () => {
+  it("returns profiles with song clips when no status filters are provided", async () => {
     mockLimit.mockResolvedValue([profile]);
 
     const results = await getProfilesWithSongClips(0, 15, []);
@@ -89,33 +96,61 @@ describe("getProfilesWithSongClips genre filter", () => {
     expect(results[0]?.genre).toBe("Rock");
   });
 
-  it("filters profiles by the provided genres", async () => {
+  it("filters by a single selected status without forcing others false", async () => {
     mockLimit.mockResolvedValue([profile]);
 
-    await getProfilesWithSongClips(0, 15, ["Rock", "Jazz"]);
+    await getProfilesWithSongClips(0, 15, ["open-to-collaboration"]);
 
     expect(mockWhere).toHaveBeenCalledWith({
       conditions: [
         isPublicFilter,
-        {
-          column: "genre",
-          values: ["Rock", "Jazz"],
-          type: "inArray",
-        },
         hasSongClipsFilter,
+        {
+          column: "openToCollaboration",
+          value: true,
+          type: "eq",
+        },
       ],
       type: "and",
     });
-    expect(mockOrderBy).toHaveBeenCalledWith({
-      column: "updatedAt",
-      direction: "desc",
+  });
+
+  it("ORs multiple selected status flags", async () => {
+    mockLimit.mockResolvedValue([profile]);
+
+    await getProfilesWithSongClips(0, 15, [
+      "open-to-collaboration",
+      "open-to-gigs",
+    ]);
+
+    expect(mockWhere).toHaveBeenCalledWith({
+      conditions: [
+        isPublicFilter,
+        hasSongClipsFilter,
+        {
+          conditions: [
+            {
+              column: "openToCollaboration",
+              value: true,
+              type: "eq",
+            },
+            {
+              column: "openToGigs",
+              value: true,
+              type: "eq",
+            },
+          ],
+          type: "or",
+        },
+      ],
+      type: "and",
     });
   });
 
   it("returns an empty array when no profiles match", async () => {
     mockLimit.mockResolvedValue([]);
 
-    const results = await getProfilesWithSongClips(0, 15, ["Metal"]);
+    const results = await getProfilesWithSongClips(0, 15, ["booking-shows"]);
 
     expect(results).toEqual([]);
   });

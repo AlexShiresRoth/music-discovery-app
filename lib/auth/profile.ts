@@ -1,6 +1,17 @@
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import { cache } from "react";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
@@ -9,6 +20,23 @@ import { getSession } from "./session";
 
 /** Discovery/list queries only return profiles marked public. */
 const isPublic = eq(profilesSchema.public, true);
+
+/** Match profiles that have any of the selected status flags (OR). */
+function statusMatchCondition(status: string[]): SQL | undefined {
+  const conditions: SQL[] = [];
+  if (status.includes("open-to-collaboration")) {
+    conditions.push(eq(profilesSchema.openToCollaboration, true));
+  }
+  if (status.includes("open-to-gigs")) {
+    conditions.push(eq(profilesSchema.openToGigs, true));
+  }
+  if (status.includes("booking-shows")) {
+    conditions.push(eq(profilesSchema.needActForShow, true));
+  }
+  if (conditions.length === 0) return undefined;
+  if (conditions.length === 1) return conditions[0];
+  return or(...conditions);
+}
 
 export async function getProfile() {
   try {
@@ -82,23 +110,19 @@ export async function getPublicProfilesForSitemap() {
 export async function getProfilesWithSongClips(
   startIndex: number = 0,
   limit: number = 15,
-  genres: string[] = [],
+  status: string[] = [],
 ): Promise<ProfileWithSongClips[]> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const profiles = await db
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          statusCondition,
+        ),
       )
       .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)
@@ -123,23 +147,19 @@ export async function getProfilesWithSongClips(
 }
 
 export async function getTotalProfilesWithSongClips(
-  genres: string[] = [],
+  status: string[] = [],
 ): Promise<number> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const totalProfiles = await db
       .select({ count: count() })
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          statusCondition,
+        ),
       );
     return totalProfiles[0].count;
   } catch (error) {
@@ -157,9 +177,7 @@ export async function getProfilesWithSongClipsByQuery(
     const profiles = await db
       .select()
       .from(profilesSchema)
-      .where(
-        and(isPublic, ilike(profilesSchema.profileName, `${query}%`)),
-      )
+      .where(and(isPublic, ilike(profilesSchema.profileName, `${query}%`)))
       .offset(startIndex)
       .limit(limit);
     if (profiles.length === 0) {

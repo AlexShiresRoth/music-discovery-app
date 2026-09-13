@@ -19,9 +19,11 @@ function Feed({
   latitude,
   totalProfiles,
   isAuthenticated,
+  status,
 }: {
   profiles: ProfileWithSongClips[];
   genres: string[];
+  status: string[];
   totalProfiles: number;
   longitude?: number;
   latitude?: number;
@@ -32,10 +34,14 @@ function Feed({
   const [profileIndex, setProfileIndex] = useState(0);
 
   const genresKey = genres.join(",");
+  const statusKey = status.join(",");
   const fetchSearchParams = useMemo(() => {
     const params: Record<string, string | string[]> = {};
     if (genresKey) {
       params.g = genresKey.split(",");
+    }
+    if (statusKey) {
+      params.status = statusKey.split(",");
     }
     if (longitude != null) {
       params.lon = String(longitude);
@@ -44,7 +50,7 @@ function Feed({
       params.lat = String(latitude);
     }
     return params;
-  }, [genresKey, longitude, latitude]);
+  }, [genresKey, longitude, latitude, statusKey]);
 
   const { fetchedData, error, isLoading } =
     useFetchMoreData<ProfileWithSongClips>({
@@ -196,12 +202,17 @@ export default function FeedList({
   const router = useRouter();
   const searchParams = useSearchParams();
   const genres = searchParams.getAll("g") || [];
+  const status = searchParams.getAll("status") || [];
   const genresKey = genres.join(",");
   const longitude = searchParams.get("lon") || "";
   const latitude = searchParams.get("lat") || "";
   const searchTermOrGenres = searchTerm || genres.join(", ");
   const searchTermOrGenresSpan = (
     <span className="font-bold">{searchTermOrGenres}</span>
+  );
+
+  console.log(
+    `${genresKey}-${searchTerm}-${longitude}-${latitude}-${status.join(",")}`,
   );
 
   if (profiles.length === 0 && songClips.length === 0) {
@@ -238,10 +249,13 @@ export default function FeedList({
         profiles={profiles}
         genres={genres}
         totalProfiles={totalProfiles}
-        key={genres.join(",") + searchTerm + longitude + latitude}
+        // key={
+
+        // }
         longitude={longitude ? parseFloat(longitude) : undefined}
         latitude={latitude ? parseFloat(latitude) : undefined}
         isAuthenticated={isAuthenticated}
+        status={status}
       />
       <FeedAudioControls />
     </FeedAudioProvider>

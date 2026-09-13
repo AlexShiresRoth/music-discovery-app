@@ -28,12 +28,7 @@ export const GENRE_GROUPS: GenreGroup[] = [
   },
   {
     label: "Pop & R&B",
-    options: [
-      genre("Funk"),
-      genre("Pop"),
-      genre("R&B"),
-      genre("Soul"),
-    ],
+    options: [genre("Funk"), genre("Pop"), genre("R&B"), genre("Soul")],
   },
   {
     label: "Hip-Hop",
@@ -53,12 +48,7 @@ export const GENRE_GROUPS: GenreGroup[] = [
   },
   {
     label: "Jazz, Blues & Folk",
-    options: [
-      genre("Blues"),
-      genre("Country"),
-      genre("Folk"),
-      genre("Jazz"),
-    ],
+    options: [genre("Blues"), genre("Country"), genre("Folk"), genre("Jazz")],
   },
   {
     label: "World & Roots",
@@ -74,3 +64,11 @@ export const GENRE_GROUPS: GenreGroup[] = [
 export const GENRES: GenreOption[] = GENRE_GROUPS.flatMap(
   (group) => group.options,
 );
+
+export const STATUS_OPTIONS = [
+  { value: "open-to-collaboration", label: "Open to Collaboration" },
+  { value: "open-to-gigs", label: "Open to Gigs" },
+  { value: "booking-shows", label: "Booking Shows" },
+];
+
+export type STATUS_OPTION = Record<string, string>;

@@ -15,73 +15,51 @@ export default function StatusDisplay({
   onPublicProfile?: boolean;
 }) {
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const cols = [
-    profile.openToCollaboration,
-    profile.openToGigs,
-    profile.needActForShow,
-  ].filter(Boolean).length;
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        {onPublicProfile && <h2 className="font-bold uppercase">Status</h2>}
         <div
           className={clsx(
-            onPublicProfile && "grid grid-cols-1 w-full gap-4",
-            onPublicProfile && cols === 1 && "md:grid-cols-1",
-            onPublicProfile && cols === 2 && "md:grid-cols-2",
-            onPublicProfile && cols === 3 && "md:grid-cols-3",
+            "flex gap-2",
+            !onPublicProfile ? "flex-col items-start" : "items-center",
           )}
         >
           {profile.openToCollaboration && (
-            <div
+            <p
               className={clsx(
-                onPublicProfile &&
-                  "p-4 bg-indigo-500/20 border-2 border-b-4 rounded",
+                "text-xs font-bold uppercase",
+                onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              <p
-                className={clsx(
-                  "text-xs font-bold uppercase",
-                  !onPublicProfile && "text-gray-500",
-                )}
-              >
-                Open to collaboration
-              </p>
-            </div>
+              Open to collaboration
+            </p>
+          )}
+          {profile.openToGigs && onPublicProfile && (
+            <span className="text-gray-500/50 text-xs">|</span>
           )}
           {profile.openToGigs && (
-            <div
+            <p
               className={clsx(
-                onPublicProfile &&
-                  "p-4 bg-amber-500/20 border-2 border-b-4 rounded",
+                "text-xs font-bold uppercase",
+                onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              <p
-                className={clsx(
-                  "text-xs font-bold uppercase",
-                  !onPublicProfile && "text-gray-500",
-                )}
-              >
-                Open to gigs
-              </p>
-            </div>
+              Open to gigs
+            </p>
+          )}
+          {profile.needActForShow && onPublicProfile && (
+            <span className="text-gray-500/50 text-xs">|</span>
           )}
           {profile.needActForShow && (
-            <div
+            <p
               className={clsx(
-                onPublicProfile &&
-                  "p-4 bg-emerald-500/20 border-2 border-b-4 rounded",
+                "text-xs font-bold uppercase",
+                onPublicProfile ? "text-amber-700" : "text-gray-500",
               )}
             >
-              <p
-                className={clsx(
-                  "text-xs font-bold uppercase",
-                  !onPublicProfile && "text-gray-500",
-                )}
-              >
-                Booking shows
-              </p>
-            </div>
+              Booking shows
+            </p>
           )}
           {profile.statusMessage && !onPublicProfile && (
             <div className="my-2">
@@ -107,7 +85,7 @@ export default function StatusDisplay({
                   }
                 >
                   <div className="border p-4 rounded">
-                    <p>{profile.statusMessage}</p>
+                    <p>{`"${profile.statusMessage}"`}</p>
                   </div>
                 </SettingsModal>
               )}
@@ -115,14 +93,6 @@ export default function StatusDisplay({
           )}
         </div>
       </div>
-      {profile.statusMessage && onPublicProfile && (
-        <div className="flex flex-col gap-2">
-          <h2 className="font-bold uppercase">Status Message</h2>
-          <div className="border p-4 rounded">
-            <p>{profile.statusMessage}</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
