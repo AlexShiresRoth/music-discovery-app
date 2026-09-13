@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "need_act_for_show" boolean DEFAULT false NOT NULL;

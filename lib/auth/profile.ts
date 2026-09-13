@@ -1,6 +1,17 @@
+import { PROFILE_STATUS_FILTERS, type ProfileStatusField } from "@/constants";
 import { db } from "@/lib/db";
 import { profilesSchema } from "@/lib/db/schema";
-import { and, asc, count, desc, eq, ilike, inArray, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  or,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import { cache } from "react";
 import "server-only";
 import { getSongClipsByIds } from "../db/song-clips";
@@ -9,6 +20,25 @@ import { getSession } from "./session";
 
 /** Discovery/list queries only return profiles marked public. */
 const isPublic = eq(profilesSchema.public, true);
+
+const STATUS_COLUMNS = {
+  openToCollaboration: profilesSchema.openToCollaboration,
+  openToGigs: profilesSchema.openToGigs,
+  needActForShow: profilesSchema.needActForShow,
+} as const satisfies Record<ProfileStatusField, unknown>;
+
+/** Match profiles that have any of the selected status flags (OR). */
+function statusMatchCondition(status: string[]): SQL | undefined {
+  const conditions = (
+    Object.keys(PROFILE_STATUS_FILTERS) as ProfileStatusField[]
+  )
+    .filter((field) => status.includes(PROFILE_STATUS_FILTERS[field].value))
+    .map((field) => eq(STATUS_COLUMNS[field], true));
+
+  if (conditions.length === 0) return undefined;
+  if (conditions.length === 1) return conditions[0];
+  return or(...conditions);
+}
 
 export async function getProfile() {
   try {
@@ -82,23 +112,19 @@ export async function getPublicProfilesForSitemap() {
 export async function getProfilesWithSongClips(
   startIndex: number = 0,
   limit: number = 15,
-  genres: string[] = [],
+  status: string[] = [],
 ): Promise<ProfileWithSongClips[]> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const profiles = await db
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          statusCondition,
+        ),
       )
       .orderBy(desc(profilesSchema.updatedAt))
       .offset(startIndex)
@@ -123,23 +149,19 @@ export async function getProfilesWithSongClips(
 }
 
 export async function getTotalProfilesWithSongClips(
-  genres: string[] = [],
+  status: string[] = [],
 ): Promise<number> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const totalProfiles = await db
       .select({ count: count() })
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+          statusCondition,
+        ),
       );
     return totalProfiles[0].count;
   } catch (error) {
@@ -157,9 +179,7 @@ export async function getProfilesWithSongClipsByQuery(
     const profiles = await db
       .select()
       .from(profilesSchema)
-      .where(
-        and(isPublic, ilike(profilesSchema.profileName, `${query}%`)),
-      )
+      .where(and(isPublic, ilike(profilesSchema.profileName, `${query}%`)))
       .offset(startIndex)
       .limit(limit);
     if (profiles.length === 0) {
@@ -220,11 +240,12 @@ export async function getProfilesWithSongClipsByGenre(
 export async function getProfilesWithSongClipsByLocation(
   longitude: number,
   latitude: number,
-  genres: string[] = [],
+  status: string[] = [],
   startIndex: number = 0,
   limit: number = 15,
 ): Promise<ProfileWithSongClips[]> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const searchPoint = sql`
     ST_SetSRID(
       ST_MakePoint(${longitude}, ${latitude}),
@@ -242,18 +263,12 @@ export async function getProfilesWithSongClipsByLocation(
       .select()
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          statusCondition,
+          sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+        ),
       )
       .orderBy(asc(distance))
       .offset(startIndex)
@@ -280,9 +295,10 @@ export async function getProfilesWithSongClipsByLocation(
 export async function getTotalProfilesWithSongClipsByLocation(
   longitude: number,
   latitude: number,
-  genres: string[] = [],
+  status: string[] = [],
 ): Promise<number> {
   try {
+    const statusCondition = statusMatchCondition(status);
     const searchPoint = sql`
     ST_SetSRID(
       ST_MakePoint(${longitude}, ${latitude}),
@@ -296,18 +312,12 @@ export async function getTotalProfilesWithSongClipsByLocation(
       .select({ count: count() })
       .from(profilesSchema)
       .where(
-        genres.length > 0
-          ? and(
-              isPublic,
-              inArray(profilesSchema.genre, genres),
-              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            )
-          : and(
-              isPublic,
-              sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
-              sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
-            ),
+        and(
+          isPublic,
+          statusCondition,
+          sql`ST_DWithin(${profilesSchema.location}, ${searchPoint}, ${RADIUS})`,
+          sql`jsonb_array_length(${profilesSchema.songClips}) > 0`,
+        ),
       );
 
     return totalProfiles[0].count;

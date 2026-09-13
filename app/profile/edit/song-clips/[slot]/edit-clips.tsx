@@ -26,7 +26,6 @@ export default function EditClips({ clip, slot }: Props) {
   const [draft, setDraft] = useState<ClipSlotDraft>(() =>
     clip ? songClipToDraft(clip) : emptySlot(),
   );
-
   const handleNewUpload = async (draft: ClipSlotDraft) => {
     if (!draft.selectedRegion || !draft.file) {
       return {
@@ -61,14 +60,14 @@ export default function EditClips({ clip, slot }: Props) {
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setIsFormPending(true);
+
+    const urlValidation = validateUrl(draft.fullSongUrl, "Full Song URL");
+    if (!urlValidation.ok) {
+      throw new Error(urlValidation.error);
+    }
+
     try {
-      setIsFormPending(true);
-
-      const urlValidation = validateUrl(draft.fullSongUrl, "Full Song URL");
-      if (!urlValidation.ok) {
-        throw new Error(urlValidation.error);
-      }
-
       const { error: uploadError, data: formData } =
         await handleNewUpload(draft);
 
@@ -92,6 +91,18 @@ export default function EditClips({ clip, slot }: Props) {
       }
 
       if (success) {
+        if (clip && !draft.dbUrl) {
+          await fetch("/api/profile/delete-song-clip", {
+            headers: { "Content-Type": "application/json" },
+            method: "DELETE",
+            body: JSON.stringify({ clipId: draft.id }),
+          });
+
+          if (!response.ok) {
+            console.error("Failed to delete clip on upload", clip.id);
+          }
+        }
+
         setToast({
           message: "Song clip uploaded successfully",
           type: "success",

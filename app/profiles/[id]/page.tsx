@@ -6,6 +6,7 @@ import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
 import ReportAccount from "@/components/report-account";
+import StatusDisplay from "@/components/status-display";
 import { getProfileById, getSession } from "@/lib/auth";
 import { ImageIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -152,6 +153,8 @@ export default async function ProfilePage({ params }: Props) {
                 className="items-start h-auto"
               />
             )}
+
+            <StatusDisplay profile={profile} onPublicProfile />
             <div className="flex items-center gap-4">
               <ShareProfileButton
                 profile={{
@@ -167,7 +170,14 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
         </header>
-
+        {profile.statusMessage && (
+          <div className="flex flex-col gap-2">
+            <h2 className="text-sm font-bold uppercase">Status Message</h2>
+            <div className="border p-4 rounded bg-amber-500/20">
+              <p>{profile.statusMessage}</p>
+            </div>
+          </div>
+        )}
         <PublicSongClips clips={profile.songClips} />
       </div>
       <Footer />

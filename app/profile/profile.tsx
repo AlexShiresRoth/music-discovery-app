@@ -6,6 +6,7 @@ import type { Profile, SongClip } from "@/lib/db/types";
 import { CogIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import StatusSetting from "../../components/status-setting";
 import PrivateInfo from "./private-info";
 import PublicInfo from "./public-info";
 import ShareProfileButton from "./share-profile-button";
@@ -41,6 +42,7 @@ export default async function Profile({
             </p>
           )}
         </div>
+
         <header className="flex items-center gap-8 md:flex-row flex-col-reverse w-full">
           <div className="flex flex-col items-center w-full md:w-auto">
             <div className="flex flex-col gap-8 items-center w-full md:w-sm h-75 border rounded relative">
@@ -128,7 +130,13 @@ export default async function Profile({
           )}
 
           {isVerified && (
-            <SongClipsSection clips={clips} isVerified={isVerified ?? false} />
+            <>
+              <StatusSetting profile={profile} />
+              <SongClipsSection
+                clips={clips}
+                isVerified={isVerified ?? false}
+              />
+            </>
           )}
           <PublicInfo {...profile} />
           <SocialSection {...profile} />

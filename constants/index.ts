@@ -28,12 +28,7 @@ export const GENRE_GROUPS: GenreGroup[] = [
   },
   {
     label: "Pop & R&B",
-    options: [
-      genre("Funk"),
-      genre("Pop"),
-      genre("R&B"),
-      genre("Soul"),
-    ],
+    options: [genre("Funk"), genre("Pop"), genre("R&B"), genre("Soul")],
   },
   {
     label: "Hip-Hop",
@@ -53,12 +48,7 @@ export const GENRE_GROUPS: GenreGroup[] = [
   },
   {
     label: "Jazz, Blues & Folk",
-    options: [
-      genre("Blues"),
-      genre("Country"),
-      genre("Folk"),
-      genre("Jazz"),
-    ],
+    options: [genre("Blues"), genre("Country"), genre("Folk"), genre("Jazz")],
   },
   {
     label: "World & Roots",
@@ -73,4 +63,41 @@ export const GENRE_GROUPS: GenreGroup[] = [
 /** Flat list for selects / filters that don't need group headers. */
 export const GENRES: GenreOption[] = GENRE_GROUPS.flatMap(
   (group) => group.options,
+);
+
+/**
+ * Profile discovery status filters.
+ * `value` is the URL/search param slug; key is the profiles schema field.
+ */
+export const PROFILE_STATUS_FILTERS = {
+  openToCollaboration: {
+    value: "open-to-collaboration",
+    label: "Open to Collaboration",
+  },
+  openToGigs: {
+    value: "open-to-gigs",
+    label: "Open to Gigs",
+  },
+  needActForShow: {
+    value: "booking-shows",
+    label: "Booking Shows",
+  },
+} as const;
+
+export type ProfileStatusField = keyof typeof PROFILE_STATUS_FILTERS;
+export type ProfileStatusValue =
+  (typeof PROFILE_STATUS_FILTERS)[ProfileStatusField]["value"];
+
+export const STATUS_OPTIONS: Array<{
+  value: ProfileStatusValue;
+  label: string;
+}> = (
+  Object.values(PROFILE_STATUS_FILTERS) as Array<{
+    value: ProfileStatusValue;
+    label: string;
+  }>
+);
+
+export const STATUS_VALUES: ProfileStatusValue[] = STATUS_OPTIONS.map(
+  (option) => option.value,
 );

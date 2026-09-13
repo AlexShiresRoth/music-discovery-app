@@ -1,4 +1,5 @@
 import FeedList from "@/components/feed-list";
+import { PROFILE_STATUS_FILTERS } from "@/constants";
 import type {
   ProfileWithSongClips,
   SongClipWithProfile,
@@ -130,7 +131,7 @@ describe("FeedList infinite load", () => {
       new URLSearchParams("g=Rock&g=Jazz&lat=30.27&lon=-97.74"),
     );
 
-    render(<FeedList profiles={initialProfiles} />);
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
     expect(mockUseFetchMoreData).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -145,6 +146,60 @@ describe("FeedList infinite load", () => {
     );
   });
 
+  it("passes status filters into the profiles fetch hook", () => {
+    const { openToCollaboration, openToGigs } = PROFILE_STATUS_FILTERS;
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams(
+        `status=${openToCollaboration.value}&status=${openToGigs.value}`,
+      ),
+    );
+
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
+
+    expect(mockUseFetchMoreData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: initialProfiles,
+        baseUrl: "/api/profiles/with-song-clips",
+        searchParams: {
+          status: [openToCollaboration.value, openToGigs.value],
+        },
+      }),
+    );
+  });
+
+  it("combines status filters with coordinates in the profiles fetch hook", () => {
+    const { openToGigs } = PROFILE_STATUS_FILTERS;
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams(
+        `status=${openToGigs.value}&lat=30.27&lon=-97.74`,
+      ),
+    );
+
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
+
+    expect(mockUseFetchMoreData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchParams: {
+          status: [openToGigs.value],
+          lat: "30.27",
+          lon: "-97.74",
+        },
+      }),
+    );
+  });
+
+  it("omits empty status params when no status filter is selected", () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
+
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
+
+    expect(mockUseFetchMoreData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchParams: {},
+      }),
+    );
+  });
+
   it("renders fetched profiles from the hook", () => {
     mockUseFetchMoreData.mockReturnValue({
       fetchedData: [
@@ -155,7 +210,7 @@ describe("FeedList infinite load", () => {
       isLoading: false,
     });
 
-    render(<FeedList profiles={initialProfiles} />);
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
     expect(screen.getByText("Band One")).toBeDefined();
     expect(screen.getByText("Band Two")).toBeDefined();
@@ -169,7 +224,7 @@ describe("FeedList infinite load", () => {
       isLoading: true,
     });
 
-    const { container } = render(<FeedList profiles={initialProfiles} />);
+    const { container } = render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
     expect(container.querySelector(".animate-spin")).toBeDefined();
   });
@@ -181,7 +236,7 @@ describe("FeedList infinite load", () => {
       isLoading: false,
     });
 
-    render(<FeedList profiles={initialProfiles} />);
+    render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
     expect(screen.getByText("Network error")).toBeDefined();
   });
@@ -200,13 +255,27 @@ describe("FeedList infinite load", () => {
         new URLSearchParams("g=Rock&g=Jazz"),
       );
 
-      render(<FeedList songClips={initialClips} />);
+      render(<FeedList songClips={initialClips} isAuthenticated={false} />);
 
       expect(mockUseFetchMoreData).toHaveBeenCalledWith(
         expect.objectContaining({
           data: initialClips,
           baseUrl: "/api/clips/with-profiles",
           searchParams: { g: ["Rock", "Jazz"] },
+        }),
+      );
+    });
+
+    it("omits empty genre params when no genre filter is selected", () => {
+      mockUseSearchParams.mockReturnValue(new URLSearchParams());
+
+      render(<FeedList songClips={initialClips} isAuthenticated={false} />);
+
+      expect(mockUseFetchMoreData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: initialClips,
+          baseUrl: "/api/clips/with-profiles",
+          searchParams: {},
         }),
       );
     });
@@ -230,7 +299,7 @@ describe("FeedList infinite load", () => {
         isLoading: false,
       });
 
-      render(<FeedList songClips={initialClips} />);
+      render(<FeedList songClips={initialClips} isAuthenticated={false} />);
 
       expect(screen.getByText("Clip One")).toBeDefined();
       expect(screen.getByText("Clip Two")).toBeDefined();
@@ -246,7 +315,7 @@ describe("FeedList infinite load", () => {
       });
 
       const { container, rerender } = render(
-        <FeedList songClips={initialClips} />,
+        <FeedList songClips={initialClips} isAuthenticated={false} />,
       );
       expect(container.querySelector(".animate-spin")).toBeDefined();
 
@@ -255,7 +324,7 @@ describe("FeedList infinite load", () => {
         error: new Error("Clips failed"),
         isLoading: false,
       });
-      rerender(<FeedList songClips={initialClips} />);
+      rerender(<FeedList songClips={initialClips} isAuthenticated={false} />);
       expect(screen.getByText("Clips failed")).toBeDefined();
     });
 
@@ -263,7 +332,7 @@ describe("FeedList infinite load", () => {
       const scrollIntoView = vi.fn();
       HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
-      render(<FeedList songClips={initialClips} />);
+      render(<FeedList songClips={initialClips} isAuthenticated={false} />);
 
       fireEvent.click(screen.getByRole("button", { name: "Finish Clip One" }));
 
@@ -276,7 +345,7 @@ describe("FeedList infinite load", () => {
 
   describe("empty state", () => {
     it("shows an empty state without mounting the feed audio UI", () => {
-      render(<FeedList profiles={[]} searchTerm="Austin" />);
+      render(<FeedList profiles={[]} searchTerm="Austin" isAuthenticated={false} />);
 
       expect(screen.getByText(/No Artists Yet/)).toBeDefined();
       expect(screen.getByText("Austin")).toBeDefined();
@@ -284,7 +353,7 @@ describe("FeedList infinite load", () => {
     });
 
     it("omits the for-clause when there is no search term or genre filter", () => {
-      render(<FeedList profiles={[]} />);
+      render(<FeedList profiles={[]} isAuthenticated={false} />);
 
       expect(
         screen.getByText(
@@ -294,8 +363,25 @@ describe("FeedList infinite load", () => {
       expect(screen.queryByText(/ for /)).toBeNull();
     });
 
+    it("includes status filters in the empty-state label", () => {
+      const { openToCollaboration } = PROFILE_STATUS_FILTERS;
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams(`status=${openToCollaboration.value}`),
+      );
+
+      render(<FeedList profiles={[]} isAuthenticated={false} />);
+
+      expect(
+        screen.getByText(
+          (_, node) =>
+            node?.textContent ===
+            `No Artists Yet for ${openToCollaboration.value}. Be the first.`,
+        ),
+      ).toBeDefined();
+    });
+
     it("goes back when the empty-state button is clicked", () => {
-      render(<FeedList profiles={[]} searchTerm="Austin" />);
+      render(<FeedList profiles={[]} searchTerm="Austin" isAuthenticated={false} />);
 
       fireEvent.click(screen.getByRole("button", { name: "Go Back" }));
       expect(mockBack).toHaveBeenCalled();
@@ -307,7 +393,7 @@ describe("FeedList infinite load", () => {
       const scrollIntoView = vi.fn();
       HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
-      render(<FeedList profiles={initialProfiles} />);
+      render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
       fireEvent.click(
         screen.getByRole("button", { name: "Advance from Band One" }),
@@ -324,7 +410,7 @@ describe("FeedList infinite load", () => {
       const scrollIntoView = vi.fn();
       HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
-      render(<FeedList profiles={initialProfiles} />);
+      render(<FeedList profiles={initialProfiles} isAuthenticated={false} />);
 
       fireEvent.click(
         screen.getByRole("button", { name: "Advance from Band Two" }),

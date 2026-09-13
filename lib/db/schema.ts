@@ -61,69 +61,81 @@ export const bugReportsSchema = pgTable("bug_reports", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const profilesSchema = pgTable("profiles", {
-  id: serial("id").primaryKey(),
-  public: boolean("public").default(true),
-  fullName: text("full_name"),
-  contactEmail: text("contact_email"),
-  profileName: text("profile_name").unique(),
-  bio: text("bio"),
-  genre: text("genre"), // @deprecated - use songClips.genre instead
-  influences: jsonb("influences").$type<string[]>().notNull().default([]),
-  joinedDate: timestamp("joined_date").defaultNow(),
-  isVerified: boolean("is_verified").default(false),
-  songClips: jsonb("song_clips")
-    .$type<SongClipWithSlot[]>()
-    .notNull()
-    .default([]),
-  imageUrl: text("image_url"),
-  city: text("city").notNull().default(""),
-  country: text("country").notNull().default(""),
-  countryCode: text("country_code").notNull().default(""),
-  state: text("state").notNull().default(""),
-  stateCode: text("state_code").notNull().default(""),
-  formattedLocation: text("formatted_location").notNull().default(""),
-  lat: doublePrecision("lat").notNull().default(0),
-  lon: doublePrecision("lon").notNull().default(0),
-  location: geographyPoint("location"),
-  updatedAt: timestamp("updated_at").defaultNow(),
-  createdAt: timestamp("created_at").defaultNow(),
-  website: jsonb("website")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  facebook: jsonb("facebook")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  instagram: jsonb("instagram")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  tiktok: jsonb("tiktok")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  spotify: jsonb("spotify")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  appleMusic: jsonb("apple_music")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  soundcloud: jsonb("soundcloud")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  bandcamp: jsonb("bandcamp")
-    .$type<SocialField>()
-    .notNull()
-    .default({ url: "", show: true }),
-  userRefId: uuid("user_ref_id").notNull(),
-}, (table) => [
-  uniqueIndex("profiles_profile_name_lower_idx").on(sql`lower(${table.profileName})`),
-]);
+export const profilesSchema = pgTable(
+  "profiles",
+  {
+    id: serial("id").primaryKey(),
+    public: boolean("public").default(true),
+    fullName: text("full_name"),
+    contactEmail: text("contact_email"),
+    profileName: text("profile_name").unique(),
+    bio: text("bio"),
+    genre: text("genre"), // @deprecated - use songClips.genre instead
+    influences: jsonb("influences").$type<string[]>().notNull().default([]),
+    joinedDate: timestamp("joined_date").defaultNow(),
+    isVerified: boolean("is_verified").default(false),
+    songClips: jsonb("song_clips")
+      .$type<SongClipWithSlot[]>()
+      .notNull()
+      .default([]),
+    imageUrl: text("image_url"),
+    city: text("city").notNull().default(""),
+    country: text("country").notNull().default(""),
+    countryCode: text("country_code").notNull().default(""),
+    state: text("state").notNull().default(""),
+    stateCode: text("state_code").notNull().default(""),
+    formattedLocation: text("formatted_location").notNull().default(""),
+    lat: doublePrecision("lat").notNull().default(0),
+    lon: doublePrecision("lon").notNull().default(0),
+    location: geographyPoint("location"),
+    updatedAt: timestamp("updated_at").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow(),
+    openToCollaboration: boolean("open_to_collaboration")
+      .notNull()
+      .default(false),
+    openToGigs: boolean("open_to_gigs").notNull().default(false),
+    needActForShow: boolean("need_act_for_show").notNull().default(false),
+    statusMessage: text("status_message"),
+    website: jsonb("website")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    facebook: jsonb("facebook")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    instagram: jsonb("instagram")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    tiktok: jsonb("tiktok")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    spotify: jsonb("spotify")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    appleMusic: jsonb("apple_music")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    soundcloud: jsonb("soundcloud")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    bandcamp: jsonb("bandcamp")
+      .$type<SocialField>()
+      .notNull()
+      .default({ url: "", show: true }),
+    userRefId: uuid("user_ref_id").notNull(),
+  },
+  (table) => [
+    uniqueIndex("profiles_profile_name_lower_idx").on(
+      sql`lower(${table.profileName})`,
+    ),
+  ],
+);
 
 export const accountReportsSchema = pgTable("account_reports", {
   id: serial("id").primaryKey(),

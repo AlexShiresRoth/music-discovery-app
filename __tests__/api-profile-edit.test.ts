@@ -80,6 +80,10 @@ const existingProfile = {
   userRefId: "user-1",
   joinedDate: new Date("2024-01-01"),
   isVerified: false,
+  openToCollaboration: false,
+  openToGigs: false,
+  needActForShow: false,
+  statusMessage: null,
 };
 
 const validUpdateData = {
@@ -429,5 +433,38 @@ describe("POST /api/profile/edit", () => {
         }),
       );
     });
+  });
+
+  it("persists status flag and message updates without clearing unset fields", async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: "user-1" } },
+      error: null,
+    });
+    mockLimit.mockResolvedValue([
+      {
+        ...existingProfile,
+        openToCollaboration: false,
+        openToGigs: true,
+        needActForShow: false,
+        statusMessage: "Old status",
+      },
+    ]);
+
+    const response = await POST(
+      makeRequest({
+        openToCollaboration: true,
+        statusMessage: "Looking for a drummer",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        openToCollaboration: true,
+        openToGigs: true,
+        needActForShow: false,
+        statusMessage: "Looking for a drummer",
+      }),
+    );
   });
 });

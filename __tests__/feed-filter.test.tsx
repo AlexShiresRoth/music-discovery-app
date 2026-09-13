@@ -1,4 +1,5 @@
 import FeedFilter from "@/components/feed-filter";
+import { PROFILE_STATUS_FILTERS } from "@/constants";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -25,8 +26,8 @@ describe("FeedFilter", () => {
     vi.clearAllMocks();
   });
 
-  it("does not render outside /clips", () => {
-    renderFilter("/");
+  it("does not render outside allowed feed paths", () => {
+    renderFilter("/profile");
 
     expect(screen.queryByRole("button", { name: /Filters/i })).toBeNull();
   });
@@ -35,6 +36,40 @@ describe("FeedFilter", () => {
     renderFilter();
 
     expect(screen.getByRole("button", { name: /Filters/i })).toBeDefined();
+  });
+
+  it("renders status filters on the home feed", () => {
+    renderFilter("/");
+    openFilterPanel();
+
+    expect(screen.getByText("Status")).toBeDefined();
+    expect(
+      screen.getByRole("link", {
+        name: PROFILE_STATUS_FILTERS.openToCollaboration.label,
+      }),
+    ).toBeDefined();
+    expect(screen.queryByText("Genre")).toBeNull();
+  });
+
+  it("renders status filters on the location feed without genres", () => {
+    renderFilter("/location", "lat=30.27&lon=-97.74&q=Austin");
+    openFilterPanel();
+
+    expect(screen.getByText("Status")).toBeDefined();
+    expect(
+      screen.getByRole("link", {
+        name: PROFILE_STATUS_FILTERS.openToGigs.label,
+      }),
+    ).toBeDefined();
+    expect(screen.queryByText("Genre")).toBeNull();
+  });
+
+  it("does not render status filters on the clips feed", () => {
+    renderFilter("/clips");
+    openFilterPanel();
+
+    expect(screen.getByText("Genre")).toBeDefined();
+    expect(screen.queryByText("Status")).toBeNull();
   });
 
   it("opens the genre filter panel when clicked", () => {
@@ -49,6 +84,15 @@ describe("FeedFilter", () => {
   it("shows a badge with the number of active genre filters", () => {
     renderFilter("/clips", "g=Rock&g=Jazz");
     openFilterPanel();
+
+    expect(screen.getByText("2")).toBeDefined();
+  });
+
+  it("shows a badge for active status filters", () => {
+    renderFilter(
+      "/",
+      `status=${PROFILE_STATUS_FILTERS.openToCollaboration.value}&status=${PROFILE_STATUS_FILTERS.openToGigs.value}`,
+    );
 
     expect(screen.getByText("2")).toBeDefined();
   });
@@ -99,6 +143,54 @@ describe("FeedFilter", () => {
     );
   });
 
+  it("toggles status filters without mixing them into genre params", () => {
+    renderFilter("/", `status=${PROFILE_STATUS_FILTERS.openToGigs.value}`);
+    openFilterPanel();
+
+    expect(
+      screen.getByRole("link", {
+        name: PROFILE_STATUS_FILTERS.openToCollaboration.label,
+      }),
+    ).toHaveProperty(
+      "href",
+      `http://localhost:3000/?status=${PROFILE_STATUS_FILTERS.openToGigs.value}&status=${PROFILE_STATUS_FILTERS.openToCollaboration.value}`,
+    );
+  });
+
+  it("removes a status filter when toggled off", () => {
+    renderFilter(
+      "/",
+      `status=${PROFILE_STATUS_FILTERS.openToGigs.value}&status=${PROFILE_STATUS_FILTERS.openToCollaboration.value}`,
+    );
+    openFilterPanel();
+
+    expect(
+      screen.getByRole("link", {
+        name: PROFILE_STATUS_FILTERS.openToGigs.label,
+      }),
+    ).toHaveProperty(
+      "href",
+      `http://localhost:3000/?status=${PROFILE_STATUS_FILTERS.openToCollaboration.value}`,
+    );
+  });
+
+  it("preserves location params when toggling status on /location", () => {
+    renderFilter(
+      "/location",
+      `lat=30.27&lon=-97.74&q=Austin&status=${PROFILE_STATUS_FILTERS.openToGigs.value}`,
+    );
+    openFilterPanel();
+
+    expect(
+      screen.getByRole("link", {
+        name: PROFILE_STATUS_FILTERS.openToCollaboration.label,
+      }),
+    ).toHaveProperty(
+      "href",
+      `http://localhost:3000/location?lat=30.27&lon=-97.74&q=Austin&status=${PROFILE_STATUS_FILTERS.openToGigs.value}&status=${PROFILE_STATUS_FILTERS.openToCollaboration.value}`,
+    );
+  });
+
   it("shows a clear link that removes all genre filters", () => {
     renderFilter("/clips", "g=Rock&g=Jazz");
     openFilterPanel();
@@ -106,6 +198,16 @@ describe("FeedFilter", () => {
     const clearLink = screen.getByRole("link", { name: "Clear" });
     expect(clearLink).toBeDefined();
     expect(clearLink).toHaveProperty("href", "http://localhost:3000/clips?");
+  });
+
+  it("shows a clear link that removes status filters", () => {
+    renderFilter("/", `status=${PROFILE_STATUS_FILTERS.openToGigs.value}`);
+    openFilterPanel();
+
+    expect(screen.getByRole("link", { name: "Clear" })).toHaveProperty(
+      "href",
+      "http://localhost:3000/?",
+    );
   });
 
   it("preserves non-genre params in the clear link", () => {
@@ -118,7 +220,7 @@ describe("FeedFilter", () => {
     );
   });
 
-  it("does not show the clear link when no genres are selected", () => {
+  it("does not show the clear link when no filters are selected", () => {
     renderFilter();
     openFilterPanel();
 

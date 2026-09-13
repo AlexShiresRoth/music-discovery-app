@@ -72,6 +72,12 @@ const baseProps = {
   bandcamp: social(),
   imageUrl: null,
   influences: ["Radiohead", "Bjork"],
+  openToCollaboration: false,
+  openToGigs: false,
+  needActForShow: false,
+  statusMessage: null,
+  updatedAt: null,
+  createdAt: null,
 };
 
 function renderWithToast(props = {}, setToast = vi.fn()) {

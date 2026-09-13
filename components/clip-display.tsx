@@ -21,7 +21,7 @@ export default function ClipDisplay({
 }) {
   return (
     <div
-      className="@container relative flex h-full min-h-[50vh] w-full shrink-0 snap-start basis-full min-w-0 flex-col overflow-hidden"
+      className="@container relative flex md:h-full md:min-h-[50vh] w-full shrink-0 snap-start basis-full min-w-0 flex-col overflow-hidden"
       data-clip-slide
       data-clip-index={index}
     >
