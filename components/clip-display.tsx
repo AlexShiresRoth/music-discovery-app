@@ -25,7 +25,7 @@ export default function ClipDisplay({
       data-clip-slide
       data-clip-index={index}
     >
-      <div className="relative z-20 grid w-full shrink-0 grid-cols-1 items-start gap-2 pb-3 md:grid-cols-2 md:pb-8">
+      <div className="relative z-20 grid w-full shrink-0 grid-cols-1 items-start md:gap-2 pb-3 md:grid-cols-2 md:pb-8">
         <div
           className={clsx(
             "order-1 flex flex-col gap-2 text-xl md:text-3xl",

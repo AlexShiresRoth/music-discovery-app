@@ -23,7 +23,7 @@ export default function ClipColumn({
   handleAdvancePlayback,
 }: Props) {
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col justify-start gap-8">
+    <div className="flex min-h-0 w-full flex-1 flex-col justify-start md:gap-8 gap-4">
       <div
         ref={scrollRef}
         className="flex min-h-0 flex-1 gap-4 overflow-x-auto overflow-y-visible snap-x snap-mandatory scrollbar-none"
