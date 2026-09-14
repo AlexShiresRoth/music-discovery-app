@@ -18,11 +18,11 @@ export default function StatusDisplay({
   const [showStatusModal, setShowStatusModal] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col md:gap-4">
       <div className="flex flex-col gap-2">
         <div
           className={clsx(
-            "flex gap-2",
+            "flex md:gap-2",
             !onPublicProfile ? "flex-col items-start" : "items-center",
           )}
         >
@@ -63,7 +63,7 @@ export default function StatusDisplay({
             </p>
           )}
           {profile.statusMessage && !onPublicProfile && (
-            <div className="my-2">
+            <div className="md:my-2">
               <button
                 type="button"
                 className="hover:cursor-pointer text-amber-700 transition-colors duration-300"

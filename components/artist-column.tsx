@@ -43,7 +43,7 @@ export default function ArtistColumn({
   return (
     <aside
       className={clsx(
-        "flex flex-col md:border-r border-r-black/10 pr-8 md:gap-20 gap-4 opacity-60",
+        "flex flex-col md:border-r border-r-black/10 pr-8 md:gap-12 gap-4 opacity-60",
         isActive ? "animate-light-fade-in" : "animate-light-fade-out",
       )}
     >
@@ -69,7 +69,7 @@ export default function ArtistColumn({
             />
           )}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col md:gap-2">
           <Link
             href={`/profiles/${profile.id}`}
             className="text-3xl md:text-4xl md:w-70 w-full font-bold text-black uppercase hover:underline underline-offset-4 decoration-black"
@@ -133,7 +133,7 @@ export default function ArtistColumn({
       {hasStatus && (
         <div className="flex-col gap-2 flex">
           <div className="flex flex-col border-b border-b-black/10 md:pb-2">
-            <p className="font-semibold text-lg">Status</p>
+            <p className="font-semibold md:text-lg text-sm">Status</p>
           </div>
           <div className="flex flex-col md:ml-4">
             <StatusDisplay profile={profile} />
