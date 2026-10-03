@@ -58,7 +58,7 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700 flex items-center gap-2"
+      className="text-xs text-gray-500 hover:cursor-pointer hover:text-gray-700 flex items-center gap-2"
     >
       <Share2Icon className="h-3 w-3" />
       {shareButtonText}
