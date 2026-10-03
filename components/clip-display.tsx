@@ -47,46 +47,48 @@ export default function ClipDisplay({
           )}
         </div>
 
-        {clip.full_song_url && (
-          <a
-            href={clip.full_song_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={clsx(
-              "order-2 flex items-center gap-2 justify-self-start text-sm text-gray-500 underline-offset-4 hover:underline md:justify-self-end [--stagger:1]",
-              isActive ? "clip-anim-fade" : "animate-fade-out",
-            )}
-            onClick={() =>
-              track("listen_to_full_song", {
-                clip_id: clip.id,
-                artist_id: clip.profileRefId,
-              })
-            }
-          >
-            Listen to full song
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        )}
-        <ShareButton
-          shareUrl={`/clips/${clip.id}`}
-          shareTitle={clip.title ?? ""}
-          shareText={clip.title ?? ""}
-          canShareTrackEvent={{
-            name: "share_clip",
-            payload: {
-              clip_id: clip.id.toString(),
-              artist_id: clip.profileRefId.toString(),
-            },
-          }}
-          clipboardShareTrackEvent={{
-            name: "share_clip_clipboard",
-            payload: {
-              clip_id: clip.id.toString(),
-              artist_id: clip.profileRefId.toString(),
-            },
-          }}
-          shareButtonText="Share Clip"
-        />
+        <div className="order-2 flex flex-col md:items-end gap-2 justify-self-start md:justify-self-end [--stagger:1]">
+          {clip.full_song_url && (
+            <a
+              href={clip.full_song_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={clsx(
+                "flex items-center gap-2 text-sm text-gray-500 underline-offset-4 hover:underline",
+                isActive ? "clip-anim-fade" : "animate-fade-out",
+              )}
+              onClick={() =>
+                track("listen_to_full_song", {
+                  clip_id: clip.id,
+                  artist_id: clip.profileRefId,
+                })
+              }
+            >
+              Listen to full song
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          )}
+          <ShareButton
+            shareUrl={`/clips/${clip.id}`}
+            shareTitle={clip.title ?? ""}
+            shareText={clip.title ?? ""}
+            canShareTrackEvent={{
+              name: "share_clip",
+              payload: {
+                clip_id: clip.id.toString(),
+                artist_id: clip.profileRefId.toString(),
+              },
+            }}
+            clipboardShareTrackEvent={{
+              name: "share_clip_clipboard",
+              payload: {
+                clip_id: clip.id.toString(),
+                artist_id: clip.profileRefId.toString(),
+              },
+            }}
+            shareButtonText="Share Clip"
+          />
+        </div>
       </div>
 
       <ClipStage
