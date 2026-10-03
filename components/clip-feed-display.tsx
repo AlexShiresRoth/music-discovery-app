@@ -7,6 +7,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import ClipStage from "./clip-stage";
+import ShareButton from "./share-button";
 
 /** Clips-feed slide: metadata floats just above the centered stage. */
 export default function ClipFeedDisplay({
@@ -57,7 +58,7 @@ export default function ClipFeedDisplay({
             <div className="flex flex-col gap-2">
               <span className="text-xs text-gray-400 -mb-2">Now Playing</span>
               <h2 className="font-bold text-amber-700 text-2xl md:text-4xl">
-                {clip.title}
+                <Link href={`/clips/${clip.id}`}>{clip.title}</Link>
               </h2>
             </div>
           </div>
@@ -85,6 +86,26 @@ export default function ClipFeedDisplay({
                   {published.label}
                 </div>
               )}
+              <ShareButton
+                shareUrl={`/clips/${clip.id}`}
+                shareTitle={clip.title ?? ""}
+                shareText={clip.title ?? ""}
+                canShareTrackEvent={{
+                  name: "share_clip",
+                  payload: {
+                    clip_id: clip.id.toString(),
+                    artist_id: clip.profileRefId.toString(),
+                  },
+                }}
+                clipboardShareTrackEvent={{
+                  name: "share_clip_clipboard",
+                  payload: {
+                    clip_id: clip.id.toString(),
+                    artist_id: clip.profileRefId.toString(),
+                  },
+                }}
+                shareButtonText="Share Clip"
+              />
             </div>
           )}
 

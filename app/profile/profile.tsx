@@ -1,6 +1,7 @@
 import EmptyState from "@/components/empty-state";
 import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
+import ShareButton from "@/components/share-button";
 import { VerificationRequestStatus } from "@/lib/db/schema";
 import type { Profile, SongClip } from "@/lib/db/types";
 import { CogIcon } from "lucide-react";
@@ -9,7 +10,6 @@ import Link from "next/link";
 import StatusSetting from "../../components/status-setting";
 import PrivateInfo from "./private-info";
 import PublicInfo from "./public-info";
-import ShareProfileButton from "./share-profile-button";
 import SocialSection from "./social";
 import SongClipsSection from "./song-clips";
 import UploadImage from "./upload-image";
@@ -91,12 +91,19 @@ export default async function Profile({
               />
             )}
             <div>
-              <ShareProfileButton
-                profile={{
-                  id: profile.id.toString(),
-                  profileName: profile.profileName ?? "",
-                  bio: profile.bio ?? "",
+              <ShareButton
+                shareUrl={`/profiles/${profile.id}`}
+                shareTitle={profile.profileName ?? ""}
+                shareText={profile.bio ?? ""}
+                canShareTrackEvent={{
+                  name: "share_profile",
+                  payload: { profile_id: profile.id.toString() },
                 }}
+                clipboardShareTrackEvent={{
+                  name: "share_profile_clipboard",
+                  payload: { profile_id: profile.id.toString() },
+                }}
+                shareButtonText="Share Profile"
               />
             </div>
           </div>

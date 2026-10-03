@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import ClipStage from "./clip-stage";
+import ShareButton from "./share-button";
 
 /** Artist-feed clip slide: metadata at top; stage stacks down on mobile, centered on desktop. */
 export default function ClipDisplay({
@@ -34,7 +35,7 @@ export default function ClipDisplay({
         >
           <span className="text-xs text-gray-400 -mb-2">Now Playing</span>
           <h2 className="font-bold text-amber-700 text-2xl md:text-4xl">
-            {clip.title}
+            <Link href={`/clips/${clip.id}`}>{clip.title}</Link>
           </h2>
           {clip.genre && (
             <Link
@@ -66,6 +67,26 @@ export default function ClipDisplay({
             <ExternalLink className="h-3 w-3" />
           </a>
         )}
+        <ShareButton
+          shareUrl={`/clips/${clip.id}`}
+          shareTitle={clip.title ?? ""}
+          shareText={clip.title ?? ""}
+          canShareTrackEvent={{
+            name: "share_clip",
+            payload: {
+              clip_id: clip.id.toString(),
+              artist_id: clip.profileRefId.toString(),
+            },
+          }}
+          clipboardShareTrackEvent={{
+            name: "share_clip_clipboard",
+            payload: {
+              clip_id: clip.id.toString(),
+              artist_id: clip.profileRefId.toString(),
+            },
+          }}
+          shareButtonText="Share Clip"
+        />
       </div>
 
       <ClipStage

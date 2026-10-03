@@ -27,7 +27,7 @@ vi.mock("@/components/status-setting", () => ({
   default: () => <div>Status setting</div>,
 }));
 
-vi.mock("@/app/profile/share-profile-button", () => ({
+vi.mock("@/components/share-button", () => ({
   default: () => <button type="button">Share Profile</button>,
 }));
 

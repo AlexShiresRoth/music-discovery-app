@@ -3,38 +3,50 @@
 import { track } from "@vercel/analytics";
 import { Share2Icon } from "lucide-react";
 
-type Props = {
-  profile: {
-    id: string;
-    profileName: string;
-    bio: string;
-  };
+type Payload = Record<string, string>;
+
+type TrackEvent = {
+  name: string;
+  payload: Payload;
 };
 
-export default function ShareProfileButton({ profile }: Props) {
+type Props = {
+  shareUrl: string;
+  shareTitle: string;
+  shareText: string;
+  canShareTrackEvent: TrackEvent;
+  clipboardShareTrackEvent: TrackEvent;
+  shareButtonText: string;
+};
+
+export default function ShareButton({
+  shareUrl,
+  shareTitle,
+  shareText,
+  canShareTrackEvent,
+  clipboardShareTrackEvent,
+  shareButtonText,
+}: Props) {
   const handleShare = async () => {
-    const url = `${window.location.origin}/profiles/${profile.id}`;
     const shareData = {
-      title: profile.profileName,
-      text: profile.bio || profile.profileName,
-      url,
+      title: shareTitle,
+      text: shareText,
+      url: shareUrl,
     };
     const canNativeShare =
       typeof navigator !== "undefined" && typeof navigator.share === "function";
 
     try {
       if (canNativeShare) {
-        track("share_profile", {
-          profile_id: profile.id,
-          name: profile.profileName,
+        track(canShareTrackEvent.name, {
+          ...canShareTrackEvent.payload,
         });
         await navigator.share(shareData);
       } else {
-        track("share_profile_clipboard", {
-          profile_id: profile.id,
-          name: profile.profileName,
+        track(clipboardShareTrackEvent.name, {
+          ...clipboardShareTrackEvent.payload,
         });
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(shareUrl);
         alert("Link copied to clipboard!");
       }
     } catch {
@@ -49,7 +61,7 @@ export default function ShareProfileButton({ profile }: Props) {
       className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700 flex items-center gap-2"
     >
       <Share2Icon className="h-3 w-3" />
-      Share Profile
+      {shareButtonText}
     </button>
   );
 }
