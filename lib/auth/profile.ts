@@ -61,7 +61,7 @@ export async function getProfile() {
   }
 }
 
-export const getProfileById = cache(async (id: string) => {
+export const getProfileById = cache(async (id: string | number) => {
   try {
     const [profile] = await db
       .select()

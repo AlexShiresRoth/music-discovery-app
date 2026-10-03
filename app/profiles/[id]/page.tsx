@@ -1,4 +1,3 @@
-import ShareProfileButton from "@/app/profile/share-profile-button";
 import BackButton from "@/components/breadcrumbs";
 import EmptyState from "@/components/empty-state";
 import Footer from "@/components/footer";
@@ -6,6 +5,7 @@ import ProfileLinksDisplay from "@/components/profile-links-display";
 import ProfileLocationDisplay from "@/components/profile-location-display";
 import PublicSongClips from "@/components/public-song-clips";
 import ReportAccount from "@/components/report-account";
+import ShareButton from "@/components/share-button";
 import StatusDisplay from "@/components/status-display";
 import { getProfileById, getSession } from "@/lib/auth";
 import { ImageIcon } from "lucide-react";
@@ -156,12 +156,19 @@ export default async function ProfilePage({ params }: Props) {
 
             <StatusDisplay profile={profile} onPublicProfile />
             <div className="flex items-center gap-4">
-              <ShareProfileButton
-                profile={{
-                  id: profile.id.toString(),
-                  profileName: profile.profileName ?? "",
-                  bio: profile.bio ?? "",
+              <ShareButton
+                shareUrl={`/profiles/${profile.id}`}
+                shareTitle={profile.profileName ?? ""}
+                shareText={profile.bio ?? ""}
+                canShareTrackEvent={{
+                  name: "share_profile",
+                  payload: { profile_id: profile.id.toString() },
                 }}
+                clipboardShareTrackEvent={{
+                  name: "share_profile_clipboard",
+                  payload: { profile_id: profile.id.toString() },
+                }}
+                shareButtonText="Share Profile"
               />
               <ReportAccount
                 isAuthenticated={isAuthenticated}
